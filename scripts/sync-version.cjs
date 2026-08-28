@@ -1,10 +1,10 @@
 // Keep `src/version.ts` in step with this package's `package.json`.
 //
-// The root package has `scripts/utils/check-version.cjs` for the same job, but
-// it is hardcoded to the repository root and rewrites `VERSION`, not `version`.
-// The CLI needs its own because it is not on release-please: nothing rewrites
-// its version, so `src/version.ts` said 2.31.0 while `package.json` said 0.1.0
-// and `roark --version` shipped the wrong number.
+// It exists because nothing else rewrites this package's version. The SDK
+// repository this package used to live in has release-please bumping every
+// version literal it is told about, and the CLI was deliberately not on that
+// train - so `src/version.ts` said 2.31.0 while `package.json` said 0.1.0 and
+// `roark --version` shipped the wrong number. Same in a repository of its own.
 //
 // Runs before tsc, so the compiled output can only carry the published version.
 const fs = require('fs');
@@ -13,13 +13,13 @@ const path = require('path');
 const main = () => {
   const version = require('../package.json').version;
   if (typeof version !== 'string' || !version) {
-    throw new Error(`packages/cli/package.json has no usable version; got ${typeof version}`);
+    throw new Error(`package.json has no usable version; got ${typeof version}`);
   }
   // Whatever is here is compiled in and answers `roark --version`, so a typo
   // reaches the registry as the package's identity. `v0.1.1` and `0.1` both
   // install fine and both read as wrong forever, npm versions being immutable.
   if (!/^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$/.test(version)) {
-    throw new Error(`packages/cli/package.json version is not semver: ${version}`);
+    throw new Error(`package.json version is not semver: ${version}`);
   }
 
   const versionFile = path.resolve(__dirname, '..', 'src', 'version.ts');

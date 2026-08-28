@@ -8,10 +8,6 @@
 # The marketing site refuses to serve a script with CRs, so this would surface as
 # a red build in another repository. Pinning the line endings here is what stops
 # it being committed in the first place.
-#
-# Scoped to packages/cli rather than the repository root on purpose: the root is
-# vendor codegen territory, and a file there is liable to be overwritten. This
-# directory is ours.
 *.sh text eol=lf
 
 # The build script is shell too, it just has no extension.

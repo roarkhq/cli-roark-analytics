@@ -1,0 +1,5 @@
+dist
+node_modules
+man
+npm-shrinkwrap.json
+pnpm-lock.yaml

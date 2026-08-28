@@ -7,7 +7,6 @@ import { version } from './version';
  */
 describe('version', () => {
   it('matches the version this package publishes', () => {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { version: published } = require('../package.json');
     expect(version).toBe(published);
   });

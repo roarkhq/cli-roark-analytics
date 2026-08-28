@@ -6,10 +6,9 @@
   "type": "commonjs",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/roarkhq/sdk-roark-analytics-node.git",
-    "directory": "packages/cli"
+    "url": "git+https://github.com/roarkhq/cli-roark-analytics.git"
   },
-  "homepage": "https://github.com/roarkhq/sdk-roark-analytics-node/tree/main/packages/cli#readme",
+  "homepage": "https://github.com/roarkhq/cli-roark-analytics#readme",
   "license": "Apache-2.0",
   "packageManager": "pnpm@10.30.1",
   "private": false,
@@ -28,20 +27,25 @@
     "prepublishOnly": "echo 'to publish, run pnpm build && (cd dist; pnpm publish)' && exit 1",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "jest",
-    "lint": "eslint .",
-    "fix": "eslint --fix ."
+    "lint": "eslint . && prettier --check .",
+    "fix": "eslint --fix . && prettier --write ."
   },
   "dependencies": {
-    "@roarkanalytics/sdk": "workspace:*",
+    "@roarkanalytics/sdk": "^3.2.0",
     "commander": "^14.0.3",
     "yaml": "^2.9.0"
   },
   "devDependencies": {
     "@types/jest": "^29.4.0",
     "@types/node": "^20.17.6",
+    "eslint": "^9.39.1",
+    "eslint-plugin-unused-imports": "^4.1.4",
     "jest": "^29.4.0",
+    "prettier": "3.1.1",
     "ts-jest": "^29.1.0",
-    "typescript": "5.8.3"
+    "ts-node": "^10.5.0",
+    "typescript": "5.8.3",
+    "typescript-eslint": "8.31.1"
   },
   "man": [
     "./man/roark.1",

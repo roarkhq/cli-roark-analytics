@@ -21,12 +21,7 @@ for file in LICENSE CHANGELOG.md; do
   if [ -e "${file}" ]; then cp "${file}" dist; fi
 done
 
-PKG_JSON_PATH=../../packages/cli/package.json node ../../scripts/utils/make-dist-package-json.cjs > dist/package.json
-
-# `@roarkanalytics/sdk` is a `workspace:*` dependency here, and dist/ is outside
-# the workspace, so pnpm has nothing to rewrite it from at publish time. Name the
-# published version explicitly instead.
-node scripts/postprocess-dist-package-json.cjs
+node scripts/make-dist-package-json.cjs > dist/package.json
 
 # Ship a lockfile, so that installing a given CLI version resolves the same
 # dependency tree today and in six months. Without one, `commander@^14.0.3` and
@@ -38,26 +33,18 @@ node scripts/postprocess-dist-package-json.cjs
 # package-lock generated here would be silently dropped from the tarball and the
 # problem would look solved without being solved.
 #
-# After the rewrite above, not before: a shrinkwrap taken from the source
-# manifest would pin `workspace:*`, which resolves to nothing outside this
-# repository.
-#
 # This is the one build step that needs the network, and it is deliberately not
-# allowed to fail the build. `scripts/build` at the root loops over every
-# packages/* directory unconditionally, and that root build is what ci.yml's
-# `build` job runs on every push and pull request in the repository - so a hard
-# failure here is not scoped to the CLI, it is a red build for everyone.
-#
-# It would go red for a routine reason, too. dist/package.json names the SDK
-# version from the root manifest, and on a release-please bump - or any change
-# that bumps the SDK and touches packages/cli together - that version is not on
-# npm yet by construction. Gating all of CI on "the SDK has already published"
-# inverts the order those two things actually happen in.
+# allowed to fail the build. `package.json` declares a range on a *published*
+# `@roarkanalytics/sdk`, and the moment that range is bumped ahead of the SDK's
+# own release - which is the normal order, since the CLI is regenerated from the
+# same spec change that produces the SDK - the resolve here cannot succeed.
+# Failing the build then would make every commit in that window red for a reason
+# that has nothing to do with the commit.
 #
 # So: warn and carry on. The shrinkwrap is a property of a *published* artifact,
-# and publish-cli.yml is where its absence is fatal - it refuses to publish a
-# tarball without one, after first checking the SDK version is on npm, so the
-# publish path still cannot skip it silently.
+# and publish.yml is where its absence is fatal - it refuses to publish a tarball
+# without one, after first checking the SDK version is on npm, so the publish
+# path still cannot skip it silently.
 (
   cd dist
 
