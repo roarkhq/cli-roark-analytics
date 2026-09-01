@@ -22,7 +22,7 @@ Optional.
 Optional.
 .TP
 \fB\-\-branching\-mode\fR \fI<value>\fR
-Scripted flows only. One of: DETERMINISTIC, ADAPTIVE. Optional.
+Scripted flows only. How a run walks the graph. DETERMINISTIC ("Simulate every path" in the app) places one call per variant, each following its path exactly whatever the agent says. ADAPTIVE ("Adapt to your agent") collapses the paths into one call PER PERSONA, on which the simulated customer picks a branch from what the agent actually said. Both modes speak the exact authored lines, and neither changes how metrics or expectations grade. One of: DETERMINISTIC, ADAPTIVE. Optional.
 .TP
 \fB\-\-agent\-ids\fR \fI<value>\fR
 Replaces the linked agents. Omit to leave them unchanged. An improv flow must keep at least one; a scripted flow can be left with none. Repeatable. Optional.
