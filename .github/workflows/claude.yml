@@ -32,7 +32,7 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          allowed_bots: "codegen"
+          allowed_bots: 'codegen'
           track_progress: true
           prompt: |
             REPO: ${{ github.repository }}
