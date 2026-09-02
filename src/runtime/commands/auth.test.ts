@@ -39,6 +39,28 @@ const invoke = async (...argv: string[]): Promise<void> => {
   await root_.parseAsync(['node', 'roark', ...argv]);
 };
 
+type ProbeBehavior = 'ok' | { status: number } | { networkError: string };
+
+/** A fake client factory whose probe GET behaves as configured, so login-time verification is
+ * exercised without a network. */
+const clientStub = (behavior: ProbeBehavior): Parameters<typeof registerAuthCommands>[2] =>
+  (() => ({
+    get: async (): Promise<unknown> => {
+      if (behavior === 'ok') return {};
+      if ('status' in behavior)
+        throw Object.assign(new Error(`HTTP ${behavior.status}`), { status: behavior.status });
+      throw new Error(behavior.networkError);
+    },
+  })) as unknown as Parameters<typeof registerAuthCommands>[2];
+
+const invokeVerified = async (behavior: ProbeBehavior, ...argv: string[]): Promise<void> => {
+  const root_ = new Command();
+  root_.exitOverride();
+  registerAuthCommands(root_, 'roark', clientStub(behavior));
+  for (const child of root_.commands) child.exitOverride();
+  await root_.parseAsync(['node', 'roark', ...argv]);
+};
+
 beforeEach(() => {
   saved = {
     XDG_CONFIG_HOME: process.env['XDG_CONFIG_HOME'],
@@ -102,6 +124,42 @@ describe('auth login', () => {
     pipeToken('   \n');
     await expect(invoke('auth', 'login')).rejects.toThrow(/No token on stdin/);
     expect(existsSync(userConfigPath())).toBe(false);
+  });
+});
+
+describe('auth login verification', () => {
+  it('confirms a token that authenticates', async () => {
+    pipeToken('good-token-value');
+    await invokeVerified('ok', 'auth', 'login');
+    expect(written()).toContain('Verified');
+  });
+
+  it('treats a 403 (valid token, missing permission) as authenticated', async () => {
+    pipeToken('scoped-token-value');
+    await invokeVerified({ status: 403 }, 'auth', 'login');
+    expect(written()).toContain('Verified');
+  });
+
+  it('warns when the token is rejected with 401, but still keeps it saved', async () => {
+    pipeToken('bad-token-value');
+    await invokeVerified({ status: 401 }, 'auth', 'login');
+    expect(written()).toContain('rejected (401)');
+    expect(JSON.parse(readFileSync(userConfigPath(), 'utf8')).bearerToken).toBe('bad-token-value');
+  });
+
+  it('stays honest when it cannot verify (offline)', async () => {
+    pipeToken('any-token-value');
+    await invokeVerified({ networkError: 'getaddrinfo ENOTFOUND api.roark.ai' }, 'auth', 'login');
+    expect(written()).toContain('could not verify');
+  });
+});
+
+describe('auth login environment shadow', () => {
+  it('warns that ROARK_API_BEARER_TOKEN overrides the stored token', async () => {
+    process.env['ROARK_API_BEARER_TOKEN'] = 'env-token-value';
+    pipeToken('stored-token-value');
+    await invokeVerified('ok', 'auth', 'login');
+    expect(written()).toContain('overrides this stored token');
   });
 });
 

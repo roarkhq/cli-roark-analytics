@@ -7,12 +7,79 @@
  */
 
 import { Command } from 'commander';
+import type Roark from '@roarkanalytics/sdk';
 import { createInterface } from 'node:readline';
 
 import { UsageError } from '../errors';
 import { clearUserConfig, maskToken, readUserConfig, userConfigPath, writeUserConfig } from '../config';
 import { paint, supportsColor, write } from '../output';
 import { isInteractive } from '../confirm';
+
+/** How the program builds an authenticated client; injected so tests can stub it (and skip the
+ * network entirely by omitting it). Matches the factory the other commands receive. */
+type ClientFor = (options: never) => Roark;
+
+// Any authenticated endpoint works as a liveness probe: `requireAuth` runs first, so a bad token is
+// a 401 while a valid one that merely lacks this endpoint's permission is a 403 — both prove the
+// token authenticates. `/v1/agent` is a stable GET that every project has.
+const AUTH_PROBE_PATH = '/v1/agent';
+
+/**
+ * Confirm the just-saved token actually authenticates, so a mistyped or half-pasted token is caught
+ * here instead of on the user's next real command. Best-effort: it never fails the login (the token
+ * is already saved) and stays quiet-but-honest when offline.
+ */
+const verifyCredential = async (
+  clientFor: ClientFor,
+  token: string,
+  binaryName: string,
+  color: boolean,
+): Promise<void> => {
+  let client: Roark;
+  try {
+    // Verify the token we just saved specifically (pass it as the flag layer so a set
+    // ROARK_API_BEARER_TOKEN can't shadow it here).
+    client = clientFor({ token } as never);
+  } catch {
+    // e.g. the base-url trust guard refused; don't turn that into a login failure.
+    return;
+  }
+
+  const verified = (): void =>
+    write(`${paint('Verified', 'green', color)} the token authenticates.`, process.stderr);
+
+  try {
+    await (client as unknown as { get: (path: string, opts?: unknown) => Promise<unknown> }).get(
+      AUTH_PROBE_PATH,
+      { query: { limit: '1' } },
+    );
+    verified();
+  } catch (error) {
+    const status = (error as { status?: number }).status;
+    if (status === 401) {
+      write(
+        paint(
+          `Warning: the token was rejected (401). It may be wrong, expired, or revoked. It is still saved; run \`${binaryName} auth login\` again to replace it.`,
+          'yellow',
+          color,
+        ),
+        process.stderr,
+      );
+    } else if (status !== undefined && status < 500) {
+      // 403 (authenticated, lacks agent:read) or any other client-level response: auth succeeded.
+      verified();
+    } else {
+      write(
+        paint(
+          `Saved, but could not verify it right now (${(error as Error).message}). It will be used as-is.`,
+          'dim',
+          color,
+        ),
+        process.stderr,
+      );
+    }
+  }
+};
 
 /** Reads a secret without echoing it, so it is not left on screen or in a scrollback. */
 const promptSecret = async (prompt: string): Promise<string> => {
@@ -51,17 +118,25 @@ const readToken = async (): Promise<string> => {
     });
     const token = piped.trim();
     if (token.length === 0) {
-      throw new UsageError('No token on stdin. Pipe one in, or run this in a terminal.');
+      throw new UsageError(
+        'No token on stdin. Pipe one in (echo "$ROARK_API_BEARER_TOKEN" | roark auth login), or run this in a terminal to be prompted.',
+      );
     }
     return token;
   }
 
   const token = (await promptSecret('Bearer token: ')).trim();
-  if (token.length === 0) throw new UsageError('No token entered.');
+  if (token.length === 0) {
+    // The most common cause: a paste that the hidden prompt did not capture. Point at the reliable
+    // path rather than just saying "nothing entered".
+    throw new UsageError(
+      'No token entered. If you pasted and nothing happened, pipe it instead: echo "$ROARK_API_BEARER_TOKEN" | roark auth login',
+    );
+  }
   return token;
 };
 
-export const registerAuthCommands = (root: Command, binaryName: string): void => {
+export const registerAuthCommands = (root: Command, binaryName: string, clientFor?: ClientFor): void => {
   const auth = new Command('auth').description('Manage the stored credential').showHelpAfterError();
   auth.action(() => auth.outputHelp());
 
@@ -83,6 +158,23 @@ export const registerAuthCommands = (root: Command, binaryName: string): void =>
       const path = writeUserConfig({ ...readUserConfig(), bearerToken: token });
       const color = supportsColor(process.stderr);
       write(`${paint('Saved', 'green', color)} ${maskToken(token)} to ${path}`, process.stderr);
+
+      // Confirm the token actually works, so a bad paste surfaces now rather than on the next command.
+      if (clientFor) await verifyCredential(clientFor, token, binaryName, color);
+
+      // A set environment variable outranks the stored token (see the precedence in config.ts), so
+      // without this the login looks like it "did nothing" when a stale export shadows it.
+      const fromEnv = process.env['ROARK_API_BEARER_TOKEN'];
+      if (fromEnv && fromEnv !== token) {
+        write(
+          paint(
+            `Note: ROARK_API_BEARER_TOKEN is set and overrides this stored token. Unset it to use the credential you just saved.`,
+            'yellow',
+            color,
+          ),
+          process.stderr,
+        );
+      }
     });
 
   auth
