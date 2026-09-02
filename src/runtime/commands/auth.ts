@@ -1,19 +1,33 @@
 /**
  * `roark auth login | logout | status`
  *
- * The token is never accepted as a flag value: flags land in shell history and
- * in the process table, where a bearer token has no business being. It is read
- * from a prompt with echo off, or from stdin so CI can pipe it in.
+ * `login` defaults to a browser flow (OAuth authorization-code + PKCE): it opens the platform's
+ * consent page, mints a key on approval, and stores it. Non-interactive/piped input, `--paste`, or
+ * `--no-browser` fall back to taking a bearer token. A token is never accepted as a flag value:
+ * flags land in shell history and the process table, where a bearer token has no business being; it
+ * is read from a prompt with echo off, or from stdin so CI can pipe it in.
  */
 
 import { Command } from 'commander';
 import type Roark from '@roarkanalytics/sdk';
+import { hostname } from 'node:os';
 import { createInterface } from 'node:readline';
 
+import { browserLogin, platformOriginFor } from '../browser-login';
 import { UsageError } from '../errors';
-import { clearUserConfig, maskToken, readUserConfig, userConfigPath, writeUserConfig } from '../config';
+import {
+  clearUserConfig,
+  maskToken,
+  readUserConfig,
+  resolveConfig,
+  userConfigPath,
+  writeUserConfig,
+} from '../config';
 import { paint, supportsColor, write } from '../output';
 import { isInteractive } from '../confirm';
+
+// The SDK's default when no base URL is configured; the token exchange targets the same host.
+const DEFAULT_BASE_URL = 'https://api.roark.ai';
 
 /** How the program builds an authenticated client; injected so tests can stub it (and skip the
  * network entirely by omitting it). Matches the factory the other commands receive. */
@@ -132,45 +146,85 @@ const readToken = async (binaryName: string): Promise<string> => {
   return token;
 };
 
+// Save the token and report where it went (masked). Shared by the browser and paste paths.
+const persistToken = (token: string): { color: boolean } => {
+  const path = writeUserConfig({ ...readUserConfig(), bearerToken: token });
+  const color = supportsColor(process.stderr);
+  write(`${paint('Saved', 'green', color)} ${maskToken(token)} to ${path}`, process.stderr);
+  return { color };
+};
+
+// A set environment variable outranks the stored token (see the precedence in config.ts), so without
+// this a login looks like it "did nothing" when a stale export shadows what we just saved.
+const warnEnvShadow = (token: string, color: boolean): void => {
+  const fromEnv = process.env['ROARK_API_BEARER_TOKEN'];
+  if (fromEnv && fromEnv !== token) {
+    write(
+      paint(
+        `Note: ROARK_API_BEARER_TOKEN is set and overrides this stored token. Unset it to use the credential you just saved.`,
+        'yellow',
+        color,
+      ),
+      process.stderr,
+    );
+  }
+};
+
 export const registerAuthCommands = (root: Command, binaryName: string, clientFor?: ClientFor): void => {
   const auth = new Command('auth').description('Manage the stored credential').showHelpAfterError();
   auth.action(() => auth.outputHelp());
 
   auth
     .command('login')
-    .description('Store a bearer token for future commands')
+    .description('Authorize this CLI in your browser, or store a bearer token')
+    .option('--no-browser', 'do not open a browser; paste or pipe a token instead')
+    .option('--paste', 'paste or pipe a bearer token instead of using the browser')
     .addHelpText(
       'after',
       [
         '',
-        'The token is read from a hidden prompt, or from stdin when not a terminal:',
+        'By default an interactive terminal opens your browser to approve access and stores the',
+        'minted key. Non-interactive (piped) input always takes a token, so CI keeps working:',
         '',
         `  ${binaryName} auth login`,
+        `  ${binaryName} auth login --paste`,
         `  echo "$ROARK_API_BEARER_TOKEN" | ${binaryName} auth login`,
       ].join('\n'),
     )
-    .action(async () => {
-      const token = await readToken(binaryName);
-      const path = writeUserConfig({ ...readUserConfig(), bearerToken: token });
-      const color = supportsColor(process.stderr);
-      write(`${paint('Saved', 'green', color)} ${maskToken(token)} to ${path}`, process.stderr);
+    .action(async (options: { browser?: boolean; paste?: boolean }) => {
+      // Browser flow when we're an interactive terminal and it wasn't opted out. A piped /
+      // non-interactive invocation always uses the token path so `echo "$TOKEN" | auth login` works.
+      const useBrowser = options.browser !== false && options.paste !== true && isInteractive();
 
+      if (useBrowser) {
+        const color = supportsColor(process.stderr);
+        const apiBaseUrl = resolveConfig({}).config.baseURL ?? DEFAULT_BASE_URL;
+        write(paint('Opening your browser to authorize this CLI…', 'dim', color), process.stderr);
+        let token: string;
+        try {
+          token = await browserLogin({
+            apiBaseUrl,
+            platformOrigin: platformOriginFor(apiBaseUrl),
+            clientName: `CLI on ${hostname()}`,
+            onAuthorizeUrl: (url) =>
+              write(paint(`If your browser didn't open, visit:\n  ${url}`, 'dim', color), process.stderr),
+          });
+        } catch (error) {
+          throw new UsageError(
+            `Browser login failed: ${(error as Error).message}\n` +
+              `Run \`${binaryName} auth login --paste\` to paste or pipe a token instead.`,
+          );
+        }
+        const { color: savedColor } = persistToken(token);
+        warnEnvShadow(token, savedColor);
+        return;
+      }
+
+      const token = await readToken(binaryName);
+      const { color } = persistToken(token);
       // Confirm the token actually works, so a bad paste surfaces now rather than on the next command.
       if (clientFor) await verifyCredential(clientFor, binaryName, color);
-
-      // A set environment variable outranks the stored token (see the precedence in config.ts), so
-      // without this the login looks like it "did nothing" when a stale export shadows it.
-      const fromEnv = process.env['ROARK_API_BEARER_TOKEN'];
-      if (fromEnv && fromEnv !== token) {
-        write(
-          paint(
-            `Note: ROARK_API_BEARER_TOKEN is set and overrides this stored token. Unset it to use the credential you just saved.`,
-            'yellow',
-            color,
-          ),
-          process.stderr,
-        );
-      }
+      warnEnvShadow(token, color);
     });
 
   auth
