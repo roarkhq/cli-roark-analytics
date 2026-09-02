@@ -25,23 +25,22 @@ type ClientFor = (options: never) => Roark;
 const AUTH_PROBE_PATH = '/v1/agent';
 
 /**
- * Confirm the just-saved token actually authenticates, so a mistyped or half-pasted token is caught
+ * Confirm the stored credential actually authenticates, so a mistyped or half-pasted token is caught
  * here instead of on the user's next real command. Best-effort: it never fails the login (the token
  * is already saved) and stays quiet-but-honest when offline.
  */
-const verifyCredential = async (
-  clientFor: ClientFor,
-  token: string,
-  binaryName: string,
-  color: boolean,
-): Promise<void> => {
+const verifyCredential = async (clientFor: ClientFor, binaryName: string, color: boolean): Promise<void> => {
   let client: Roark;
   try {
-    // Verify the token we just saved specifically (pass it as the flag layer so a set
-    // ROARK_API_BEARER_TOKEN can't shadow it here).
-    client = clientFor({ token } as never);
-  } catch {
-    // e.g. the base-url trust guard refused; don't turn that into a login failure.
+    // Resolve the client the same way a real command would (no forced --token), so the base-url
+    // trust guard still applies: we must not send the credential to a host a checked-in .roark.json
+    // chose. This verifies the effective credential, which is exactly what the next command will use.
+    client = clientFor({} as never);
+  } catch (error) {
+    // e.g. the trust guard refused, or config is malformed. Don't fail the login, but say the check
+    // was skipped so it doesn't look like the feature silently didn't run.
+    const reason = (error as Error).message.split('\n')[0];
+    write(paint(`Saved, but skipped the token check (${reason}).`, 'dim', color), process.stderr);
     return;
   }
 
@@ -49,10 +48,7 @@ const verifyCredential = async (
     write(`${paint('Verified', 'green', color)} the token authenticates.`, process.stderr);
 
   try {
-    await (client as unknown as { get: (path: string, opts?: unknown) => Promise<unknown> }).get(
-      AUTH_PROBE_PATH,
-      { query: { limit: '1' } },
-    );
+    await client.get(AUTH_PROBE_PATH, { query: { limit: '1' } });
     verified();
   } catch (error) {
     const status = (error as { status?: number }).status;
@@ -107,7 +103,7 @@ const promptSecret = async (prompt: string): Promise<string> => {
   }
 };
 
-const readToken = async (): Promise<string> => {
+const readToken = async (binaryName: string): Promise<string> => {
   if (!isInteractive()) {
     const piped = await new Promise<string>((resolve, reject) => {
       let buffer = '';
@@ -119,7 +115,7 @@ const readToken = async (): Promise<string> => {
     const token = piped.trim();
     if (token.length === 0) {
       throw new UsageError(
-        'No token on stdin. Pipe one in (echo "$ROARK_API_BEARER_TOKEN" | roark auth login), or run this in a terminal to be prompted.',
+        `No token on stdin. Pipe one in (echo "$ROARK_API_BEARER_TOKEN" | ${binaryName} auth login), or run this in a terminal to be prompted.`,
       );
     }
     return token;
@@ -130,7 +126,7 @@ const readToken = async (): Promise<string> => {
     // The most common cause: a paste that the hidden prompt did not capture. Point at the reliable
     // path rather than just saying "nothing entered".
     throw new UsageError(
-      'No token entered. If you pasted and nothing happened, pipe it instead: echo "$ROARK_API_BEARER_TOKEN" | roark auth login',
+      `No token entered. If you pasted and nothing happened, pipe it instead: echo "$ROARK_API_BEARER_TOKEN" | ${binaryName} auth login`,
     );
   }
   return token;
@@ -154,13 +150,13 @@ export const registerAuthCommands = (root: Command, binaryName: string, clientFo
       ].join('\n'),
     )
     .action(async () => {
-      const token = await readToken();
+      const token = await readToken(binaryName);
       const path = writeUserConfig({ ...readUserConfig(), bearerToken: token });
       const color = supportsColor(process.stderr);
       write(`${paint('Saved', 'green', color)} ${maskToken(token)} to ${path}`, process.stderr);
 
       // Confirm the token actually works, so a bad paste surfaces now rather than on the next command.
-      if (clientFor) await verifyCredential(clientFor, token, binaryName, color);
+      if (clientFor) await verifyCredential(clientFor, binaryName, color);
 
       // A set environment variable outranks the stored token (see the precedence in config.ts), so
       // without this the login looks like it "did nothing" when a stale export shadows it.
