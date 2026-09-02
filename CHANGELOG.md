@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/roarkhq/cli-roark-analytics/compare/v0.3.0...v0.3.1) (2026-09-02)
+
+
+### Bug Fixes
+
+* **deps:** pin @roarkanalytics/sdk to ^3.2.1 (unblocks 0.3.0 publish) ([#8](https://github.com/roarkhq/cli-roark-analytics/issues/8)) ([092e583](https://github.com/roarkhq/cli-roark-analytics/commit/092e5832a17c3b508f6241c812620a970cd8c671))
+
 ## [0.3.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.2.0...v0.3.0) (2026-09-02)
 
 
