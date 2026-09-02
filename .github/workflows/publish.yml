@@ -1,18 +1,24 @@
 # Publishes @roarkanalytics/cli.
 #
-# Manual, and single-purpose: pick a ref, rehearse it, publish it. There is no
-# release-please in this repository and no tag-driven trigger - the CLI's version
-# is its own, a renamed command is breaking for it and invisible to the SDK, and
-# a regeneration that only adds a flag is not a release. So a human decides when
-# a version ships, bumps `package.json`, and dispatches this.
+# Two ways in, sharing one build-check-publish body:
 #
-# It lived in sdk-roark-analytics-node as `publish-cli.yml`, deliberately apart
-# from that repository's `publish-npm.yml`, which fires on a GitHub release and
-# ships the SDK and the MCP server together. Splitting the repository made that
-# separation structural rather than a convention two workflows had to keep.
+#   - `release: published` - the automated path. release-please.yml merges a
+#     `release:` PR, cuts the tag and the GitHub release, and that release event
+#     fires this at the tagged commit. This is why the release must be created
+#     with a PAT and not GITHUB_TOKEN: a GITHUB_TOKEN release raises no
+#     `release: published`, so this would never run.
+#   - `workflow_dispatch` - the manual path, kept for a hand-picked ref or a
+#     rehearsal. It still defaults `dry_run` to true, so a manual run publishes
+#     nothing unless asked.
+#
+# A renamed command is still breaking for the CLI and invisible to the SDK - the
+# human decision of WHEN to ship stays, it is just made by merging the release PR
+# rather than by editing package.json and dispatching.
 name: Publish
 
 on:
+  release:
+    types: [published]
   workflow_dispatch:
     inputs:
       dry_run:
@@ -193,17 +199,20 @@ jobs:
           rm -f "$tarball"
           echo "the packed tarball carries the shrinkwrap, the man pages and the bin"
 
+      # A `release` event carries no inputs, so `inputs.tag` is empty there:
+      # default it to `latest` rather than passing `--tag ''`. A release always
+      # publishes; only a manual dispatch can ask for a dry run.
       - name: Publish
-        if: inputs.dry_run != true
+        if: github.event_name == 'release' || inputs.dry_run != true
         working-directory: dist
-        run: npm publish --access public --tag '${{ inputs.tag }}'
+        run: npm publish --access public --tag '${{ inputs.tag || 'latest' }}'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.ROARK_NPM_TOKEN || secrets.NPM_TOKEN }}
 
       - name: Rehearse the publish
-        if: inputs.dry_run == true
+        if: github.event_name == 'workflow_dispatch' && inputs.dry_run == true
         working-directory: dist
-        run: npm publish --access public --tag '${{ inputs.tag }}' --dry-run
+        run: npm publish --access public --tag '${{ inputs.tag || 'latest' }}' --dry-run
         env:
           NODE_AUTH_TOKEN: ${{ secrets.ROARK_NPM_TOKEN || secrets.NPM_TOKEN }}
 
@@ -212,9 +221,9 @@ jobs:
         run: |
           {
             echo '### @roarkanalytics/cli ${{ steps.check.outputs.version }}'
-            if [ '${{ inputs.dry_run }}' = 'true' ]; then
+            if [ '${{ github.event_name }}' = 'workflow_dispatch' ] && [ '${{ inputs.dry_run }}' = 'true' ]; then
               echo 'Dry run: built, checked and packed. Nothing was published.'
             else
-              echo 'Published to npm under the `${{ inputs.tag }}` tag.'
+              echo 'Published to npm under the `${{ inputs.tag || 'latest' }}` tag.'
             fi
           } >> "$GITHUB_STEP_SUMMARY"

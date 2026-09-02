@@ -1,0 +1,42 @@
+# Authors the CLI's `release: <version>` PR from conventional commits, so a
+# release is bump + changelog + tag + GitHub release rather than a manual
+# package.json edit and a dispatch.
+#
+# The CLI was deliberately off the SDK's release train while it lived inside the
+# node repo: its version is its own, and a renamed command is breaking for it and
+# invisible to the SDK. That reasoning is about who decides WHEN to ship, not
+# about doing the mechanics by hand - release-please keeps the human decision
+# (merge the release PR) while removing the toil (the bump, the changelog, the
+# tag). `publish.yml` already publishes on `release: published`.
+#
+# Inert until the `RELEASE_PLEASE_ENABLED` repository variable is 'true', so this
+# is safe to merge before the token and variable are in place.
+name: release-please
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: release-please
+  cancel-in-progress: false
+
+jobs:
+  release-please:
+    if: vars.RELEASE_PLEASE_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: googleapis/release-please-action@v4
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+          target-branch: main
+          # NOT GITHUB_TOKEN. A GitHub release created with GITHUB_TOKEN does not
+          # raise `release: published`, so `publish.yml` would never fire and the
+          # CLI would silently stop shipping - the exact outage this exists to
+          # prevent. A PAT is required (RELEASE_PLEASE_TOKEN), as in the SDK repos.
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
