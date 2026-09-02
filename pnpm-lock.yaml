@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@roarkanalytics/sdk':
-        specifier: ^3.2.0
-        version: 3.2.0
+        specifier: ^3.2.1
+        version: 3.2.1
       commander:
         specifier: ^14.0.3
         version: 14.0.3
@@ -383,8 +383,8 @@ packages:
     resolution: {integrity: sha512-oGB+UxlgWcgQkgwo8GcEGwemoTFt3FIO9ababBmaGwXIoBKZ+GTy0pP185beGg7Llih/NSHSV2XAs1lnznocSg==}
     engines: {node: '>= 8'}
 
-  '@roarkanalytics/sdk@3.2.0':
-    resolution: {integrity: sha512-dZm7nhil+zSvh1jGWOp12znFbn1HYx5SocvzrDS82ljPQUATVqyLkloc0ANft3pSb3SiaaNuWd/Z46z912lTxg==}
+  '@roarkanalytics/sdk@3.2.1':
+    resolution: {integrity: sha512-5K8cMDUBWD4Id1BGHSiHe71tJSW9kn119XgFsSAckgpnaYtsP8SooRuz6XOuMXortSTUgLyqVrtBnExuw36jyw==}
 
   '@sinclair/typebox@0.27.12':
     resolution: {integrity: sha512-hhyNJ+nbR6ZR7pToHvllEFun9TL0sbL+tk/ON75lo+Xas054uez98qRbsuNt7MBCyZKK4+8Yli/OAGZhmfBZ/g==}
@@ -2093,7 +2093,7 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.20.2
 
-  '@roarkanalytics/sdk@3.2.0': {}
+  '@roarkanalytics/sdk@3.2.1': {}
 
   '@sinclair/typebox@0.27.12': {}
 
