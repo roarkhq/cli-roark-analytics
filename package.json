@@ -31,7 +31,7 @@
     "fix": "eslint --fix . && prettier --write ."
   },
   "dependencies": {
-    "@roarkanalytics/sdk": "^3.2.0",
+    "@roarkanalytics/sdk": "^3.2.1",
     "commander": "^14.0.3",
     "yaml": "^2.9.0"
   },
