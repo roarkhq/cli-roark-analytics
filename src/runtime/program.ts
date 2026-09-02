@@ -339,7 +339,7 @@ export const createProgram = (options: ProgramOptions): Command => {
     addApiCommand(root, options, definition);
   }
 
-  registerAuthCommands(root, options.binaryName);
+  registerAuthCommands(root, options.binaryName, clientFor);
   registerConfigAsCodeCommands(root, options.binaryName, clientFor, resolveOutput);
   registerConfigCommands(root, options.binaryName);
   registerApiCommand(root, options.binaryName, clientFor, resolveOutput);
