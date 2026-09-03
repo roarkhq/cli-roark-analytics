@@ -1,0 +1,69 @@
+# Enables native auto-merge on release-please's own PR, so a release lands
+# without a human clicking merge.
+#
+# release-please opens `release: <version>` PRs from a `release-please--*` branch.
+# This turns on auto-merge for exactly those PRs; GitHub merges them once the
+# required checks pass. Nothing else is touched - the head-branch guard means a
+# normal PR never auto-merges.
+#
+# Auto-merge is enabled with a token from the org release App, NOT the workflow's
+# GITHUB_TOKEN. This is load-bearing: when native auto-merge later completes the
+# merge, the push to `main` only triggers `on: push` workflows (release-please,
+# which cuts the tag and GitHub release) if auto-merge was enabled by an App/PAT
+# token. Enable it with GITHUB_TOKEN and GitHub suppresses the downstream run, so
+# the release PR merges but no release is ever cut and nothing publishes - a
+# silent stall.
+#
+# The head-branch guard is the primary gate; a fork PR runs with a read-only
+# token and cannot merge anyway, so the only actor it excludes is an internal
+# contributor who already has write access, and branch protection still governs
+# the merge itself. For defense-in-depth, set the optional `RELEASE_PLEASE_ACTOR`
+# repository variable to the login that authors these PRs (`roark-release[bot]`
+# for the App): when set, the PR author must match it too; left unset, the
+# branch-name guard alone applies.
+#
+# Inert until the `AUTOMERGE_RELEASE_ENABLED` repository variable is 'true'.
+name: automerge-release-pr
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+concurrency:
+  group: automerge-release-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  automerge:
+    if: >-
+      vars.AUTOMERGE_RELEASE_ENABLED == 'true' &&
+      startsWith(github.head_ref, 'release-please--') &&
+      (vars.RELEASE_PLEASE_ACTOR == '' || github.event.pull_request.user.login == vars.RELEASE_PLEASE_ACTOR)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      # Mint a short-lived installation token from the org-owned release App
+      # (roark-release). Auto-merge must be enabled with this, not GITHUB_TOKEN:
+      # a GITHUB_TOKEN-enabled merge does not trigger release-please's `on: push`,
+      # so the release would never be cut. See the header comment.
+      - name: Mint a token from the release App
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+
+      # `synchronize` re-runs this on every push to the release branch, so the
+      # call has to be idempotent: enabling auto-merge on a PR that already has it
+      # (or that GitHub reports as momentarily unstable) can error rather than
+      # no-op, and an unguarded failure would leave a persistent red check on the
+      # release PR. Swallow it - the worst case is auto-merge is simply not on,
+      # and a human merges.
+      - name: Enable auto-merge on the release PR
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          gh pr merge --auto --squash "${{ github.event.pull_request.number }}" -R "${{ github.repository }}" \
+            || echo 'Auto-merge unavailable or already enabled; leaving the release PR as is.'
