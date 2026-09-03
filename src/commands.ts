@@ -3024,6 +3024,16 @@ export const COMMANDS: readonly CliCommand[] = [
         repeatable: false,
       },
       {
+        name: 'enrich-with-live-conversation',
+        path: ['enrichWithLiveConversation'],
+        location: 'body',
+        required: false,
+        description:
+          "Merge the customer's own recording of the real call into each simulation, so metrics can be scored against the live leg as well as the simulated one. This is the API equivalent of the dashboard's live-enrichment toggle. With this on, the run provisions a phone number and holds each call open for up to 15 minutes waiting for a matching call to be posted to POST /v1/call. A call matches on the provisioned number (`roarkPhoneNumber` on the job) with a start time inside the simulation window. If nothing arrives, the simulation still completes and any `LIVE`-sourced metric produces no value. Required by any metric whose `requiresLiveConversation` is true: without it that metric is silently skipped.",
+        valueKind: 'boolean',
+        repeatable: false,
+      },
+      {
         name: 'auto-run',
         path: ['autoRun'],
         location: 'body',
@@ -3454,6 +3464,15 @@ export const COMMANDS: readonly CliCommand[] = [
         description:
           'Metric definitions to include in this run plan. Reference each by `id` (UUID) or `slug`.',
         valueKind: 'array',
+        repeatable: false,
+      },
+      {
+        name: 'enrich-with-live-conversation',
+        path: ['enrichWithLiveConversation'],
+        location: 'body',
+        required: false,
+        description: "Whether to merge the customer's own live recording into each simulation of this plan.",
+        valueKind: 'boolean',
         repeatable: false,
       },
     ],

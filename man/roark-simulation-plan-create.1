@@ -56,6 +56,9 @@ Agent endpoints to include in this run plan Required.
 \fB\-\-metrics\fR \fI<value>\fR
 Metric definitions to include in this run plan. Reference each by `id` (UUID) or `slug`. Required.
 .TP
+\fB\-\-enrich\-with\-live\-conversation\fR
+Merge the customer's own recording of the real call into each simulation, so metrics can be scored against the live leg as well as the simulated one. This is the API equivalent of the dashboard's live\-enrichment toggle. With this on, the run provisions a phone number and holds each call open for up to 15 minutes waiting for a matching call to be posted to POST /v1/call. A call matches on the provisioned number (`roarkPhoneNumber` on the job) with a start time inside the simulation window. If nothing arrives, the simulation still completes and any `LIVE`\-sourced metric produces no value. Required by any metric whose `requiresLiveConversation` is true: without it that metric is silently skipped. Optional.
+.TP
 \fB\-\-auto\-run\fR
 Deprecated: use POST /v1/simulation/run, which starts a run and accepts runtime `variables` as well. This flag runs the plan with only the values pinned on it. Optional.
 .SH "GLOBAL OPTIONS"
