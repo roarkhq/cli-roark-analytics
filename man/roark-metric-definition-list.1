@@ -6,9 +6,16 @@ roark\-metric\-definition\-list \- List metric definitions
 .B roark metric definition list
 [\fIoptions\fR]
 .SH "DESCRIPTION"
-Fetch all metric definitions available in the project, including both system\-generated and custom metrics.
+Fetch metric definitions available in the project, including both system\-generated and custom metrics. Results are ordered by immutable definition ID; pass `nextCursor` to retrieve the following page.
 .SH "API"
 GET /v1/metric/definitions
+.SH "OPTIONS"
+.TP
+\fB\-\-limit\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-after\fR \fI<value>\fR
+Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
