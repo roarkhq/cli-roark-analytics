@@ -34,10 +34,6 @@ concurrency:
   group: publish-cli
   cancel-in-progress: false
 
-env:
-  # #alarms-prod, defined once here rather than repeated in every alert step.
-  SLACK_ALARMS_CHANNEL: 'C064B836PL2'
-
 # The publish authenticates to npm with NODE_AUTH_TOKEN, not with the GitHub
 # token, so read is all this needs: check out the ref, build it, push the tarball
 # to a registry that is not GitHub. Unlike `publish-npm.yml`, nothing here
@@ -233,26 +229,22 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       # Post the outcome to #alarms-prod. The "published" notify is skipped on a
-      # dry-run dispatch, which publishes nothing. No-op until SLACK_BOT_TOKEN is
+      # dry-run dispatch, which publishes nothing. No-op until SLACK_ALARMS_PROD_WEBHOOK_URL is
       # set; jq builds the payload so message text cannot break it.
       - name: Slack notify - published
         if: success() && (github.event_name == 'release' || inputs.dry_run != true)
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_ALARMS_PROD_WEBHOOK_URL }}
           VERSION: ${{ steps.check.outputs.version }}
         run: |
-          [ -n "${SLACK_BOT_TOKEN:-}" ] || { echo 'SLACK_BOT_TOKEN unset; skipping'; exit 0; }
+          [ -n "${SLACK_WEBHOOK_URL:-}" ] || { echo 'SLACK_ALARMS_PROD_WEBHOOK_URL unset; skipping'; exit 0; }
           text="📦 \`@roarkanalytics/cli\` ${VERSION:-(new version)} published to npm"
-          resp=$(curl -sS --max-time 15 -X POST https://slack.com/api/chat.postMessage \
-            -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
-            -H 'Content-type: application/json; charset=utf-8' \
-            --data "$(jq -n --arg t "$text" --arg c "$SLACK_ALARMS_CHANNEL" '{channel:$c,text:$t}')") \
+          resp=$(curl -sS --max-time 15 -X POST -H 'Content-type: application/json' \
+            --data "$(jq -n --arg t "$text" '{text:$t}')" "$SLACK_WEBHOOK_URL") \
             || { echo '::warning::Slack request failed (transport or timeout); alert not delivered'; exit 0; }
-          # Best-effort, but not silent: a rejected token or channel surfaces as a
-          # warning in the run log rather than vanishing under `|| true`.
-          if [ "$(printf '%s' "$resp" | jq -r '.ok' 2>/dev/null || true)" != 'true' ]; then
-            echo "::warning::Slack did not accept the alert: $(printf '%s' "$resp" | jq -r '.error // "unknown"' 2>/dev/null || echo unparseable)"
-          fi
+          # Best-effort, but not silent: a non-"ok" webhook response surfaces as a
+          # warning rather than vanishing.
+          [ "$resp" = ok ] || echo "::warning::Slack webhook did not accept the alert: $resp"
 
       # Scoped to a real publish (release, or a non-dry-run dispatch), so a
       # dry-run rehearsal failing in build/test does not page #alarms-prod and
@@ -260,18 +252,14 @@ jobs:
       - name: Slack notify - publish failed
         if: failure() && (github.event_name == 'release' || inputs.dry_run != true)
         env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_ALARMS_PROD_WEBHOOK_URL }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          [ -n "${SLACK_BOT_TOKEN:-}" ] || { echo 'SLACK_BOT_TOKEN unset; skipping'; exit 0; }
+          [ -n "${SLACK_WEBHOOK_URL:-}" ] || { echo 'SLACK_ALARMS_PROD_WEBHOOK_URL unset; skipping'; exit 0; }
           text="🚨 \`@roarkanalytics/cli\` publish FAILED - ${RUN_URL}"
-          resp=$(curl -sS --max-time 15 -X POST https://slack.com/api/chat.postMessage \
-            -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
-            -H 'Content-type: application/json; charset=utf-8' \
-            --data "$(jq -n --arg t "$text" --arg c "$SLACK_ALARMS_CHANNEL" '{channel:$c,text:$t}')") \
+          resp=$(curl -sS --max-time 15 -X POST -H 'Content-type: application/json' \
+            --data "$(jq -n --arg t "$text" '{text:$t}')" "$SLACK_WEBHOOK_URL") \
             || { echo '::warning::Slack request failed (transport or timeout); alert not delivered'; exit 0; }
-          # Best-effort, but not silent: a rejected token or channel surfaces as a
-          # warning in the run log rather than vanishing under `|| true`.
-          if [ "$(printf '%s' "$resp" | jq -r '.ok' 2>/dev/null || true)" != 'true' ]; then
-            echo "::warning::Slack did not accept the alert: $(printf '%s' "$resp" | jq -r '.error // "unknown"' 2>/dev/null || echo unparseable)"
-          fi
+          # Best-effort, but not silent: a non-"ok" webhook response surfaces as a
+          # warning rather than vanishing.
+          [ "$resp" = ok ] || echo "::warning::Slack webhook did not accept the alert: $resp"
