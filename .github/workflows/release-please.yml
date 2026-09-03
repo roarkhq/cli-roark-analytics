@@ -22,7 +22,6 @@ concurrency:
   group: release-please
   cancel-in-progress: false
 
-
 jobs:
   release-please:
     if: vars.RELEASE_PLEASE_ENABLED == 'true'
