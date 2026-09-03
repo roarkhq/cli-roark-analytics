@@ -122,10 +122,18 @@ jobs:
           # they can disagree - and `npm ci`, which is what install.sh runs when
           # a shrinkwrap is present, hard-fails on exactly that. Catching it here
           # costs a line; catching it after an immutable publish costs a release.
+          #
+          # The manifest declares a caret range, so npm resolves it to the newest
+          # matching SDK and the shrinkwrap pins THAT (e.g. ^3.2.1 -> 3.4.0). The
+          # invariant `npm ci` needs is that the pin SATISFIES the range, not that
+          # it equals the range's floor. An exact-equality check against the floor
+          # rejected every normal caret resolution, so the CLI stopped publishing
+          # the moment the SDK shipped any version above the floor (v0.4.0 was
+          # tagged but never reached npm this way). Check semver satisfaction.
           locked_sdk=$(jq -r -e '.packages["node_modules/@roarkanalytics/sdk"].version' npm-shrinkwrap.json)
-          if [ "$locked_sdk" != "$sdk_version" ]; then
-            echo "::error::the shrinkwrap pins @roarkanalytics/sdk@$locked_sdk but dist/package.json declares \
-          $sdk_range. The build generated them out of step; rebuild before publishing."
+          if ! npx --yes semver -r "$sdk_range" "$locked_sdk" >/dev/null 2>&1; then
+            echo "::error::the shrinkwrap pins @roarkanalytics/sdk@$locked_sdk, which does not satisfy the \
+          $sdk_range declared in dist/package.json. The build generated them out of step; rebuild before publishing."
             exit 1
           fi
 
