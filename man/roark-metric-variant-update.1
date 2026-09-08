@@ -1,0 +1,121 @@
+.\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
+.TH "ROARK\-METRIC\-VARIANT\-UPDATE" "1" "" "roark-metric-variant-update" "Roark Analytics API Manual"
+.SH "NAME"
+roark\-metric\-variant\-update \- Update a metric variant
+.SH "SYNOPSIS"
+.B roark metric variant update
+\fIid\-or\-slug\fR \fIvariant\-id\fR [\fIoptions\fR]
+.SH "DESCRIPTION"
+Rename a variant, change its configuration, or both. Every configuration change creates a new immutable version and advances `versionId`; the response carries the advanced value. **Editing one of Roark’s own variants forks it for your organization.** The response carries the new variant’s `id`, which will differ from the one in the path, and `isSystem` becomes false. Roark’s variant is untouched and other organizations keep it. DELETE your fork to go back to it. Which fields are editable depends on the metric: some Roark metrics lock their prompt or output configuration, and a locked field is rejected rather than ignored.
+.SH "API"
+PUT /v1/metric/definitions/{idOrSlug}/variants/{variantId}
+.SH "ARGUMENTS"
+.TP
+\fIid\-or\-slug\fR
+Metric definition UUID or its stable slug.
+.TP
+\fIvariant\-id\fR
+Variant UUID.
+.SH "OPTIONS"
+.TP
+\fB\-\-name\fR \fI<value>\fR
+Rename the variant. Does not change its configuration, so `versionId` is unaffected. `Default` is reserved. Optional.
+.TP
+\fB\-\-llm\-prompt\fR \fI<value>\fR
+The rubric this variant applies. LLM judge metrics only. Optional.
+.TP
+\fB\-\-scale\-min\fR \fI<value>\fR
+Scale minimum. SCALE output only. Optional.
+.TP
+\fB\-\-scale\-max\fR \fI<value>\fR
+Scale maximum. SCALE output only. Optional.
+.TP
+\fB\-\-boolean\-true\-label\fR \fI<value>\fR
+What a `true` value means. Given to the judge as its polarity rule, so keep it accurate. Optional.
+.TP
+\fB\-\-boolean\-false\-label\fR \fI<value>\fR
+What a `false` value means. Given to the judge as its polarity rule, so keep it accurate. Optional.
+.TP
+\fB\-\-max\-classifications\fR \fI<value>\fR
+Maximum classifications returned. CLASSIFICATION output only. Optional.
+.TP
+\fB\-\-change\-reason\fR \fI<value>\fR
+Free\-text audit note recorded on the new version. Optional.
+.SH "GLOBAL OPTIONS"
+.TP
+\fB\-\-data\fR \fI<json>\fR
+Request body as JSON, or @file to read one (@\- for stdin).
+.TP
+\fB\-y\fR, \fB\-\-yes\fR
+Skip confirmation prompts.
+.TP
+\fB\-\-no\-input\fR
+Never prompt; fail instead.
+.TP
+\fB\-\-base\-url\fR \fI<url>\fR
+API base URL.
+.TP
+\fB\-\-token\fR \fI<token>\fR
+Bearer token. Prefer ROARK_API_BEARER_TOKEN or the stored credential.
+.TP
+\fB\-\-timeout\fR \fI<ms>\fR
+Request timeout in milliseconds.
+.TP
+\fB\-\-max\-retries\fR \fI<count>\fR
+Retries for retryable failures.
+.TP
+\fB\-\-format\fR \fI<format>\fR
+Output format: auto, json, jsonl, plain.
+.TP
+\fB\-\-json\fR
+Shorthand for \-\-format json.
+.TP
+\fB\-\-no\-color\fR
+Disable colour.
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Suppress non\-essential output.
+.TP
+\fB\-\-allow\-project\-base\-url\fR
+Send the stored credential to a base URL set by a project .roark.json. Refused by default.
+.SH "EXAMPLES"
+.PP
+.RS 4
+.nf
+roark metric variant update <id\-or\-slug> <variant\-id>
+.fi
+.RE
+.SH "ENVIRONMENT"
+.TP
+\fBROARK_API_BEARER_TOKEN\fR
+Bearer token used when \-\-token is not given.
+.TP
+\fBROARK_BASE_URL\fR
+API base URL.
+.TP
+\fBROARK_ALLOW_PROJECT_BASE_URL\fR
+Trusts a base URL set by a project .roark.json, like \-\-allow\-project\-base\-url.
+.TP
+\fBNO_COLOR\fR
+Disables colour when set to any value.
+.SH "EXIT STATUS"
+.TP
+\fB0\fR
+The command succeeded.
+.TP
+\fB1\fR
+The API rejected the request.
+.TP
+\fB2\fR
+The command line was wrong.
+.TP
+\fB3\fR
+No credential, or the credential was refused.
+.TP
+\fB4\fR
+The addressed resource does not exist.
+.TP
+\fB5\fR
+The request never completed: connection, timeout, or abort.
+.SH "SEE ALSO"
+.BR roark (1)

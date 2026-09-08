@@ -121,14 +121,15 @@ roark completion fish | source
 
 ### call
 
-| Command                                                                                                                                                 | Description              |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------ |
-| `roark call create --recording-url <value> --started-at <value> --interface-type <value> --call-direction <value> --customer.phone-number-e164 <value>` | Create a call            |
-| `roark call get <call-id>`                                                                                                                              | Get a call by ID         |
-| `roark call list`                                                                                                                                       | List calls               |
-| `roark call metric list <call-id>`                                                                                                                      | List call metrics        |
-| `roark call sentiment-run list <call-id>`                                                                                                               | List call sentiment runs |
-| `roark call transcript get <call-id>`                                                                                                                   | Get call transcript      |
+| Command                                                                                                                                                 | Description                       |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| `roark call create --recording-url <value> --started-at <value> --interface-type <value> --call-direction <value> --customer.phone-number-e164 <value>` | Create a call                     |
+| `roark call get <call-id>`                                                                                                                              | Get a call by ID                  |
+| `roark call list`                                                                                                                                       | List calls                        |
+| `roark call metric list <call-id>`                                                                                                                      | List call metrics                 |
+| `roark call sentiment-run list <call-id>`                                                                                                               | List call sentiment runs          |
+| `roark call tool-invocation append <call-id> --tool-invocations <value>`                                                                                | Append tool invocations to a call |
+| `roark call transcript get <call-id>`                                                                                                                   | Get call transcript               |
 
 ### config
 
@@ -177,11 +178,17 @@ roark completion fish | source
 | `roark metric collection-job list`                                               | List metric collection jobs            |
 | `roark metric definition create --data '{ ... }'`                                | Create custom metric definition        |
 | `roark metric definition list`                                                   | List metric definitions                |
+| `roark metric definition update <id-or-slug>`                                    | Update a metric definition             |
 | `roark metric policy create --name <value> --modality <value> --metrics <value>` | Create a metric policy                 |
 | `roark metric policy delete <policy-id>`                                         | Delete a metric policy                 |
 | `roark metric policy get <policy-id>`                                            | Get metric policy by ID                |
 | `roark metric policy list`                                                       | List metric policies                   |
 | `roark metric policy update <policy-id>`                                         | Update a metric policy                 |
+| `roark metric variant create <id-or-slug> --name <value>`                        | Create a metric variant                |
+| `roark metric variant delete <id-or-slug> <variant-id>`                          | Delete a metric variant                |
+| `roark metric variant get <id-or-slug> <variant-id>`                             | Get a metric variant                   |
+| `roark metric variant list <id-or-slug>`                                         | List a metric’s variants               |
+| `roark metric variant update <id-or-slug> <variant-id>`                          | Update a metric variant                |
 
 ### simulation
 
@@ -204,6 +211,7 @@ roark completion fish | source
 | `roark simulation plan list`                                                                                                                            | List run plans            |
 | `roark simulation plan update <plan-id>`                                                                                                                | Update a run plan         |
 | `roark simulation run --data '{ ... }'`                                                                                                                 | Run a simulation          |
+| `roark simulation template list`                                                                                                                        | List simulation templates |
 
 ### webhook
 

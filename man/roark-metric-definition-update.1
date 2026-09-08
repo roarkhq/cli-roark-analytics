@@ -1,0 +1,169 @@
+.\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
+.TH "ROARK\-METRIC\-DEFINITION\-UPDATE" "1" "" "roark-metric-definition-update" "Roark Analytics API Manual"
+.SH "NAME"
+roark\-metric\-definition\-update \- Update a metric definition
+.SH "SYNOPSIS"
+.B roark metric definition update
+\fIid\-or\-slug\fR [\fIoptions\fR]
+.SH "DESCRIPTION"
+Update the editable subset of a custom metric definition, addressed by its UUID or its stable `slug`. Only the supplied fields are changed; omitted fields are left unchanged. Every update creates a new immutable version; the response carries the advanced `versionId`. Immutable fields (scope, outputType, calcType, …) are rejected, and which fields are editable depends on the metric (e.g. derived metrics only allow `name`). Roark's own metrics are rejected here: this endpoint edits the shared definition, which every workspace sees. To change one for your workspace alone, edit its variant with PUT /v1/metric/definitions/{idOrSlug}/variants/{variantId}, which forks it for you and leaves every other workspace on the original.
+.SH "API"
+PUT /v1/metric/definitions/{idOrSlug}
+.SH "ARGUMENTS"
+.TP
+\fIid\-or\-slug\fR
+The metric definition's Roark ID (UUID) or its stable `slug` (e.g. `customer_satisfaction`).
+.SH "OPTIONS"
+.TP
+\fB\-\-name\fR \fI<value>\fR
+New name (only for metrics whose name is editable) Optional.
+.TP
+\fB\-\-llm\-prompt\fR \fI<value>\fR
+New LLM prompt (only for LLM_JUDGE metrics whose prompt is editable) Optional.
+.TP
+\fB\-\-scale\-min\fR \fI<value>\fR
+New scale minimum (SCALE output only) Optional.
+.TP
+\fB\-\-scale\-max\fR \fI<value>\fR
+New scale maximum (SCALE output only) Optional.
+.TP
+\fB\-\-scale\-labels\fR \fI<value>\fR
+Replacement set of scale\-range labels (SCALE output only) Optional.
+.TP
+\fB\-\-boolean\-true\-label\fR \fI<value>\fR
+New label for the true case (BOOLEAN output only) Optional.
+.TP
+\fB\-\-boolean\-false\-label\fR \fI<value>\fR
+New label for the false case (BOOLEAN output only) Optional.
+.TP
+\fB\-\-classification\-options\fR \fI<value>\fR
+Replacement set of classification options (CLASSIFICATION output only) Optional.
+.TP
+\fB\-\-max\-classifications\fR \fI<value>\fR
+New maximum number of classifications (CLASSIFICATION output only) Optional.
+.TP
+\fB\-\-tool\-definition\-ids\fR \fI<value>\fR
+Replacement set of scoped tool\-definition ids (only for metrics whose tool scoping is editable) Repeatable. Optional.
+.TP
+\fB\-\-supported\-contexts\fR \fI<value>\fR
+Replacement set of supported contexts. Omit to leave unchanged. One of: CALL, SEGMENT, TURN. Repeatable. Optional.
+.TP
+\fB\-\-formula\fR \fI<value>\fR
+New formula expression (FORMULA only). Pass `sources` alongside if the referenced metrics change. Optional.
+.TP
+\fB\-\-sources\fR \fI<value>\fR
+Replacement formula sources, required when `formula` changes the referenced metrics (FORMULA only). Optional.
+.TP
+\fB\-\-change\-reason\fR \fI<value>\fR
+Optional free\-text audit note recorded on the new version. Optional.
+.TP
+\fB\-\-slug\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-metric\-id\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-source\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-organization\-id\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-project\-id\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-output\-type\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-scope\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-participant\-role\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-calc\-type\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-supports\-multiple\-variants\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-analysis\-package\-id\fR \fI<value>\fR
+Optional.
+.SH "GLOBAL OPTIONS"
+.TP
+\fB\-\-data\fR \fI<json>\fR
+Request body as JSON, or @file to read one (@\- for stdin).
+.TP
+\fB\-y\fR, \fB\-\-yes\fR
+Skip confirmation prompts.
+.TP
+\fB\-\-no\-input\fR
+Never prompt; fail instead.
+.TP
+\fB\-\-base\-url\fR \fI<url>\fR
+API base URL.
+.TP
+\fB\-\-token\fR \fI<token>\fR
+Bearer token. Prefer ROARK_API_BEARER_TOKEN or the stored credential.
+.TP
+\fB\-\-timeout\fR \fI<ms>\fR
+Request timeout in milliseconds.
+.TP
+\fB\-\-max\-retries\fR \fI<count>\fR
+Retries for retryable failures.
+.TP
+\fB\-\-format\fR \fI<format>\fR
+Output format: auto, json, jsonl, plain.
+.TP
+\fB\-\-json\fR
+Shorthand for \-\-format json.
+.TP
+\fB\-\-no\-color\fR
+Disable colour.
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Suppress non\-essential output.
+.TP
+\fB\-\-allow\-project\-base\-url\fR
+Send the stored credential to a base URL set by a project .roark.json. Refused by default.
+.SH "EXAMPLES"
+.PP
+.RS 4
+.nf
+roark metric definition update <id\-or\-slug>
+.fi
+.RE
+.SH "ENVIRONMENT"
+.TP
+\fBROARK_API_BEARER_TOKEN\fR
+Bearer token used when \-\-token is not given.
+.TP
+\fBROARK_BASE_URL\fR
+API base URL.
+.TP
+\fBROARK_ALLOW_PROJECT_BASE_URL\fR
+Trusts a base URL set by a project .roark.json, like \-\-allow\-project\-base\-url.
+.TP
+\fBNO_COLOR\fR
+Disables colour when set to any value.
+.SH "EXIT STATUS"
+.TP
+\fB0\fR
+The command succeeded.
+.TP
+\fB1\fR
+The API rejected the request.
+.TP
+\fB2\fR
+The command line was wrong.
+.TP
+\fB3\fR
+No credential, or the credential was refused.
+.TP
+\fB4\fR
+The addressed resource does not exist.
+.TP
+\fB5\fR
+The request never completed: connection, timeout, or abort.
+.SH "SEE ALSO"
+.BR roark (1)
