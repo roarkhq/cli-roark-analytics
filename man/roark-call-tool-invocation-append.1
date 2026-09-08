@@ -1,0 +1,100 @@
+.\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
+.TH "ROARK\-CALL\-TOOL\-INVOCATION\-APPEND" "1" "" "roark-call-tool-invocation-append" "Roark Analytics API Manual"
+.SH "NAME"
+roark\-call\-tool\-invocation\-append \- Append tool invocations to a call
+.SH "SYNOPSIS"
+.B roark call tool\-invocation append
+\fIcall\-id\fR [\fIoptions\fR]
+.SH "DESCRIPTION"
+Attach tool invocations that fired during a call to an already\-existing call, asynchronously after the call was created. Use this when the tool\-call data becomes available later than the call itself (e.g. a Roark simulation, or a call submitted via POST /v1/call before its tools were ready). Writes are idempotent: re\-sending an invocation already present on the call (same tool name and timing) is skipped, so retries converge instead of double\-counting. Optionally pass `metrics` to (re)score metrics over the newly attached tools, which triggers a billed metric collection job and requires the `metric:create` permission.
+.SH "API"
+POST /v1/call/{callId}/tool\-invocations
+.SH "ARGUMENTS"
+.TP
+\fIcall\-id\fR
+The call\-id.
+.SH "OPTIONS"
+.TP
+\fB\-\-tool\-invocations\fR \fI<value>\fR
+Tool invocations that fired during the call, to attach to it. Max 500 per request. Re\-sending an invocation already present on the call (same tool name and timing) is skipped, so retries are safe. Required.
+.TP
+\fB\-\-metrics\fR \fI<value>\fR
+Optional. Metric definitions to (re)score on this call after the tool invocations are attached, e.g. the Tool Invocation Analysis metrics. Triggers a metric collection job (billed, credit\-gated) and requires the 'metric:create' permission. Omit to attach tools without scoring. Max 20. Optional.
+.SH "GLOBAL OPTIONS"
+.TP
+\fB\-\-data\fR \fI<json>\fR
+Request body as JSON, or @file to read one (@\- for stdin).
+.TP
+\fB\-y\fR, \fB\-\-yes\fR
+Skip confirmation prompts.
+.TP
+\fB\-\-no\-input\fR
+Never prompt; fail instead.
+.TP
+\fB\-\-base\-url\fR \fI<url>\fR
+API base URL.
+.TP
+\fB\-\-token\fR \fI<token>\fR
+Bearer token. Prefer ROARK_API_BEARER_TOKEN or the stored credential.
+.TP
+\fB\-\-timeout\fR \fI<ms>\fR
+Request timeout in milliseconds.
+.TP
+\fB\-\-max\-retries\fR \fI<count>\fR
+Retries for retryable failures.
+.TP
+\fB\-\-format\fR \fI<format>\fR
+Output format: auto, json, jsonl, plain.
+.TP
+\fB\-\-json\fR
+Shorthand for \-\-format json.
+.TP
+\fB\-\-no\-color\fR
+Disable colour.
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Suppress non\-essential output.
+.TP
+\fB\-\-allow\-project\-base\-url\fR
+Send the stored credential to a base URL set by a project .roark.json. Refused by default.
+.SH "EXAMPLES"
+.PP
+.RS 4
+.nf
+roark call tool\-invocation append <call\-id> \-\-tool\-invocations <value>
+.fi
+.RE
+.SH "ENVIRONMENT"
+.TP
+\fBROARK_API_BEARER_TOKEN\fR
+Bearer token used when \-\-token is not given.
+.TP
+\fBROARK_BASE_URL\fR
+API base URL.
+.TP
+\fBROARK_ALLOW_PROJECT_BASE_URL\fR
+Trusts a base URL set by a project .roark.json, like \-\-allow\-project\-base\-url.
+.TP
+\fBNO_COLOR\fR
+Disables colour when set to any value.
+.SH "EXIT STATUS"
+.TP
+\fB0\fR
+The command succeeded.
+.TP
+\fB1\fR
+The API rejected the request.
+.TP
+\fB2\fR
+The command line was wrong.
+.TP
+\fB3\fR
+No credential, or the credential was refused.
+.TP
+\fB4\fR
+The addressed resource does not exist.
+.TP
+\fB5\fR
+The request never completed: connection, timeout, or abort.
+.SH "SEE ALSO"
+.BR roark (1)

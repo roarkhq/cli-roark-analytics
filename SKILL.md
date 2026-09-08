@@ -55,6 +55,7 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark call list` - List calls
 - `roark call metric list <call-id>` - List call metrics
 - `roark call sentiment-run list <call-id>` - List call sentiment runs
+- `roark call tool-invocation append <call-id> --tool-invocations <value>` - Append tool invocations to a call
 - `roark call transcript get <call-id>` - Get call transcript
 - `roark config apply [dir]` - Reconcile the project to a config directory (or bundle). Previews and confirms first.
 - `roark config diff [dir]` - Preview the changes a config directory (or bundle) would make. No writes.
@@ -79,11 +80,17 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark metric collection-job list` - List metric collection jobs
 - `roark metric definition create --data '{...}'` - Create custom metric definition
 - `roark metric definition list` - List metric definitions
+- `roark metric definition update <id-or-slug>` - Update a metric definition
 - `roark metric policy create --name <value> --modality <value> --metrics <value>` - Create a metric policy
 - `roark metric policy delete <policy-id>` - Delete a metric policy
 - `roark metric policy get <policy-id>` - Get metric policy by ID
 - `roark metric policy list` - List metric policies
 - `roark metric policy update <policy-id>` - Update a metric policy
+- `roark metric variant create <id-or-slug> --name <value>` - Create a metric variant
+- `roark metric variant delete <id-or-slug> <variant-id>` - Delete a metric variant
+- `roark metric variant get <id-or-slug> <variant-id>` - Get a metric variant
+- `roark metric variant list <id-or-slug>` - List a metric’s variants
+- `roark metric variant update <id-or-slug> <variant-id>` - Update a metric variant
 - `roark simulation environment get <environment-id>` - Get environment by ID
 - `roark simulation environment list` - List environments
 - `roark simulation job get <job-id>` - Get simulation by ID
@@ -101,6 +108,7 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark simulation plan list` - List run plans
 - `roark simulation plan update <plan-id>` - Update a run plan
 - `roark simulation run --data '{...}'` - Run a simulation
+- `roark simulation template list` - List simulation templates
 - `roark webhook create --url <value> --events <value>` - Create webhook
 - `roark webhook delete <webhook-id>` - Delete webhook
 - `roark webhook get <webhook-id>` - Get webhook by ID
