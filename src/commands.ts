@@ -4039,7 +4039,7 @@ export const COMMANDS: readonly CliCommand[] = [
     httpPath: '/v1/simulation/run',
     summary: 'Run a simulation',
     description:
-      'Starts a simulation and returns the run. Send `plan` to describe a simulation and run it once. Add `saveAsPlan` to keep that configuration as a reusable run plan. Send `planId` instead to run a plan you already have.',
+      'Starts a simulation and returns the run. Send `template` to run one of the built-in templates: it supplies the metrics and checks, and for some templates the flows too, so the request only names the agent and the direction. Send `plan` to describe a simulation yourself and run it once. Send `planId` to run a plan you already have. `template` and `plan` both resolve to a run plan, returned as `simulationRunPlanId`. Add `saveAsPlan` to keep it, or read it back to see exactly what ran. A plan built from a template is a snapshot: retuning the template later never changes what that plan runs, which is what makes a saved one safe to pin in CI.',
     positionals: [],
     flags: [],
     hasParams: true,
@@ -4053,6 +4053,10 @@ export const COMMANDS: readonly CliCommand[] = [
       {
         name: 'RunSimulationFromPlanId',
         required: ['planId'],
+      },
+      {
+        name: 'RunSimulationFromTemplate',
+        required: ['template', 'agentEndpoints', 'direction'],
       },
     ],
     acceptsBody: true,
