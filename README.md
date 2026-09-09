@@ -144,6 +144,7 @@ roark completion fish | source
 | ---------------------------------------------------------------- | -------------------------------------- |
 | `roark customer-flow create --data '{ ... }'`                    | Create a customer flow                 |
 | `roark customer-flow delete <flow-id>`                           | Delete a customer flow                 |
+| `roark customer-flow duplicate <flow-id>`                        | Duplicate a customer flow              |
 | `roark customer-flow edge-case create <flow-id> --title <value>` | Add an edge case                       |
 | `roark customer-flow edge-case delete <flow-id> <edge-case-id>`  | Remove an edge case                    |
 | `roark customer-flow edge-case promote <flow-id> <edge-case-id>` | Promote an edge case to the happy path |
@@ -194,8 +195,11 @@ roark completion fish | source
 
 | Command                                                                                                                                                 | Description               |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
+| `roark simulation environment create --name <value> --background-noise <value>`                                                                         | Create an environment     |
+| `roark simulation environment delete <environment-id>`                                                                                                  | Delete an environment     |
 | `roark simulation environment get <environment-id>`                                                                                                     | Get environment by ID     |
 | `roark simulation environment list`                                                                                                                     | List environments         |
+| `roark simulation environment update <environment-id>`                                                                                                  | Update an environment     |
 | `roark simulation job get <job-id>`                                                                                                                     | Get simulation by ID      |
 | `roark simulation job lookup --roark-phone-number <value>`                                                                                              | Lookup by phone number    |
 | `roark simulation persona create --name <value> --language <value> --accent <value> --gender <value>`                                                   | Create a new persona      |

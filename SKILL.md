@@ -61,6 +61,7 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark config diff [dir]` - Preview the changes a config directory (or bundle) would make. No writes.
 - `roark customer-flow create --data '{...}'` - Create a customer flow
 - `roark customer-flow delete <flow-id>` - Delete a customer flow
+- `roark customer-flow duplicate <flow-id>` - Duplicate a customer flow
 - `roark customer-flow edge-case create <flow-id> --title <value>` - Add an edge case
 - `roark customer-flow edge-case delete <flow-id> <edge-case-id>` - Remove an edge case
 - `roark customer-flow edge-case promote <flow-id> <edge-case-id>` - Promote an edge case to the happy path
@@ -91,8 +92,11 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark metric variant get <id-or-slug> <variant-id>` - Get a metric variant
 - `roark metric variant list <id-or-slug>` - List a metric’s variants
 - `roark metric variant update <id-or-slug> <variant-id>` - Update a metric variant
+- `roark simulation environment create --name <value> --background-noise <value>` - Create an environment
+- `roark simulation environment delete <environment-id>` - Delete an environment
 - `roark simulation environment get <environment-id>` - Get environment by ID
 - `roark simulation environment list` - List environments
+- `roark simulation environment update <environment-id>` - Update an environment
 - `roark simulation job get <job-id>` - Get simulation by ID
 - `roark simulation job lookup --roark-phone-number <value>` - Lookup by phone number
 - `roark simulation persona create --name <value> --language <value> --accent <value> --gender <value>` - Create a new persona
