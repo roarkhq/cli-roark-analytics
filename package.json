@@ -56,6 +56,8 @@
     "./man/roark-agent-endpoint-update.1",
     "./man/roark-agent-get.1",
     "./man/roark-agent-list.1",
+    "./man/roark-agent-prompt-list.1",
+    "./man/roark-agent-prompt-version-list.1",
     "./man/roark-agent-update.1",
     "./man/roark-call-create.1",
     "./man/roark-call-get.1",
