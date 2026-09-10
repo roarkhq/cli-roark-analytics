@@ -118,6 +118,7 @@ roark completion fish | source
 | `roark agent get <agent-id>`                                                         | Get agent by ID             |
 | `roark agent list`                                                                   | List agents                 |
 | `roark agent prompt list <agent-id>`                                                 | List an agent's prompts     |
+| `roark agent prompt update <agent-id> --prompt <value>`                              | Set an agent's prompt       |
 | `roark agent prompt version list <agent-id> <prompt-id>`                             | List a prompt's versions    |
 | `roark agent update <agent-id>`                                                      | Update an agent             |
 

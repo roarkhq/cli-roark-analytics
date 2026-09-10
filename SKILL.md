@@ -50,6 +50,7 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark agent get <agent-id>` - Get agent by ID
 - `roark agent list` - List agents
 - `roark agent prompt list <agent-id>` - List an agent's prompts
+- `roark agent prompt update <agent-id> --prompt <value>` - Set an agent's prompt
 - `roark agent prompt version list <agent-id> <prompt-id>` - List a prompt's versions
 - `roark agent update <agent-id>` - Update an agent
 - `roark call create --recording-url <value> --started-at <value> --interface-type <value> --call-direction <value> --customer.phone-number-e164 <value>` - Create a call
