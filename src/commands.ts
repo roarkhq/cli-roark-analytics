@@ -12,7 +12,7 @@ export const DESCRIPTION = 'Command line interface for the Roark Analytics API';
 export const GROUPS: Readonly<Record<string, string>> = {
   agent: 'Manage agents',
   'agent endpoint': 'Manage agent endpoints',
-  'agent prompt': 'Read agent prompts',
+  'agent prompt': 'Manage agent prompts',
   'agent prompt version': 'Read agent prompt versions',
   call: 'Manage calls',
   'call metric': 'Read call metrics',
@@ -377,6 +377,39 @@ export const COMMANDS: readonly CliCommand[] = [
     bodyOpaque: false,
     bodyVariants: [],
     acceptsBody: false,
+    requiresAuth: true,
+  },
+  {
+    commandPath: ['agent', 'prompt', 'update'],
+    clientProperty: 'agentPrompt',
+    methodName: 'update',
+    httpMethod: 'put',
+    httpPath: '/v1/agent/{agentId}/prompts',
+    summary: "Set an agent's prompt",
+    description:
+      "Sets the agent's API-managed prompt. This is its own version history (`source: API_MANAGED`), separate from prompts observed on calls, edited in the app, or managed by config-as-code. Setting the same content twice is a no-op (no new version). Roark does not run your agent and no metric reads this prompt: it is stored and versioned for your reference.",
+    positionals: [
+      {
+        name: 'agent-id',
+        paramKey: 'agentId',
+      },
+    ],
+    flags: [
+      {
+        name: 'prompt',
+        path: ['prompt'],
+        location: 'body',
+        required: true,
+        description: 'The prompt content to set.',
+        valueKind: 'string',
+        repeatable: false,
+      },
+    ],
+    hasParams: true,
+    paramsAllOptional: false,
+    bodyOpaque: false,
+    bodyVariants: [],
+    acceptsBody: true,
     requiresAuth: true,
   },
   {
