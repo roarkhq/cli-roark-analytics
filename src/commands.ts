@@ -2902,6 +2902,16 @@ export const COMMANDS: readonly CliCommand[] = [
         repeatable: false,
       },
       {
+        name: 'display-name',
+        path: ['displayName'],
+        location: 'body',
+        required: false,
+        description:
+          'Label shown in place of the name across the dashboard (e.g. a short descriptor like "Irate Escalator"). The persona still identifies as `name` on calls. Omit or set null to display the name itself.',
+        valueKind: 'string',
+        repeatable: false,
+      },
+      {
         name: 'description',
         path: ['description'],
         location: 'body',
@@ -3283,6 +3293,16 @@ export const COMMANDS: readonly CliCommand[] = [
         location: 'body',
         required: false,
         description: 'The name the agent will identify as during conversations',
+        valueKind: 'string',
+        repeatable: false,
+      },
+      {
+        name: 'display-name',
+        path: ['displayName'],
+        location: 'body',
+        required: false,
+        description:
+          'Label shown in place of the name across the dashboard (e.g. a short descriptor like "Irate Escalator"). The persona still identifies as `name` on calls. Omit or set null to display the name itself.',
         valueKind: 'string',
         repeatable: false,
       },
@@ -3746,6 +3766,16 @@ export const COMMANDS: readonly CliCommand[] = [
         repeatable: false,
       },
       {
+        name: 'include-automatic-metrics',
+        path: ['includeAutomaticMetrics'],
+        location: 'body',
+        required: false,
+        description:
+          'Let the run add metrics by itself off the attached flows, on top of the `metrics` named here. Two attach this way today: Agent Expectations wherever an attached flow has agent expectations written on it, and Keypad Entry wherever one has steps where the agent is expected to press keys. Both grade something authored on the flow that nothing else measures, which is why it is on by default. Set false when the `metrics` list is meant to be exhaustive: a plan testing only whether the caller can complete the flow may not want the agent graded on its expectations as well. False also pins the plan against any automatic metric Roark adds later.',
+        valueKind: 'boolean',
+        repeatable: false,
+      },
+      {
         name: 'enrich-with-live-conversation',
         path: ['enrichWithLiveConversation'],
         location: 'body',
@@ -4203,6 +4233,16 @@ export const COMMANDS: readonly CliCommand[] = [
         location: 'body',
         required: false,
         description: "Whether to also collect each attached flow's own metrics, on top of this plan's list.",
+        valueKind: 'boolean',
+        repeatable: false,
+      },
+      {
+        name: 'include-automatic-metrics',
+        path: ['includeAutomaticMetrics'],
+        location: 'body',
+        required: false,
+        description:
+          'Whether to let the run add metrics by itself off the attached flows. See `POST /v1/simulation/plan`.',
         valueKind: 'boolean',
         repeatable: false,
       },
