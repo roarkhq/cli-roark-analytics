@@ -117,6 +117,8 @@ roark completion fish | source
 | `roark agent endpoint update <endpoint-id>`                                          | Update an agent endpoint    |
 | `roark agent get <agent-id>`                                                         | Get agent by ID             |
 | `roark agent list`                                                                   | List agents                 |
+| `roark agent prompt list <agent-id>`                                                 | List an agent's prompts     |
+| `roark agent prompt version list <agent-id> <prompt-id>`                             | List a prompt's versions    |
 | `roark agent update <agent-id>`                                                      | Update an agent             |
 
 ### call
