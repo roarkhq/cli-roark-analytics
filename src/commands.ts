@@ -1577,7 +1577,7 @@ export const COMMANDS: readonly CliCommand[] = [
         location: 'body',
         required: false,
         description:
-          'STRICT only. What the simulated customer does when your agent does not say the expected line. Each unmatched agent utterance is an attempt: `reaction` runs per attempt (STAY_SILENT, REPEAT its last scripted line, RESPOND once in character without moving on, or SAY `sayLine`), and `then` runs when attempts reach `maxAttempts` or your agent stays silent for `waitSeconds` (HANG_UP ends the call with ended reason SCRIPT_DIVERGED, MOVE_ON advances anyway, ADAPT hands the rest of the call to loose behaviour). Null: stay silent, 3 attempts, hang up.',
+          'STRICT only. What the simulated customer does when your agent does not say the expected line. Each unmatched agent utterance is an attempt: `reaction` runs per attempt (STAY_SILENT, REPEAT its last scripted line, RESPOND once in character without moving on, or SAY `sayLine`), and `then` runs when attempts reach `maxAttempts` or your agent stays silent for `waitSeconds` (HANG_UP ends the call with ended reason SCRIPT_DIVERGED, HANG_UP_INVALIDATE ends it the same way and invalidates the run so it is scored by nothing and counted nowhere, MOVE_ON advances anyway, ADAPT hands the rest of the call to loose behaviour). Null: stay silent, 3 attempts, hang up. The default for every agent step; an AGENT_TURN step can carry its own.',
         valueKind: 'object',
       },
       {
@@ -1611,7 +1611,7 @@ export const COMMANDS: readonly CliCommand[] = [
         location: 'body',
         required: true,
         valueKind: 'string',
-        enumValues: ['HANG_UP', 'MOVE_ON', 'ADAPT'],
+        enumValues: ['HANG_UP', 'MOVE_ON', 'ADAPT', 'HANG_UP_INVALIDATE'],
         repeatable: false,
       },
       {
