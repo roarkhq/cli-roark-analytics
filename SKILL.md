@@ -73,7 +73,7 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark customer-flow graph replace <flow-id> --graph <value>` - Replace a scripted flow's steps
 - `roark customer-flow happy-path update <flow-id>` - Update a flow's happy path
 - `roark customer-flow list` - List customer flows
-- `roark customer-flow update <flow-id>` - Update a customer flow
+- `roark customer-flow update <flow-id> --off-script-policy.reaction <value> --off-script-policy.max-attempts <value> --off-script-policy.then <value>` - Update a customer flow
 - `roark health` - Get API health status
 - `roark http-request-definition create --scope <value> --url <value>` - Create HTTP request definition
 - `roark http-request-definition get <definition-id>` - Get HTTP request definition by ID
