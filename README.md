@@ -143,20 +143,20 @@ roark completion fish | source
 
 ### customer-flow
 
-| Command                                                          | Description                            |
-| ---------------------------------------------------------------- | -------------------------------------- |
-| `roark customer-flow create --data '{ ... }'`                    | Create a customer flow                 |
-| `roark customer-flow delete <flow-id>`                           | Delete a customer flow                 |
-| `roark customer-flow duplicate <flow-id>`                        | Duplicate a customer flow              |
-| `roark customer-flow edge-case create <flow-id> --title <value>` | Add an edge case                       |
-| `roark customer-flow edge-case delete <flow-id> <edge-case-id>`  | Remove an edge case                    |
-| `roark customer-flow edge-case promote <flow-id> <edge-case-id>` | Promote an edge case to the happy path |
-| `roark customer-flow edge-case update <flow-id> <edge-case-id>`  | Update an edge case                    |
-| `roark customer-flow get <flow-id>`                              | Get customer flow by ID                |
-| `roark customer-flow graph replace <flow-id> --graph <value>`    | Replace a scripted flow's steps        |
-| `roark customer-flow happy-path update <flow-id>`                | Update a flow's happy path             |
-| `roark customer-flow list`                                       | List customer flows                    |
-| `roark customer-flow update <flow-id>`                           | Update a customer flow                 |
+| Command                                                                                                                                               | Description                            |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- |
+| `roark customer-flow create --data '{ ... }'`                                                                                                         | Create a customer flow                 |
+| `roark customer-flow delete <flow-id>`                                                                                                                | Delete a customer flow                 |
+| `roark customer-flow duplicate <flow-id>`                                                                                                             | Duplicate a customer flow              |
+| `roark customer-flow edge-case create <flow-id> --title <value>`                                                                                      | Add an edge case                       |
+| `roark customer-flow edge-case delete <flow-id> <edge-case-id>`                                                                                       | Remove an edge case                    |
+| `roark customer-flow edge-case promote <flow-id> <edge-case-id>`                                                                                      | Promote an edge case to the happy path |
+| `roark customer-flow edge-case update <flow-id> <edge-case-id>`                                                                                       | Update an edge case                    |
+| `roark customer-flow get <flow-id>`                                                                                                                   | Get customer flow by ID                |
+| `roark customer-flow graph replace <flow-id> --graph <value>`                                                                                         | Replace a scripted flow's steps        |
+| `roark customer-flow happy-path update <flow-id>`                                                                                                     | Update a flow's happy path             |
+| `roark customer-flow list`                                                                                                                            | List customer flows                    |
+| `roark customer-flow update <flow-id> --off-script-policy.reaction <value> --off-script-policy.max-attempts <value> --off-script-policy.then <value>` | Update a customer flow                 |
 
 ### health
 

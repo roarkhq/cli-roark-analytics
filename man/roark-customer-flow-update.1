@@ -21,6 +21,27 @@ Optional.
 \fB\-\-description\fR \fI<value>\fR
 Optional.
 .TP
+\fB\-\-script\-adherence\fR \fI<value>\fR
+Scripted flows only. How closely a run follows the script. LOOSE (default) hands the whole script to the simulated customer as one prompt; it keeps the call moving whatever your agent says. STRICT runs the script as a state machine on the agent service: at every agent step the simulated customer waits, silent, until your agent has said the expected line, and only then moves on. Scripted flows only; STRICT needs the agent\-service transport and is not available on realtime models. One of: LOOSE, STRICT. Optional.
+.TP
+\fB\-\-off\-script\-policy\fR \fI<value>\fR
+STRICT only. What the simulated customer does when your agent does not say the expected line. Each unmatched agent utterance is a strike: `reaction` runs per strike (STAY_SILENT, REPEAT its last scripted line, RESPOND once in character without moving on, or SAY `sayLine`), and `then` runs when strikes reach `maxAttempts` or your agent stays silent for `waitSeconds` (HANG_UP ends the call with ended reason SCRIPT_DIVERGED, MOVE_ON advances anyway, ADAPT hands the rest of the call to loose behaviour). Null: stay silent, 3 attempts, hang up. Optional.
+.TP
+\fB\-\-off\-script\-policy.reaction\fR \fI<value>\fR
+One of: STAY_SILENT, REPEAT, RESPOND, SAY. Required.
+.TP
+\fB\-\-off\-script\-policy.say\-line\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-off\-script\-policy.max\-attempts\fR \fI<value>\fR
+Required.
+.TP
+\fB\-\-off\-script\-policy.then\fR \fI<value>\fR
+One of: HANG_UP, MOVE_ON, ADAPT. Required.
+.TP
+\fB\-\-off\-script\-policy.wait\-seconds\fR \fI<value>\fR
+Optional.
+.TP
 \fB\-\-branching\-mode\fR \fI<value>\fR
 Scripted flows only. How a run walks the graph. DETERMINISTIC ("Simulate every path" in the app) places one call per variant, each following its path exactly whatever the agent says. ADAPTIVE ("Adapt to your agent") collapses the paths into one call PER PERSONA, on which the simulated customer picks a branch from what the agent actually said. Both modes speak the exact authored lines, and neither changes how metrics or expectations grade. One of: DETERMINISTIC, ADAPTIVE. Optional.
 .TP
@@ -70,7 +91,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark customer\-flow update <flow\-id>
+roark customer\-flow update <flow\-id> \-\-off\-script\-policy.reaction <value> \-\-off\-script\-policy.max\-attempts <value> \-\-off\-script\-policy.then <value>
 .fi
 .RE
 .SH "ENVIRONMENT"
