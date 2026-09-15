@@ -53,6 +53,12 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark agent prompt update <agent-id> --prompt <value>` - Set an agent's prompt
 - `roark agent prompt version list <agent-id> <prompt-id>` - List a prompt's versions
 - `roark agent update <agent-id>` - Update an agent
+- `roark benchmark leaderboard get --suite <value>` - Get the benchmark leaderboard
+- `roark benchmark metric list --suite <value>` - List benchmark metrics
+- `roark benchmark suite list` - List benchmark suites
+- `roark benchmark target get <target-key> --suite <value>` - Get a benchmark target
+- `roark benchmark target history list <target-key> --suite <value>` - List a target’s published generations
+- `roark benchmark target score-sample list <target-key> --suite <value>` - List score samples for a target
 - `roark call create --recording-url <value> --started-at <value> --interface-type <value> --call-direction <value> --customer.phone-number-e164 <value>` - Create a call
 - `roark call get <call-id>` - Get a call by ID
 - `roark call list` - List calls
@@ -109,6 +115,7 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark simulation plan create --name <value> --direction <value> --max-simulation-duration-seconds <value> --agent-endpoints <value> --metrics <value>` - Create a run plan
 - `roark simulation plan delete <plan-id>` - Delete a run plan
 - `roark simulation plan get <plan-id>` - Get run plan by ID
+- `roark simulation plan job cancel <job-id>` - Cancel a simulation plan job
 - `roark simulation plan job get <job-id>` - Get simulation plan job
 - `roark simulation plan job list` - List simulation plan jobs
 - `roark simulation plan job start <plan-id>` - Run a simulation plan

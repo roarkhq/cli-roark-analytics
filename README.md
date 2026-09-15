@@ -122,6 +122,17 @@ roark completion fish | source
 | `roark agent prompt version list <agent-id> <prompt-id>`                             | List a prompt's versions    |
 | `roark agent update <agent-id>`                                                      | Update an agent             |
 
+### benchmark
+
+| Command                                                                 | Description                           |
+| ----------------------------------------------------------------------- | ------------------------------------- |
+| `roark benchmark leaderboard get --suite <value>`                       | Get the benchmark leaderboard         |
+| `roark benchmark metric list --suite <value>`                           | List benchmark metrics                |
+| `roark benchmark suite list`                                            | List benchmark suites                 |
+| `roark benchmark target get <target-key> --suite <value>`               | Get a benchmark target                |
+| `roark benchmark target history list <target-key> --suite <value>`      | List a target’s published generations |
+| `roark benchmark target score-sample list <target-key> --suite <value>` | List score samples for a target       |
+
 ### call
 
 | Command                                                                                                                                                 | Description                       |
@@ -196,29 +207,30 @@ roark completion fish | source
 
 ### simulation
 
-| Command                                                                                                                                                 | Description               |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------- |
-| `roark simulation environment create --name <value> --background-noise <value>`                                                                         | Create an environment     |
-| `roark simulation environment delete <environment-id>`                                                                                                  | Delete an environment     |
-| `roark simulation environment get <environment-id>`                                                                                                     | Get environment by ID     |
-| `roark simulation environment list`                                                                                                                     | List environments         |
-| `roark simulation environment update <environment-id>`                                                                                                  | Update an environment     |
-| `roark simulation job get <job-id>`                                                                                                                     | Get simulation by ID      |
-| `roark simulation job lookup --roark-phone-number <value>`                                                                                              | Lookup by phone number    |
-| `roark simulation persona create --name <value> --language <value> --accent <value> --gender <value>`                                                   | Create a new persona      |
-| `roark simulation persona get <persona-id>`                                                                                                             | Get persona by ID         |
-| `roark simulation persona list`                                                                                                                         | List personas             |
-| `roark simulation persona update <persona-id>`                                                                                                          | Update a persona          |
-| `roark simulation plan create --name <value> --direction <value> --max-simulation-duration-seconds <value> --agent-endpoints <value> --metrics <value>` | Create a run plan         |
-| `roark simulation plan delete <plan-id>`                                                                                                                | Delete a run plan         |
-| `roark simulation plan get <plan-id>`                                                                                                                   | Get run plan by ID        |
-| `roark simulation plan job get <job-id>`                                                                                                                | Get simulation plan job   |
-| `roark simulation plan job list`                                                                                                                        | List simulation plan jobs |
-| `roark simulation plan job start <plan-id>`                                                                                                             | Run a simulation plan     |
-| `roark simulation plan list`                                                                                                                            | List run plans            |
-| `roark simulation plan update <plan-id>`                                                                                                                | Update a run plan         |
-| `roark simulation run --data '{ ... }'`                                                                                                                 | Run a simulation          |
-| `roark simulation template list`                                                                                                                        | List simulation templates |
+| Command                                                                                                                                                 | Description                  |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| `roark simulation environment create --name <value> --background-noise <value>`                                                                         | Create an environment        |
+| `roark simulation environment delete <environment-id>`                                                                                                  | Delete an environment        |
+| `roark simulation environment get <environment-id>`                                                                                                     | Get environment by ID        |
+| `roark simulation environment list`                                                                                                                     | List environments            |
+| `roark simulation environment update <environment-id>`                                                                                                  | Update an environment        |
+| `roark simulation job get <job-id>`                                                                                                                     | Get simulation by ID         |
+| `roark simulation job lookup --roark-phone-number <value>`                                                                                              | Lookup by phone number       |
+| `roark simulation persona create --name <value> --language <value> --accent <value> --gender <value>`                                                   | Create a new persona         |
+| `roark simulation persona get <persona-id>`                                                                                                             | Get persona by ID            |
+| `roark simulation persona list`                                                                                                                         | List personas                |
+| `roark simulation persona update <persona-id>`                                                                                                          | Update a persona             |
+| `roark simulation plan create --name <value> --direction <value> --max-simulation-duration-seconds <value> --agent-endpoints <value> --metrics <value>` | Create a run plan            |
+| `roark simulation plan delete <plan-id>`                                                                                                                | Delete a run plan            |
+| `roark simulation plan get <plan-id>`                                                                                                                   | Get run plan by ID           |
+| `roark simulation plan job cancel <job-id>`                                                                                                             | Cancel a simulation plan job |
+| `roark simulation plan job get <job-id>`                                                                                                                | Get simulation plan job      |
+| `roark simulation plan job list`                                                                                                                        | List simulation plan jobs    |
+| `roark simulation plan job start <plan-id>`                                                                                                             | Run a simulation plan        |
+| `roark simulation plan list`                                                                                                                            | List run plans               |
+| `roark simulation plan update <plan-id>`                                                                                                                | Update a run plan            |
+| `roark simulation run --data '{ ... }'`                                                                                                                 | Run a simulation             |
+| `roark simulation template list`                                                                                                                        | List simulation templates    |
 
 ### webhook
 

@@ -1,25 +1,37 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-CUSTOMER\-FLOW\-DUPLICATE" "1" "" "roark-customer-flow-duplicate" "Roark Analytics API Manual"
+.TH "ROARK\-BENCHMARK\-TARGET\-SCORE\-SAMPLE\-LIST" "1" "" "roark-benchmark-target-score-sample-list" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-customer\-flow\-duplicate \- Duplicate a customer flow
+roark\-benchmark\-target\-score\-sample\-list \- List score samples for a target
 .SH "SYNOPSIS"
-.B roark customer\-flow duplicate
-\fIflow\-id\fR [\fIoptions\fR]
+.B roark benchmark target score\-sample list
+\fItarget\-key\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Deep\-copies a flow into a new project\-owned flow. The copy carries the source's description, branching mode, linked agents, flow\-level expectations and flow\-owned metrics. A scripted flow copies its whole step graph; an improv flow copies its variants (personas, briefs, expectations). Duplicating a Roark\-managed flow is how you customise it. Voicemail flows are Roark\-managed and cannot be duplicated.
+Returns the individual scored calls behind a target’s aggregate cells, each with the scorer’s rationale — the "why is this number what it is" read. Filter to one cell with `conditionKey` and `metricKey`. Metrics computed without a rationale (latencies, counts) contribute no samples. Returns reasoning only: no transcript and no audio.
 .SH "API"
-POST /v1/customer\-flow/{flowId}/duplicate
+GET /v1/benchmark/target/{targetKey}/score\-sample
 .SH "ARGUMENTS"
 .TP
-\fIflow\-id\fR
-The flow\-id.
+\fItarget\-key\fR
+The target\-key.
 .SH "OPTIONS"
 .TP
-\fB\-\-title\fR \fI<value>\fR
-Title for the copy. Defaults to "Copy of" the source flow. Optional.
+\fB\-\-suite\fR \fI<value>\fR
+Required.
 .TP
-\fB\-\-agent\-ids\fR \fI<value>\fR
-Agents to link on the copy. Omit to carry the source flow's agents over. Required when the source is a Roark\-managed flow with no agents of its own. Repeatable. Optional.
+\fB\-\-suite\-version\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-condition\-key\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-metric\-key\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-limit\fR \fI<value>\fR
+Maximum number of records to return (default: 20, max: 100) Optional.
+.TP
+\fB\-\-offset\fR \fI<value>\fR
+Pagination offset Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -61,7 +73,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark customer\-flow duplicate <flow\-id>
+roark benchmark target score\-sample list <target\-key> \-\-suite <value>
 .fi
 .RE
 .SH "ENVIRONMENT"
