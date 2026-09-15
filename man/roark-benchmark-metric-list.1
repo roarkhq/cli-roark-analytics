@@ -1,25 +1,21 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-CUSTOMER\-FLOW\-DUPLICATE" "1" "" "roark-customer-flow-duplicate" "Roark Analytics API Manual"
+.TH "ROARK\-BENCHMARK\-METRIC\-LIST" "1" "" "roark-benchmark-metric-list" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-customer\-flow\-duplicate \- Duplicate a customer flow
+roark\-benchmark\-metric\-list \- List benchmark metrics
 .SH "SYNOPSIS"
-.B roark customer\-flow duplicate
-\fIflow\-id\fR [\fIoptions\fR]
+.B roark benchmark metric list
+[\fIoptions\fR]
 .SH "DESCRIPTION"
-Deep\-copies a flow into a new project\-owned flow. The copy carries the source's description, branching mode, linked agents, flow\-level expectations and flow\-owned metrics. A scripted flow copies its whole step graph; an improv flow copies its variants (personas, briefs, expectations). Duplicating a Roark\-managed flow is how you customise it. Voicemail flows are Roark\-managed and cannot be duplicated.
+Returns the metrics a suite version published, each with the direction that counts as better. Use it to pick a valid `sortBy` for the leaderboard: a metric key outside this list is rejected rather than silently ranking every target null.
 .SH "API"
-POST /v1/customer\-flow/{flowId}/duplicate
-.SH "ARGUMENTS"
-.TP
-\fIflow\-id\fR
-The flow\-id.
+GET /v1/benchmark/metric
 .SH "OPTIONS"
 .TP
-\fB\-\-title\fR \fI<value>\fR
-Title for the copy. Defaults to "Copy of" the source flow. Optional.
+\fB\-\-suite\fR \fI<value>\fR
+Required.
 .TP
-\fB\-\-agent\-ids\fR \fI<value>\fR
-Agents to link on the copy. Omit to carry the source flow's agents over. Required when the source is a Roark\-managed flow with no agents of its own. Repeatable. Optional.
+\fB\-\-suite\-version\fR \fI<value>\fR
+Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -61,7 +57,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark customer\-flow duplicate <flow\-id>
+roark benchmark metric list \-\-suite <value>
 .fi
 .RE
 .SH "ENVIRONMENT"
