@@ -71,6 +71,9 @@ Whether to also collect each attached flow's own metrics, on top of this plan's 
 .TP
 \fB\-\-include\-automatic\-metrics\fR
 Whether to let the run add metrics by itself off the attached flows. See `POST /v1/simulation/plan`. Optional.
+.TP
+\fB\-\-reference\-customer\-flow\-variant\-id\fR \fI<value>\fR
+The reference arm every other flow variant in a run is reported as a difference from. Send `null` to clear it; omit the field to leave it unchanged. See `POST /v1/simulation/plan`. Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
