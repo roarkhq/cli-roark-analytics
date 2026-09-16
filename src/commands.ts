@@ -4342,6 +4342,16 @@ export const COMMANDS: readonly CliCommand[] = [
         repeatable: false,
       },
       {
+        name: 'comparison-values',
+        path: ['comparisonValues'],
+        location: 'body',
+        required: false,
+        description:
+          'Which values of `comparisonProperty` to run. This is what the plan costs: the flow is attached once per value, so ten values is ten times the calls of one. Omit it to run every value the property has, which for `ACCENT` is more than twenty. Send a subset to narrow the sweep, for example three accents you actually serve. A `comparisonBaseline` outside this set is rejected, because it would anchor every difference to an arm the run never made. Not stored as a field: the arms are the values. Reading the plan back returns them as its flow attachments.',
+        valueKind: 'array',
+        repeatable: true,
+      },
+      {
         name: 'enrich-with-live-conversation',
         path: ['enrichWithLiveConversation'],
         location: 'body',
@@ -4870,6 +4880,16 @@ export const COMMANDS: readonly CliCommand[] = [
           'The value every other value is measured against. See `POST /v1/simulation/plan`. A real value cannot be sent on its own: the property it belongs to decides which values are legal, and an omitted property means "leave unchanged", which this endpoint cannot check a baseline against. Send `comparisonProperty` with it, or get a `400`. `null` on its own IS allowed, and clears just the baseline while leaving the property set. Nothing needs validating when clearing, and a property with no baseline is a real state: the report falls back to that property\'s own norm, and `GENDER` has no norm to fall back to.',
         valueKind: 'string',
         repeatable: false,
+      },
+      {
+        name: 'comparison-values',
+        path: ['comparisonValues'],
+        location: 'body',
+        required: false,
+        description:
+          'Which values of `comparisonProperty` to run. See `POST /v1/simulation/plan`. Omitting it keeps the arms the plan already has, so an edit that only renames the plan never widens a sweep you deliberately narrowed, and never multiplies what it costs.',
+        valueKind: 'array',
+        repeatable: true,
       },
     ],
     hasParams: true,

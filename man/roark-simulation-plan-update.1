@@ -77,6 +77,9 @@ The property this plan investigates. Send `null` to clear the comparison; omit t
 .TP
 \fB\-\-comparison\-baseline\fR \fI<value>\fR
 The value every other value is measured against. See `POST /v1/simulation/plan`. A real value cannot be sent on its own: the property it belongs to decides which values are legal, and an omitted property means "leave unchanged", which this endpoint cannot check a baseline against. Send `comparisonProperty` with it, or get a `400`. `null` on its own IS allowed, and clears just the baseline while leaving the property set. Nothing needs validating when clearing, and a property with no baseline is a real state: the report falls back to that property's own norm, and `GENDER` has no norm to fall back to. Optional.
+.TP
+\fB\-\-comparison\-values\fR \fI<value>\fR
+Which values of `comparisonProperty` to run. See `POST /v1/simulation/plan`. Omitting it keeps the arms the plan already has, so an edit that only renames the plan never widens a sweep you deliberately narrowed, and never multiplies what it costs. Repeatable. Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
