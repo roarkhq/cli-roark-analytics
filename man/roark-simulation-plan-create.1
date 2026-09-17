@@ -45,7 +45,7 @@ Execution mode (PARALLEL or SEQUENTIAL) One of: PARALLEL, SEQUENTIAL_SAME_RUN_PL
 Deprecated: use `flows` instead. Scenarios to include in this run plan. The same scenario ID can appear multiple times with different variables. Optional.
 .TP
 \fB\-\-flows\fR \fI<value>\fR
-Customer flows to include in this run plan. The same flow can appear more than once with a different persona override or different variables. Optional.
+Customer flows to include in this run plan. The same flow can appear more than once with a different persona override, different variables, or different `overrides`: attaching it once per value of one property is how you compare that property without a template. Optional.
 .TP
 \fB\-\-personas\fR \fI<value>\fR
 Personas to include in this run plan. Required with `scenarios`; ignored with `flows`, where each variant carries its own persona. Optional.
