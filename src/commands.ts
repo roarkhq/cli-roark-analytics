@@ -4253,7 +4253,7 @@ export const COMMANDS: readonly CliCommand[] = [
         location: 'body',
         required: false,
         description:
-          'Customer flows to include in this run plan. The same flow can appear more than once with a different persona override or different variables.',
+          'Customer flows to include in this run plan. The same flow can appear more than once with a different persona override, different variables, or different `overrides`: attaching it once per value of one property is how you compare that property without a template.',
         valueKind: 'array',
         repeatable: false,
       },
