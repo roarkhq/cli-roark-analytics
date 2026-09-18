@@ -1,18 +1,18 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-AUTOIMPROVE\-FIX\-GET" "1" "" "roark-autoimprove-fix-get" "Roark Analytics API Manual"
+.TH "ROARK\-AUTOIMPROVE\-JOB\-DISMISS" "1" "" "roark-autoimprove-job-dismiss" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-autoimprove\-fix\-get \- Get an Autoimprove fix
+roark\-autoimprove\-job\-dismiss \- Dismiss a verified job
 .SH "SYNOPSIS"
-.B roark autoimprove fix get
-\fIfix\-id\fR [\fIoptions\fR]
+.B roark autoimprove job dismiss
+\fIjob\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Fetch one fix with its full worklog: every step Roark took, the validation batches with their pass\-rate movement, any question it is waiting on, and its final report once concluded.
+Discard a verified job without promoting: production stays untouched and the staging resources are cleaned up. Only a job in AWAITING_PROMOTE can be dismissed.
 .SH "API"
-GET /v1/autoimprove/fix/{fixId}
+POST /v1/autoimprove/job/{jobId}/dismiss
 .SH "ARGUMENTS"
 .TP
-\fIfix\-id\fR
-The fix\-id.
+\fIjob\-id\fR
+The job\-id.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -54,7 +54,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark autoimprove fix get <fix\-id>
+roark autoimprove job dismiss <job\-id>
 .fi
 .RE
 .SH "ENVIRONMENT"
