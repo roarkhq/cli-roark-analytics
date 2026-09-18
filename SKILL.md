@@ -53,6 +53,14 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark agent prompt update <agent-id> --prompt <value>` - Set an agent's prompt
 - `roark agent prompt version list <agent-id> <prompt-id>` - List a prompt's versions
 - `roark agent update <agent-id>` - Update an agent
+- `roark autoimprove fix answer <fix-id> --text <value>` - Answer Roark's question
+- `roark autoimprove fix cancel <fix-id>` - Cancel a fix
+- `roark autoimprove fix create --agent-id <value> --objective-metric-definition-id <value> --objective-label <value>` - Start an Autoimprove fix
+- `roark autoimprove fix dismiss <fix-id>` - Dismiss a verified fix
+- `roark autoimprove fix get <fix-id>` - Get an Autoimprove fix
+- `roark autoimprove fix guidance send <fix-id> --text <value>` - Send guidance to a running fix
+- `roark autoimprove fix list` - List Autoimprove fixes
+- `roark autoimprove fix promote <fix-id>` - Promote a verified fix to production
 - `roark benchmark leaderboard get --suite <value>` - Get the benchmark leaderboard
 - `roark benchmark metric list --suite <value>` - List benchmark metrics
 - `roark benchmark suite list` - List benchmark suites

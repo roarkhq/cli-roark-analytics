@@ -122,6 +122,19 @@ roark completion fish | source
 | `roark agent prompt version list <agent-id> <prompt-id>`                             | List a prompt's versions    |
 | `roark agent update <agent-id>`                                                      | Update an agent             |
 
+### autoimprove
+
+| Command                                                                                                              | Description                          |
+| -------------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| `roark autoimprove fix answer <fix-id> --text <value>`                                                               | Answer Roark's question              |
+| `roark autoimprove fix cancel <fix-id>`                                                                              | Cancel a fix                         |
+| `roark autoimprove fix create --agent-id <value> --objective-metric-definition-id <value> --objective-label <value>` | Start an Autoimprove fix             |
+| `roark autoimprove fix dismiss <fix-id>`                                                                             | Dismiss a verified fix               |
+| `roark autoimprove fix get <fix-id>`                                                                                 | Get an Autoimprove fix               |
+| `roark autoimprove fix guidance send <fix-id> --text <value>`                                                        | Send guidance to a running fix       |
+| `roark autoimprove fix list`                                                                                         | List Autoimprove fixes               |
+| `roark autoimprove fix promote <fix-id>`                                                                             | Promote a verified fix to production |
+
 ### benchmark
 
 | Command                                                                 | Description                           |
