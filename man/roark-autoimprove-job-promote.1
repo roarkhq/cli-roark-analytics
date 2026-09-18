@@ -1,18 +1,18 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-AUTOIMPROVE\-FIX\-CANCEL" "1" "" "roark-autoimprove-fix-cancel" "Roark Analytics API Manual"
+.TH "ROARK\-AUTOIMPROVE\-JOB\-PROMOTE" "1" "" "roark-autoimprove-job-promote" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-autoimprove\-fix\-cancel \- Cancel a fix
+roark\-autoimprove\-job\-promote \- Promote a verified job to production
 .SH "SYNOPSIS"
-.B roark autoimprove fix cancel
-\fIfix\-id\fR [\fIoptions\fR]
+.B roark autoimprove job promote
+\fIjob\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Stop a live fix. Production is never changed by a cancel; everything the fix set up (the shadow agent, its phone number, authored test flows and run plan) is cleaned up automatically.
+Apply the verified staging changes to the PRODUCTION agent. Only a job in AWAITING_PROMOTE can be promoted. A snapshot of the production configuration is taken immediately before the write, so the promote is fully rollbackable. After the promote the staging shadow and its phone number are cleaned up.
 .SH "API"
-POST /v1/autoimprove/fix/{fixId}/cancel
+POST /v1/autoimprove/job/{jobId}/promote
 .SH "ARGUMENTS"
 .TP
-\fIfix\-id\fR
-The fix\-id.
+\fIjob\-id\fR
+The job\-id.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -54,7 +54,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark autoimprove fix cancel <fix\-id>
+roark autoimprove job promote <job\-id>
 .fi
 .RE
 .SH "ENVIRONMENT"

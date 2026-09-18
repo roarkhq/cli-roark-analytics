@@ -1,18 +1,14 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-AUTOIMPROVE\-FIX\-PROMOTE" "1" "" "roark-autoimprove-fix-promote" "Roark Analytics API Manual"
+.TH "ROARK\-AUTOIMPROVE\-JOB\-LIST" "1" "" "roark-autoimprove-job-list" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-autoimprove\-fix\-promote \- Promote a verified fix to production
+roark\-autoimprove\-job\-list \- List Autoimprove jobs
 .SH "SYNOPSIS"
-.B roark autoimprove fix promote
-\fIfix\-id\fR [\fIoptions\fR]
+.B roark autoimprove job list
+[\fIoptions\fR]
 .SH "DESCRIPTION"
-Apply the verified staging changes to the PRODUCTION agent. Only a fix in AWAITING_PROMOTE can be promoted. A snapshot of the production configuration is taken immediately before the write, so the promote is fully rollbackable. After the promote the staging shadow and its phone number are cleaned up.
+List the Autoimprove jobs in this project, most recent first, capped at 100. A job is one autonomous engagement: Roark improving one agent toward one objective metric on a staging copy, with a human\-gated promote to production at the end.
 .SH "API"
-POST /v1/autoimprove/fix/{fixId}/promote
-.SH "ARGUMENTS"
-.TP
-\fIfix\-id\fR
-The fix\-id.
+GET /v1/autoimprove/job
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -54,7 +50,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark autoimprove fix promote <fix\-id>
+roark autoimprove job list
 .fi
 .RE
 .SH "ENVIRONMENT"

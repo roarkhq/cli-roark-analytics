@@ -1,22 +1,18 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-AUTOIMPROVE\-FIX\-GUIDANCE\-SEND" "1" "" "roark-autoimprove-fix-guidance-send" "Roark Analytics API Manual"
+.TH "ROARK\-AUTOIMPROVE\-JOB\-CANCEL" "1" "" "roark-autoimprove-job-cancel" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-autoimprove\-fix\-guidance\-send \- Send guidance to a running fix
+roark\-autoimprove\-job\-cancel \- Cancel a job
 .SH "SYNOPSIS"
-.B roark autoimprove fix guidance send
-\fIfix\-id\fR [\fIoptions\fR]
+.B roark autoimprove job cancel
+\fIjob\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Steer Roark mid\-fix. The message is folded into its next decision and is binding. Accepted while the fix is live (RUNNING, NEEDS_INPUT, or PAUSED); a concluded fix returns a conflict.
+Stop a live job. Production is never changed by a cancel; everything the job set up (the shadow agent, its phone number, authored test flows and run plan) is cleaned up automatically.
 .SH "API"
-POST /v1/autoimprove/fix/{fixId}/guidance
+POST /v1/autoimprove/job/{jobId}/cancel
 .SH "ARGUMENTS"
 .TP
-\fIfix\-id\fR
-The fix\-id.
-.SH "OPTIONS"
-.TP
-\fB\-\-text\fR \fI<value>\fR
-The message for Roark. Required.
+\fIjob\-id\fR
+The job\-id.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -58,7 +54,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark autoimprove fix guidance send <fix\-id> \-\-text <value>
+roark autoimprove job cancel <job\-id>
 .fi
 .RE
 .SH "ENVIRONMENT"
