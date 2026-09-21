@@ -207,6 +207,39 @@ jobs:
           rm -f "$tarball"
           echo "the packed tarball carries the shrinkwrap, the man pages and the bin"
 
+      # The command table addresses the SDK by string, so nothing above this
+      # point has asked whether those strings resolve. v0.23.0 shipped because
+      # of that: the table was regenerated to `autoimproveJob` while the range
+      # stayed `^3.2.1`, and all eight `roark autoimprove job ...` commands
+      # reached npm throwing "missing from @roarkanalytics/sdk".
+      #
+      # Installed from the packed tarball into a scratch directory, not probed
+      # in place. The repository's `node_modules` comes from `pnpm-lock.yaml`
+      # and what a user gets comes from the generated `npm-shrinkwrap.json`;
+      # those are different resolutions, and the published one is the only one
+      # whose answer matters. `npm install <tarball>` honours the shrinkwrap the
+      # same way `install.sh` does.
+      - name: Every command resolves on the SDK that ships with it
+        working-directory: dist
+        run: |
+          set -euo pipefail
+
+          npm pack --loglevel=error >/dev/null
+          tarball=$(ls -- *.tgz)
+          probe="$RUNNER_TEMP/cli-resolution-probe"
+          rm -rf "$probe"
+          mkdir -p "$probe"
+          # `npm init -y` first: installing into a bare directory makes npm walk
+          # up looking for a package.json and it would find this repository's.
+          (
+            cd "$probe"
+            npm init -y >/dev/null
+            npm install "$GITHUB_WORKSPACE/dist/$tarball" --loglevel=error --no-audit --no-fund >/dev/null
+          )
+          rm -f "$tarball"
+
+          node "$GITHUB_WORKSPACE/scripts/check-sdk-resolution.cjs" "$probe"
+
       # A `release` event carries no inputs, so `inputs.tag` is empty there:
       # default it to `latest` rather than passing `--tag ''`. A release always
       # publishes; only a manual dispatch can ask for a dry run.
