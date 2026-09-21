@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.23.1](https://github.com/roarkhq/cli-roark-analytics/compare/v0.23.0...v0.23.1) (2026-09-21)
+
+
+### Bug Fixes
+
+* **deps:** require @roarkanalytics/sdk ^4.0.0 ([#56](https://github.com/roarkhq/cli-roark-analytics/issues/56)) ([25574ab](https://github.com/roarkhq/cli-roark-analytics/commit/25574ab41778bc7a4238dcbb5e08cdcb29819b59))
+
 ## [0.23.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.22.0...v0.23.0) (2026-09-21)
 
 
