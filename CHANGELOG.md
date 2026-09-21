@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.23.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.22.0...v0.23.0) (2026-09-21)
+
+
+### ⚠ BREAKING CHANGES
+
+* **cli:** removes or renames commands. Scripts using the old names will fail.
+
+### Features
+
+* **cli:** cli update ([#54](https://github.com/roarkhq/cli-roark-analytics/issues/54)) ([2722903](https://github.com/roarkhq/cli-roark-analytics/commit/2722903aae2a0bb35dd6060fb11a6957c7a92f83))
+
 ## [0.22.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.21.0...v0.22.0) (2026-09-18)
 
 
