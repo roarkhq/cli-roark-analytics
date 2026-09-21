@@ -1,18 +1,18 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-AUTOIMPROVE\-FIX\-ANSWER" "1" "" "roark-autoimprove-fix-answer" "Roark Analytics API Manual"
+.TH "ROARK\-AUTOIMPROVE\-JOB\-ANSWER" "1" "" "roark-autoimprove-job-answer" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-autoimprove\-fix\-answer \- Answer Roark's question
+roark\-autoimprove\-job\-answer \- Answer Roark's question
 .SH "SYNOPSIS"
-.B roark autoimprove fix answer
-\fIfix\-id\fR [\fIoptions\fR]
+.B roark autoimprove job answer
+\fIjob\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Answer the question a fix is blocked on. Only meaningful while the fix status is NEEDS_INPUT (the open QUESTION entry carries the offered options; free text is also accepted). Otherwise returns a conflict.
+Answer the question a job is blocked on. Only meaningful while the job status is NEEDS_INPUT (the open QUESTION entry carries the offered options; free text is also accepted). Otherwise returns a conflict.
 .SH "API"
-POST /v1/autoimprove/fix/{fixId}/answer
+POST /v1/autoimprove/job/{jobId}/answer
 .SH "ARGUMENTS"
 .TP
-\fIfix\-id\fR
-The fix\-id.
+\fIjob\-id\fR
+The job\-id.
 .SH "OPTIONS"
 .TP
 \fB\-\-text\fR \fI<value>\fR
@@ -58,7 +58,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark autoimprove fix answer <fix\-id> \-\-text <value>
+roark autoimprove job answer <job\-id> \-\-text <value>
 .fi
 .RE
 .SH "ENVIRONMENT"

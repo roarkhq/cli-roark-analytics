@@ -1,18 +1,22 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-AUTOIMPROVE\-FIX\-DISMISS" "1" "" "roark-autoimprove-fix-dismiss" "Roark Analytics API Manual"
+.TH "ROARK\-AUTOIMPROVE\-JOB\-GUIDANCE\-SEND" "1" "" "roark-autoimprove-job-guidance-send" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-autoimprove\-fix\-dismiss \- Dismiss a verified fix
+roark\-autoimprove\-job\-guidance\-send \- Send guidance to a running job
 .SH "SYNOPSIS"
-.B roark autoimprove fix dismiss
-\fIfix\-id\fR [\fIoptions\fR]
+.B roark autoimprove job guidance send
+\fIjob\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Discard a verified fix without promoting: production stays untouched and the staging resources are cleaned up. Only a fix in AWAITING_PROMOTE can be dismissed.
+Steer Roark mid\-job. The message is folded into its next decision and is binding. Accepted while the job is live (RUNNING, NEEDS_INPUT, or PAUSED); a concluded job returns a conflict.
 .SH "API"
-POST /v1/autoimprove/fix/{fixId}/dismiss
+POST /v1/autoimprove/job/{jobId}/guidance
 .SH "ARGUMENTS"
 .TP
-\fIfix\-id\fR
-The fix\-id.
+\fIjob\-id\fR
+The job\-id.
+.SH "OPTIONS"
+.TP
+\fB\-\-text\fR \fI<value>\fR
+The message for Roark. Required.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -54,7 +58,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark autoimprove fix dismiss <fix\-id>
+roark autoimprove job guidance send <job\-id> \-\-text <value>
 .fi
 .RE
 .SH "ENVIRONMENT"

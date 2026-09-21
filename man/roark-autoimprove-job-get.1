@@ -1,14 +1,18 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-AUTOIMPROVE\-FIX\-LIST" "1" "" "roark-autoimprove-fix-list" "Roark Analytics API Manual"
+.TH "ROARK\-AUTOIMPROVE\-JOB\-GET" "1" "" "roark-autoimprove-job-get" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-autoimprove\-fix\-list \- List Autoimprove fixes
+roark\-autoimprove\-job\-get \- Get an Autoimprove job
 .SH "SYNOPSIS"
-.B roark autoimprove fix list
-[\fIoptions\fR]
+.B roark autoimprove job get
+\fIjob\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-List the Autoimprove fixes in this project, most recent first, capped at 100. A fix is one autonomous engagement: Roark improving one agent toward one objective metric on a staging copy, with a human\-gated promote to production at the end.
+Fetch one job with its full worklog: every step Roark took, the validation batches with their pass\-rate movement, any question it is waiting on, and its final report once concluded.
 .SH "API"
-GET /v1/autoimprove/fix
+GET /v1/autoimprove/job/{jobId}
+.SH "ARGUMENTS"
+.TP
+\fIjob\-id\fR
+The job\-id.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -50,7 +54,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark autoimprove fix list
+roark autoimprove job get <job\-id>
 .fi
 .RE
 .SH "ENVIRONMENT"
