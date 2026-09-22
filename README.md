@@ -122,6 +122,17 @@ roark completion fish | source
 | `roark agent prompt version list <agent-id> <prompt-id>`                             | List a prompt's versions    |
 | `roark agent update <agent-id>`                                                      | Update an agent             |
 
+### agent-config
+
+| Command                                                                | Description                   |
+| ---------------------------------------------------------------------- | ----------------------------- |
+| `roark agent-config get <key>`                                         | Get a managed config          |
+| `roark agent-config list`                                              | List managed configs          |
+| `roark agent-config promote <key>`                                     | Promote staging to production |
+| `roark agent-config resolve <key>`                                     | Resolve config for a session  |
+| `roark agent-config staging delete <key>`                              | Discard the staging revision  |
+| `roark agent-config update <key> --channel <value> --document <value>` | Write a config revision       |
+
 ### autoimprove
 
 | Command                                                                                                              | Description                          |

@@ -53,6 +53,12 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark agent prompt update <agent-id> --prompt <value>` - Set an agent's prompt
 - `roark agent prompt version list <agent-id> <prompt-id>` - List a prompt's versions
 - `roark agent update <agent-id>` - Update an agent
+- `roark agent-config get <key>` - Get a managed config
+- `roark agent-config list` - List managed configs
+- `roark agent-config promote <key>` - Promote staging to production
+- `roark agent-config resolve <key>` - Resolve config for a session
+- `roark agent-config staging delete <key>` - Discard the staging revision
+- `roark agent-config update <key> --channel <value> --document <value>` - Write a config revision
 - `roark autoimprove job answer <job-id> --text <value>` - Answer Roark's question
 - `roark autoimprove job cancel <job-id>` - Cancel a job
 - `roark autoimprove job create --agent-id <value> --objective-metric-definition-id <value> --objective-label <value>` - Start an Autoimprove job
