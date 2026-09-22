@@ -17,6 +17,7 @@ import { browserLogin, platformOriginFor, type BrowserLoginResult } from '../bro
 import { UsageError } from '../errors';
 import {
   clearUserConfig,
+  loadConfig,
   maskToken,
   readUserConfig,
   resolveConfig,
@@ -37,6 +38,61 @@ type ClientFor = (options: never) => Roark;
 // a 401 while a valid one that merely lacks this endpoint's permission is a 403 — both prove the
 // token authenticates. `/v1/agent` is a stable GET that every project has.
 const AUTH_PROBE_PATH = '/v1/agent';
+
+// What the credential itself says it is. Added with user-scoped credentials and the only endpoint
+// that answers without naming a project, which is exactly what a liveness check needs. An older API
+// does not have it; callers fall back to AUTH_PROBE_PATH on a 404.
+const AUTH_DESCRIBE_PATH = '/v1/me';
+
+type CredentialState =
+  | { kind: 'live'; scope?: string | undefined; email?: string | null | undefined }
+  | { kind: 'rejected' }
+  | { kind: 'unknown'; reason: string };
+
+/**
+ * Asks the API whether the effective credential still works.
+ *
+ * `auth status` used to answer from the config file alone, so it said "Authenticated" for a
+ * credential the server had already revoked. That was always wrong and is now easy to hit: a
+ * user-scoped credential is revoked from the web UI, in a different place from the machine
+ * holding it, so the CLI is routinely the last to know.
+ */
+const describeCredential = async (clientFor: ClientFor): Promise<CredentialState> => {
+  let client: Roark;
+  try {
+    // Resolved the same way a real command would, so the base-url trust guard still applies and we
+    // are checking the credential that would actually be used.
+    client = clientFor({} as never);
+  } catch (error) {
+    return { kind: 'unknown', reason: (error as Error).message.split('\n')[0] ?? 'unknown error' };
+  }
+
+  const classify = (error: unknown): CredentialState => {
+    const status = (error as { status?: number }).status;
+    if (status === 401) return { kind: 'rejected' };
+    // 403 (authenticated, lacks a permission) and 400 (a user credential that named no project)
+    // both prove authentication succeeded.
+    if (status !== undefined && status < 500) return { kind: 'live' };
+    return { kind: 'unknown', reason: (error as Error).message };
+  };
+
+  try {
+    const me = (await client.get(AUTH_DESCRIBE_PATH)) as {
+      data?: { tokenScope?: string; user?: { email?: string } | null };
+    };
+    return { kind: 'live', scope: me.data?.tokenScope, email: me.data?.user?.email ?? null };
+  } catch (error) {
+    if ((error as { status?: number }).status !== 404) return classify(error);
+  }
+
+  // Older API without /v1/me: any authenticated endpoint still proves the token lives.
+  try {
+    await client.get(AUTH_PROBE_PATH, { query: { limit: '1' } });
+    return { kind: 'live' };
+  } catch (error) {
+    return classify(error);
+  }
+};
 
 /**
  * Confirm the stored credential actually authenticates, so a mistyped or half-pasted token is caught
@@ -254,43 +310,82 @@ export const registerAuthCommands = (root: Command, binaryName: string, clientFo
 
   auth
     .command('status')
-    .description('Show which credential would be used, and where it came from')
-    .action(() => {
+    .description('Show which credential would be used, where it came from, and whether it still works')
+    .action(async () => {
       const color = supportsColor(process.stderr);
       const fromEnv = process.env['ROARK_API_BEARER_TOKEN'];
       const stored = readUserConfig().bearerToken;
+      const token = fromEnv ?? stored;
 
-      if (fromEnv) {
+      if (!token) {
         write(
-          `${paint('Authenticated', 'green', color)} via ROARK_API_BEARER_TOKEN (${maskToken(fromEnv)})`,
+          `${paint('Not authenticated.', 'yellow', color)} Run \`${binaryName} auth login\`.`,
           process.stderr,
         );
-        if (stored) {
+        process.exitCode = 3;
+        return;
+      }
+
+      const source = fromEnv ? 'ROARK_API_BEARER_TOKEN' : userConfigPath();
+
+      // Ask the API rather than trusting the file. Without this the command reports a revoked
+      // credential as authenticated, which is the opposite of what someone runs it to find out.
+      const state =
+        clientFor ? await describeCredential(clientFor) : ({ kind: 'unknown', reason: 'no client' } as const);
+
+      if (state.kind === 'rejected') {
+        write(
+          `${paint('Rejected', 'red', color)} by the API (401): the credential in ${source} (${maskToken(
+            token,
+          )}) is wrong, expired, or revoked.`,
+          process.stderr,
+        );
+        write(paint(`Run \`${binaryName} auth login\` to replace it.`, 'dim', color), process.stderr);
+        process.exitCode = 3;
+        return;
+      }
+
+      if (state.kind === 'unknown') {
+        // Deliberately not "Authenticated": we do not know. Saying so is the whole point.
+        write(
+          `${paint('Unverified', 'yellow', color)} credential in ${source} (${maskToken(
+            token,
+          )}): could not reach the API (${state.reason}).`,
+          process.stderr,
+        );
+      } else {
+        const who = state.email ? ` as ${state.email}` : '';
+        write(
+          `${paint('Authenticated', 'green', color)}${who} via ${source} (${maskToken(token)})`,
+          process.stderr,
+        );
+        if (state.scope === 'USER') {
+          // A user credential reaches every project you belong to, so which one it acts on is part
+          // of the answer, not a detail.
+          const project = loadConfig().project;
           write(
             paint(
-              `A token is also stored in ${userConfigPath()}; the environment variable wins.`,
+              project ?
+                `Acting on project ${project}. Change it with \`${binaryName} config set project <id>\`.`
+              : `No project selected: commands will fail until you set one with \`${binaryName} config set project <id>\`.`,
               'dim',
               color,
             ),
             process.stderr,
           );
         }
-        return;
       }
 
-      if (stored) {
+      if (fromEnv && stored) {
         write(
-          `${paint('Authenticated', 'green', color)} via ${userConfigPath()} (${maskToken(stored)})`,
+          paint(
+            `A token is also stored in ${userConfigPath()}; the environment variable wins.`,
+            'dim',
+            color,
+          ),
           process.stderr,
         );
-        return;
       }
-
-      write(
-        `${paint('Not authenticated.', 'yellow', color)} Run \`${binaryName} auth login\`.`,
-        process.stderr,
-      );
-      process.exitCode = 3;
     });
 
   root.addCommand(auth);
