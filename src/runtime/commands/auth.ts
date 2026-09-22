@@ -13,7 +13,7 @@ import type Roark from '@roarkanalytics/sdk';
 import { hostname } from 'node:os';
 import { createInterface } from 'node:readline';
 
-import { browserLogin, platformOriginFor } from '../browser-login';
+import { browserLogin, platformOriginFor, type BrowserLoginResult } from '../browser-login';
 import { UsageError } from '../errors';
 import {
   clearUserConfig,
@@ -147,10 +147,24 @@ const readToken = async (binaryName: string): Promise<string> => {
 };
 
 // Save the token and report where it went (masked). Shared by the browser and paste paths.
-const persistToken = (token: string): { color: boolean } => {
-  const path = writeUserConfig({ ...readUserConfig(), bearerToken: token });
+//
+// `project` is written only when the browser flow reports one: a user credential stores no
+// project of its own, so without this the very next command would need a `--project`. The paste
+// path passes nothing, which leaves any existing setting alone rather than clearing it.
+const persistToken = (token: string, project?: string): { color: boolean } => {
+  const path = writeUserConfig({
+    ...readUserConfig(),
+    bearerToken: token,
+    ...(project === undefined ? {} : { project }),
+  });
   const color = supportsColor(process.stderr);
   write(`${paint('Saved', 'green', color)} ${maskToken(token)} to ${path}`, process.stderr);
+  if (project !== undefined) {
+    write(
+      `${paint('Project', 'green', color)} ${project} (change it with \`config set project\`)`,
+      process.stderr,
+    );
+  }
   return { color };
 };
 
@@ -200,9 +214,9 @@ export const registerAuthCommands = (root: Command, binaryName: string, clientFo
         const color = supportsColor(process.stderr);
         const apiBaseUrl = resolveConfig({}).config.baseURL ?? DEFAULT_BASE_URL;
         write(paint('Opening your browser to authorize this CLI…', 'dim', color), process.stderr);
-        let token: string;
+        let login: BrowserLoginResult;
         try {
-          token = await browserLogin({
+          login = await browserLogin({
             apiBaseUrl,
             platformOrigin: platformOriginFor(apiBaseUrl),
             clientName: `CLI on ${hostname()}`,
@@ -215,8 +229,8 @@ export const registerAuthCommands = (root: Command, binaryName: string, clientFo
               `Run \`${binaryName} auth login --paste\` to paste or pipe a token instead.`,
           );
         }
-        const { color: savedColor } = persistToken(token);
-        warnEnvShadow(token, savedColor);
+        const { color: savedColor } = persistToken(login.token, login.project);
+        warnEnvShadow(login.token, savedColor);
         return;
       }
 

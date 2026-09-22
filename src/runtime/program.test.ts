@@ -255,6 +255,29 @@ describe('run: argv reaches the request', () => {
     expect(await invoke('agent', 'list', '--limit', 'lots')).toBe(EXIT.usage);
     expect(requests).toHaveLength(0);
   });
+
+  it('sends no project header when none is configured', async () => {
+    // A project API key names its own project. The header must be absent rather than empty:
+    // customer-api reads presence, and an empty value is a 400.
+    expect(await invoke('agent', 'list')).toBe(EXIT.ok);
+    expect(requests[0]!.headers.has('x-roark-project-id')).toBe(false);
+  });
+
+  it('sends --project as X-Roark-Project-Id', async () => {
+    expect(await invoke('agent', 'list', '--project', 'proj_flag')).toBe(EXIT.ok);
+    expect(requests[0]!.headers.get('x-roark-project-id')).toBe('proj_flag');
+  });
+
+  it('falls back to the stored project, which is what `auth login` writes', async () => {
+    writeUser({ bearerToken: 'stored-token', baseURL: 'https://api.example', project: 'proj_stored' });
+    expect(await invoke('agent', 'list')).toBe(EXIT.ok);
+    expect(requests[0]!.headers.get('x-roark-project-id')).toBe('proj_stored');
+
+    // And the flag still beats it, for a one-off command against another project.
+    requests.length = 0;
+    expect(await invoke('agent', 'list', '--project', 'proj_flag')).toBe(EXIT.ok);
+    expect(requests[0]!.headers.get('x-roark-project-id')).toBe('proj_flag');
+  });
 });
 
 describe('run: exit codes', () => {
