@@ -43,9 +43,17 @@ type ProbeBehavior = 'ok' | { status: number } | { networkError: string };
 
 /** A fake client factory whose probe GET behaves as configured, so login-time verification is
  * exercised without a network. */
-const clientStub = (behavior: ProbeBehavior): Parameters<typeof registerAuthCommands>[2] =>
-  (() => ({
-    get: async (): Promise<unknown> => {
+const clientStub = (
+  behavior: ProbeBehavior,
+  me?: { tokenScope: string; user?: { email: string } | null },
+): Parameters<typeof registerAuthCommands>[2] =>
+  ((): unknown => ({
+    get: async (path: string): Promise<unknown> => {
+      // `auth status` asks /v1/me first; an older API 404s it and the caller falls back.
+      if (path === '/v1/me') {
+        if (me) return { data: me };
+        throw Object.assign(new Error('HTTP 404'), { status: 404 });
+      }
       if (behavior === 'ok') return {};
       if ('status' in behavior)
         throw Object.assign(new Error(`HTTP ${behavior.status}`), { status: behavior.status });
@@ -57,6 +65,18 @@ const invokeVerified = async (behavior: ProbeBehavior, ...argv: string[]): Promi
   const root_ = new Command();
   root_.exitOverride();
   registerAuthCommands(root_, 'roark', clientStub(behavior));
+  for (const child of root_.commands) child.exitOverride();
+  await root_.parseAsync(['node', 'roark', ...argv]);
+};
+
+/** Same, but the API answers /v1/me, so `auth status` can describe the credential. */
+const invokeDescribed = async (
+  me: { tokenScope: string; user?: { email: string } | null },
+  ...argv: string[]
+): Promise<void> => {
+  const root_ = new Command();
+  root_.exitOverride();
+  registerAuthCommands(root_, 'roark', clientStub('ok', me));
   for (const child of root_.commands) child.exitOverride();
   await root_.parseAsync(['node', 'roark', ...argv]);
 };
@@ -181,7 +201,7 @@ describe('auth logout', () => {
 describe('auth status', () => {
   it('names the stored credential and exits 0', async () => {
     writeUser({ bearerToken: 'roark-stored-token-abcd' });
-    await invoke('auth', 'status');
+    await invokeVerified('ok', 'auth', 'status');
 
     expect(written()).toContain('Authenticated');
     expect(written()).toContain('roar...abcd');
@@ -192,11 +212,69 @@ describe('auth status', () => {
   it('says the environment variable wins, and mentions the file it shadows', async () => {
     writeUser({ bearerToken: 'roark-stored-token-abcd' });
     process.env['ROARK_API_BEARER_TOKEN'] = 'roark-environment-token-wxyz';
-    await invoke('auth', 'status');
+    await invokeVerified('ok', 'auth', 'status');
 
     expect(written()).toContain('ROARK_API_BEARER_TOKEN');
     expect(written()).toContain('roar...wxyz');
     expect(written()).toContain('the environment variable wins');
+  });
+
+  it('reports a revoked credential as rejected, and exits 3', async () => {
+    // The bug this replaced: status answered from the config file, so a credential revoked in the
+    // web UI still read as "Authenticated" on the machine holding it. A user-scoped credential is
+    // revoked somewhere else by design, so the CLI is routinely the last to know.
+    writeUser({ bearerToken: 'roark-stored-token-abcd' });
+    await invokeVerified({ status: 401 }, 'auth', 'status');
+
+    expect(written()).toContain('Rejected');
+    expect(written()).not.toContain('Authenticated');
+    expect(written()).toContain('revoked');
+    expect(process.exitCode).toBe(3);
+  });
+
+  it('says unverified, not authenticated, when the API cannot be reached', async () => {
+    // Offline is not the same as authenticated, and claiming otherwise is the same lie in a
+    // quieter voice. Exit stays 0: nothing is known to be wrong.
+    writeUser({ bearerToken: 'roark-stored-token-abcd' });
+    await invokeVerified({ networkError: 'connect ECONNREFUSED' }, 'auth', 'status');
+
+    expect(written()).toContain('Unverified');
+    expect(written()).not.toContain('Authenticated');
+    expect(process.exitCode).toBeUndefined();
+  });
+
+  it('treats a 403 as authenticated, since only authentication is being tested', async () => {
+    writeUser({ bearerToken: 'roark-stored-token-abcd' });
+    await invokeVerified({ status: 403 }, 'auth', 'status');
+
+    expect(written()).toContain('Authenticated');
+    expect(process.exitCode).toBeUndefined();
+  });
+
+  it('names who a user credential acts as, and which project it acts on', async () => {
+    // For a user credential the project is half the answer: the same token behaves differently
+    // depending on it, so `auth status` that omitted it would be telling half the truth.
+    writeUser({ bearerToken: 'roark-stored-token-abcd', project: 'proj_123' });
+    await invokeDescribed({ tokenScope: 'USER', user: { email: 'someone@example.com' } }, 'auth', 'status');
+
+    expect(written()).toContain('Authenticated as someone@example.com');
+    expect(written()).toContain('Acting on project proj_123');
+  });
+
+  it('warns when a user credential has no project selected', async () => {
+    writeUser({ bearerToken: 'roark-stored-token-abcd' });
+    await invokeDescribed({ tokenScope: 'USER', user: { email: 'someone@example.com' } }, 'auth', 'status');
+
+    expect(written()).toContain('No project selected');
+    expect(written()).toContain('config set project');
+  });
+
+  it('says nothing about projects for a project-scoped key, which names its own', async () => {
+    writeUser({ bearerToken: 'roark-stored-token-abcd' });
+    await invokeDescribed({ tokenScope: 'PROJECT', user: null }, 'auth', 'status');
+
+    expect(written()).toContain('Authenticated');
+    expect(written()).not.toContain('project');
   });
 
   it('exits 3 when there is no credential, so a script can branch on it', async () => {

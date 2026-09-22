@@ -29,6 +29,7 @@ import { render, supportsColor, write } from '../output';
 /** Settable keys, as typed, mapped onto the config field they write. */
 const KEYS: Record<string, keyof CliConfig> = {
   'base-url': 'baseURL',
+  project: 'project',
   timeout: 'timeout',
   'max-retries': 'maxRetries',
 };

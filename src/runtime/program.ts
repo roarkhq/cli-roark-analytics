@@ -46,6 +46,7 @@ const isDestructive = (command: CliCommand): boolean =>
 
 interface GlobalOptions {
   baseUrl?: string;
+  project?: string;
   timeout?: string;
   maxRetries?: string;
   token?: string;
@@ -78,6 +79,7 @@ interface ExtraOptions {
 const addGlobalOptions = (command: Command, extra: ExtraOptions): Command => {
   command
     .option('--base-url <url>', 'API base URL')
+    .option('--project <id>', 'project to act on (or ROARK_PROJECT_ID, or `roark config set project`)')
     .option('--token <token>', 'bearer token (prefer ROARK_API_BEARER_TOKEN or `auth login`)')
     .option('--timeout <ms>', 'request timeout in milliseconds')
     .option('--max-retries <count>', 'retries for retryable failures')
@@ -129,6 +131,7 @@ const clientFor = (options: GlobalOptions, requiresAuth = true): Roark => {
   const overrides: CliConfig = {
     ...(options.token === undefined ? {} : { bearerToken: options.token }),
     ...(options.baseUrl === undefined ? {} : { baseURL: options.baseUrl }),
+    ...(options.project === undefined ? {} : { project: options.project }),
     ...(options.timeout === undefined ? {} : { timeout: Number(options.timeout) }),
     ...(options.maxRetries === undefined ? {} : { maxRetries: Number(options.maxRetries) }),
   };
@@ -147,6 +150,9 @@ const clientFor = (options: GlobalOptions, requiresAuth = true): Roark => {
     // The SDK constructor rejects an absent token, so a public endpoint is given
     // an empty one rather than being made to demand a credential it never sends.
     bearerToken: config.bearerToken ?? '',
+    // Sent as `X-Roark-Project-Id`. Absent unless configured, because a project key names its own
+    // project and an empty header is a 400 rather than a no-op.
+    ...(config.project === undefined ? {} : { project: config.project }),
     ...(config.baseURL === undefined ? {} : { baseURL: config.baseURL }),
     ...(config.timeout === undefined ? {} : { timeout: config.timeout }),
     ...(config.maxRetries === undefined ? {} : { maxRetries: config.maxRetries }),
