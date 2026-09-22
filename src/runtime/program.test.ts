@@ -268,6 +268,14 @@ describe('run: argv reaches the request', () => {
     expect(requests[0]!.headers.get('x-roark-project-id')).toBe('proj_flag');
   });
 
+  it('sends the project from `api`, the escape hatch a user credential needs most', async () => {
+    // `api` declares its own connection options instead of inheriting the root ones, so --project
+    // has to be listed there separately. It was not, which made the one command that can reach an
+    // endpoint without a generated wrapper the one command a user credential could not use.
+    expect(await invoke('api', 'get', '/v1/call', '--project', 'proj_flag')).toBe(EXIT.ok);
+    expect(requests[0]!.headers.get('x-roark-project-id')).toEqual('proj_flag');
+  });
+
   it('falls back to the stored project, which is what `auth login` writes', async () => {
     writeUser({ bearerToken: 'stored-token', baseURL: 'https://api.example', project: 'proj_stored' });
     expect(await invoke('agent', 'list')).toBe(EXIT.ok);
