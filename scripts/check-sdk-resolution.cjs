@@ -22,13 +22,53 @@
 // bug: the repo installs from `pnpm-lock.yaml`, while what a user gets is the
 // `npm-shrinkwrap.json` the build generates. Probing the install is the only
 // way to ask the question that matters - does the thing being published work.
+//
+// The optional second argument is what makes that question answerable BEFORE a
+// release is cut. With no argument the SDK is resolved the way the binary would
+// resolve it, which is whatever the build happened to pin - the NEWEST version
+// the declared range admits. v0.25.0 is what that costs: the table named
+// `agent.build`, the range said `^4.0.0`, and the publish raced the SDK's own
+// release and lost by three minutes. It failed correctly, but it failed at the
+// only moment that is expensive - the tag and the GitHub release already
+// existed and npm had nothing.
+//
+// Pointed at a directory holding a specific SDK, it asks the opposite and much
+// stricter question: does the table resolve on the OLDEST version the range
+// admits? That has no race in it. It is a property of two files in the
+// repository, it is false the moment the generator adds a command the declared
+// floor cannot serve, and `ci.yml` asks it on the regeneration PR itself.
 const { createRequire } = require('node:module');
+const fs = require('node:fs');
 const path = require('node:path');
+
+// The SDK's `exports` map does not list `./package.json`, so requiring it
+// throws ERR_PACKAGE_PATH_NOT_EXPORTED. Resolve the entry point instead and walk
+// up to the manifest beside it. Only used to name a version in the log, so a
+// miss degrades to "unknown" rather than failing the check.
+const versionOfResolvedSdk = (resolver) => {
+  try {
+    let directory = path.dirname(resolver.resolve('@roarkanalytics/sdk'));
+    for (;;) {
+      const manifest = path.join(directory, 'package.json');
+      if (fs.existsSync(manifest)) {
+        return JSON.parse(fs.readFileSync(manifest, 'utf8')).version ?? 'unknown';
+      }
+      const parent = path.dirname(directory);
+      if (parent === directory) return 'unknown';
+      directory = parent;
+    }
+  } catch {
+    return 'unknown';
+  }
+};
 
 const main = () => {
   const probe = process.argv[2];
+  const sdkDir = process.argv[3];
   if (!probe) {
-    throw new Error('usage: check-sdk-resolution.cjs <directory where the tarball is installed>');
+    throw new Error(
+      'usage: check-sdk-resolution.cjs <directory where the tarball is installed> [directory to resolve the SDK from]',
+    );
   }
 
   // Resolve from inside the probe directory, so this reads the installed tree
@@ -45,8 +85,15 @@ const main = () => {
   // may hoist it to the top level or nest it under the CLI, and the binary will
   // read whichever one is nested-or-hoisted relative to itself. Asking the same
   // question from the same place is the point.
-  const fromCli = createRequire(commandsPath);
+  //
+  // Unless a directory was named, in which case resolve from there instead: the
+  // caller has installed one specific SDK and wants the table judged against
+  // THAT rather than against whatever this tree resolved. The shrinkwrap is why
+  // this cannot be done by installing the floor next to the tarball - a nested
+  // copy would win over a hoisted one - so the two resolutions are kept apart.
+  const fromCli = createRequire(sdkDir ? path.join(sdkDir, 'index.js') : commandsPath);
   const sdk = fromCli('@roarkanalytics/sdk');
+  const sdkVersion = versionOfResolvedSdk(fromCli);
   const Roark = sdk.default ?? sdk.Roark ?? sdk;
   // The constructor refuses to build without credentials, and a resource
   // accessor is a getter on the instance, so there has to be an instance. The
@@ -70,15 +117,28 @@ const main = () => {
         `  roark ${command.commandPath.join(' ')} -> ${command.clientProperty}.${command.methodName}`,
       );
     }
+    // Two callers, two different things to do about it, so the remedy is worded
+    // per caller rather than left as one sentence that is half wrong either way.
     throw new Error(
-      `${missing.length} of ${COMMANDS.length} commands do not resolve on the SDK this build ships against ` +
-        '(listed above). The command table names resources the pinned @roarkanalytics/sdk does not have. ' +
-        'Either the SDK release carrying them is not out yet, or the dependency range in package.json was ' +
-        'not moved with the regenerated table.',
+      sdkDir ?
+        `${missing.length} of ${COMMANDS.length} commands do not resolve on @roarkanalytics/sdk@${sdkVersion}, ` +
+        'the oldest version the range in package.json admits (listed above). The range is the only thing a ' +
+        'consumer reads, so as written it promises a CLI that throws. Raise the floor to the SDK release ' +
+        'that carries these methods - the regeneration that added them to the table is what should have ' +
+        'moved it. If that release is not on npm yet, this stays red until it is, which is correct: the ' +
+        'commands cannot work before it exists.'
+      : `${missing.length} of ${COMMANDS.length} commands do not resolve on the SDK this build ships against ` +
+        `(@roarkanalytics/sdk@${sdkVersion}, listed above). The command table names resources the pinned ` +
+        '@roarkanalytics/sdk does not have. Either the SDK release carrying them is not out yet, or the ' +
+        'dependency range in package.json was not moved with the regenerated table.',
     );
   }
 
-  console.log(`all ${COMMANDS.length} commands resolve on the SDK this build ships against`);
+  console.log(
+    sdkDir ?
+      `all ${COMMANDS.length} commands resolve on @roarkanalytics/sdk@${sdkVersion}, the oldest the range admits`
+    : `all ${COMMANDS.length} commands resolve on the SDK this build ships against (@roarkanalytics/sdk@${sdkVersion})`,
+  );
 };
 
 try {
