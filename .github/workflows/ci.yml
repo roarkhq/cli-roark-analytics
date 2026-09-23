@@ -56,6 +56,123 @@ jobs:
       - name: Build
         run: pnpm build
 
+      # The declared range is the only statement of "which SDK does this CLI
+      # need" that a consumer ever reads, and nothing until now compared it to
+      # the table that does the needing. `publish.yml` checks the RESOLVED SDK,
+      # which is the newest the range admits; that answer depends on what npm had
+      # published at the moment the runner installed, so it is a race, and it is
+      # asked at the worst possible time - after release-please has already cut
+      # the tag and the GitHub release.
+      #
+      # v0.25.0 lost that race by three minutes. The regeneration added
+      # `roark agent build` and left the range at `^4.0.0`; the SDK release
+      # carrying `agent.build` went to npm at 04:32 and the publish had already
+      # failed at 04:29, leaving a tag and a release with no package. The
+      # commands that were already broken at the floor - the six `agentConfig`
+      # ones from 4.1.0 - had been merged for a day and nothing had said a word,
+      # because the shrinkwrap quietly resolved past them every time.
+      #
+      # So ask the question that has no race in it: does the table resolve on the
+      # OLDEST SDK the range allows? That is decided by two files in this
+      # repository, it is false the moment the generator outruns the range, and
+      # it is asked here - on the regeneration PR, where the fix is a one-line
+      # bump rather than a re-release.
+      - name: Every command resolves on the oldest SDK the range allows
+        run: |
+          set -euo pipefail
+
+          sdk_range=$(jq -r -e '.dependencies["@roarkanalytics/sdk"]' package.json)
+
+          # Ask the registry which PUBLISHED versions satisfy the range rather
+          # than deriving the floor from the string. `${sdk_range#^}` would do
+          # for the caret this package has always declared and silently lie
+          # about anything else: `~4.2.0` and `>=4.2.0 <5` survive it unchanged
+          # and get handed to `npm install` as a range, which then resolves to
+          # the NEWEST match - the exact answer this step exists to stop
+          # trusting - while the log still calls it the floor.
+          #
+          # `npm view pkg@<range> version` filters by the range and prints the
+          # matches ascending, so `.[0]` is the lowest published version a
+          # consumer could land on, whatever syntax the range is written in. It
+          # is one string for a single match and an array for several, hence the
+          # jq. (`versions`, plural, ignores the range and lists everything.)
+          # Every message below is built up in a variable rather than written as
+          # one backslash-continued string. A workflow annotation is a single
+          # line, and inside double quotes `\<newline>` removes only the
+          # backslash and the newline - the indentation that keeps the YAML
+          # readable survives into the middle of the sentence, so the reader
+          # would get "cannot be           installed".
+          if ! matching=$(npm view "@roarkanalytics/sdk@$sdk_range" version --json 2>/dev/null) ||
+             [ -z "$matching" ]; then
+            # `--json` puts a structured error on STDOUT as well, so `$matching`
+            # holds it even though the command failed. Read the code off it
+            # rather than treating every failure as "no such version": a registry
+            # outage or a DNS blip would otherwise be reported as the range
+            # naming an SDK that does not exist, which is the one diagnosis
+            # guaranteed to send the reader to the wrong file.
+            code=$(jq -r '.error.code // "unknown"' <<<"$matching" 2>/dev/null || echo unknown)
+            if [ "$code" = E404 ]; then
+              # The "generator outran the release" case, which is precisely what
+              # this step is here to catch, so it gets a crafted message rather
+              # than a bare npm 404 forty lines further down.
+              message="no published @roarkanalytics/sdk satisfies $sdk_range, so this CLI cannot be installed at all."
+              message="$message Either the SDK release the regenerated command table needs is not out yet -"
+              message="$message in which case this stays red until it is, which is correct - or the range was"
+              message="$message bumped to a version that will never exist."
+            else
+              message="could not ask npm which versions satisfy $sdk_range (error code $code), so the floor"
+              message="$message could not be determined. This says nothing about the command table - it is the"
+              message="$message registry lookup that failed, so re-run the job."
+            fi
+            echo "::error::$message"
+            exit 1
+          fi
+          floor=$(jq -r 'if type == "array" then .[0] else . end' <<<"$matching")
+          if [ -z "$floor" ] || [ "$floor" = null ]; then
+            message="npm reported versions satisfying $sdk_range but no floor could be read out of the response."
+            message="$message This is a bug in this step rather than in the range; the raw response was: $matching"
+            echo "::error::$message"
+            exit 1
+          fi
+
+          # Installed on its own, in its own directory, rather than beside the
+          # CLI: the published tarball carries a shrinkwrap pinning an exact SDK,
+          # and a nested copy beats a hoisted one, so a floor installed next to
+          # it would be resolved past and the check would pass on the wrong
+          # version. The table is read from the tarball install, the SDK from
+          # here, and `check-sdk-resolution.cjs` is told to keep them apart.
+          floor_sdk="$RUNNER_TEMP/floor-sdk"
+          rm -rf "$floor_sdk"
+          mkdir -p "$floor_sdk"
+          (
+            cd "$floor_sdk"
+            npm init -y >/dev/null
+            npm install "@roarkanalytics/sdk@$floor" --loglevel=error --no-audit --no-fund >/dev/null
+          )
+
+          cd dist
+          # The name comes from `npm pack` itself rather than from `ls -- *.tgz`.
+          # Globbing is right only while exactly one tarball is in dist/, which
+          # is true on a fresh build and stops being true the moment a step
+          # upstream packs without cleaning up - and then `ls` returns two names,
+          # `$tarball` becomes both of them, and the install fails on a path that
+          # does not exist. Asking the command that made the file is free.
+          tarball=$(npm pack --loglevel=error --json | jq -r '.[0].filename')
+          probe="$RUNNER_TEMP/floor-probe"
+          rm -rf "$probe"
+          mkdir -p "$probe"
+          # `npm init -y` first, or npm walks up looking for a package.json and
+          # finds this repository's.
+          (
+            cd "$probe"
+            npm init -y >/dev/null
+            npm install "$GITHUB_WORKSPACE/dist/$tarball" --loglevel=error --no-audit --no-fund >/dev/null
+          )
+          rm -f "$tarball"
+
+          echo "package.json declares $sdk_range, so the oldest SDK a consumer may resolve is $floor"
+          node "$GITHUB_WORKSPACE/scripts/check-sdk-resolution.cjs" "$probe" "$floor_sdk"
+
   # `install.sh` is served to customers from https://roark.ai/install.sh, so its
   # only real test is running it the way they do. It installs the *published*
   # CLI rather than this checkout, which means this job proves the installer
