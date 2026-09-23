@@ -96,25 +96,44 @@ jobs:
           # consumer could land on, whatever syntax the range is written in. It
           # is one string for a single match and an array for several, hence the
           # jq. (`versions`, plural, ignores the range and lists everything.)
+          # Every message below is built up in a variable rather than written as
+          # one backslash-continued string. A workflow annotation is a single
+          # line, and inside double quotes `\<newline>` removes only the
+          # backslash and the newline - the indentation that keeps the YAML
+          # readable survives into the middle of the sentence, so the reader
+          # would get "cannot be           installed".
           if ! matching=$(npm view "@roarkanalytics/sdk@$sdk_range" version --json 2>/dev/null) ||
              [ -z "$matching" ]; then
-            # The "generator outran the release" case, which is precisely what
-            # this step is here to catch, so it gets a crafted message rather
-            # than a bare npm 404 forty lines further down.
-            #
-            # Built up in a variable instead of written as one backslash-continued
-            # string. A workflow annotation is a single line, and inside double
-            # quotes `\<newline>` removes only the backslash and the newline - the
-            # indentation that keeps the YAML readable survives into the middle of
-            # the sentence, so the reader gets "cannot be           installed".
-            message="no published @roarkanalytics/sdk satisfies $sdk_range, so this CLI cannot be installed at all."
-            message="$message Either the SDK release the regenerated command table needs is not out yet -"
-            message="$message in which case this stays red until it is, which is correct - or the range was"
-            message="$message bumped to a version that will never exist."
+            # `--json` puts a structured error on STDOUT as well, so `$matching`
+            # holds it even though the command failed. Read the code off it
+            # rather than treating every failure as "no such version": a registry
+            # outage or a DNS blip would otherwise be reported as the range
+            # naming an SDK that does not exist, which is the one diagnosis
+            # guaranteed to send the reader to the wrong file.
+            code=$(jq -r '.error.code // "unknown"' <<<"$matching" 2>/dev/null || echo unknown)
+            if [ "$code" = E404 ]; then
+              # The "generator outran the release" case, which is precisely what
+              # this step is here to catch, so it gets a crafted message rather
+              # than a bare npm 404 forty lines further down.
+              message="no published @roarkanalytics/sdk satisfies $sdk_range, so this CLI cannot be installed at all."
+              message="$message Either the SDK release the regenerated command table needs is not out yet -"
+              message="$message in which case this stays red until it is, which is correct - or the range was"
+              message="$message bumped to a version that will never exist."
+            else
+              message="could not ask npm which versions satisfy $sdk_range (error code $code), so the floor"
+              message="$message could not be determined. This says nothing about the command table - it is the"
+              message="$message registry lookup that failed, so re-run the job."
+            fi
             echo "::error::$message"
             exit 1
           fi
           floor=$(jq -r 'if type == "array" then .[0] else . end' <<<"$matching")
+          if [ -z "$floor" ] || [ "$floor" = null ]; then
+            message="npm reported versions satisfying $sdk_range but no floor could be read out of the response."
+            message="$message This is a bug in this step rather than in the range; the raw response was: $matching"
+            echo "::error::$message"
+            exit 1
+          fi
 
           # Installed on its own, in its own directory, rather than beside the
           # CLI: the published tarball carries a shrinkwrap pinning an exact SDK,
@@ -132,8 +151,13 @@ jobs:
           )
 
           cd dist
-          npm pack --loglevel=error >/dev/null
-          tarball=$(ls -- *.tgz)
+          # The name comes from `npm pack` itself rather than from `ls -- *.tgz`.
+          # Globbing is right only while exactly one tarball is in dist/, which
+          # is true on a fresh build and stops being true the moment a step
+          # upstream packs without cleaning up - and then `ls` returns two names,
+          # `$tarball` becomes both of them, and the install fails on a path that
+          # does not exist. Asking the command that made the file is free.
+          tarball=$(npm pack --loglevel=error --json | jq -r '.[0].filename')
           probe="$RUNNER_TEMP/floor-probe"
           rm -rf "$probe"
           mkdir -p "$probe"
