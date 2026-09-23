@@ -145,6 +145,7 @@
     "./man/roark-simulation-plan-update.1",
     "./man/roark-simulation-run.1",
     "./man/roark-simulation-template-list.1",
+    "./man/roark-simulation-tool-mock.1",
     "./man/roark-webhook-create.1",
     "./man/roark-webhook-delete.1",
     "./man/roark-webhook-get.1",
