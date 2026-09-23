@@ -49,6 +49,7 @@
   },
   "man": [
     "./man/roark.1",
+    "./man/roark-agent-build.1",
     "./man/roark-agent-create.1",
     "./man/roark-agent-endpoint-create.1",
     "./man/roark-agent-endpoint-get.1",

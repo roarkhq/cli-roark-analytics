@@ -54,6 +54,53 @@ export const GROUPS: Readonly<Record<string, string>> = {
 
 export const COMMANDS: readonly CliCommand[] = [
   {
+    commandPath: ['agent', 'build'],
+    clientProperty: 'agent',
+    methodName: 'build',
+    httpMethod: 'post',
+    httpPath: '/v1/agent/build',
+    summary: 'Build a Roark-hosted agent',
+    description:
+      'Creates a new Roark-hosted agent from a one-line job description. Roark authors the system prompt and hosts the config, so the agent is live and self-improvable from creation.',
+    positionals: [],
+    flags: [
+      {
+        name: 'name',
+        path: ['name'],
+        location: 'body',
+        required: true,
+        description: 'Name of the agent',
+        valueKind: 'string',
+        repeatable: false,
+      },
+      {
+        name: 'job-description',
+        path: ['jobDescription'],
+        location: 'body',
+        required: true,
+        description:
+          'One-line description of what the agent should do. Roark authors the system prompt from this.',
+        valueKind: 'string',
+        repeatable: false,
+      },
+      {
+        name: 'voice',
+        path: ['voice'],
+        location: 'body',
+        required: false,
+        description: 'Optional voice label for the hosted agent',
+        valueKind: 'string',
+        repeatable: false,
+      },
+    ],
+    hasParams: true,
+    paramsAllOptional: false,
+    bodyOpaque: false,
+    bodyVariants: [],
+    acceptsBody: true,
+    requiresAuth: true,
+  },
+  {
     commandPath: ['agent', 'create'],
     clientProperty: 'agent',
     methodName: 'create',
