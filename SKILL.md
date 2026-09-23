@@ -42,6 +42,7 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 
 ## Commands
 
+- `roark agent build --name <value> --job-description <value>` - Build a Roark-hosted agent
 - `roark agent create --name <value>` - Create a new agent
 - `roark agent endpoint create --agent-id <value> --value <value> --direction <value>` - Create a new agent endpoint
 - `roark agent endpoint get <endpoint-id>` - Get agent endpoint by ID
