@@ -138,6 +138,7 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark simulation plan update <plan-id>` - Update a run plan
 - `roark simulation run --data '{...}'` - Run a simulation
 - `roark simulation template list` - List simulation templates
+- `roark simulation tool mock --simulation-job-id <value> --tool-name <value>` - Mock a tool call during a test call
 - `roark webhook create --url <value> --events <value>` - Create webhook
 - `roark webhook delete <webhook-id>` - Delete webhook
 - `roark webhook get <webhook-id>` - Get webhook by ID

@@ -1,0 +1,105 @@
+.\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
+.TH "ROARK\-SIMULATION\-TOOL\-MOCK" "1" "" "roark-simulation-tool-mock" "Roark Analytics API Manual"
+.SH "NAME"
+roark\-simulation\-tool\-mock \- Mock a tool call during a test call
+.SH "SYNOPSIS"
+.B roark simulation tool mock
+[\fIoptions\fR]
+.SH "DESCRIPTION"
+The server half of the tool guard for code\-first agents. When a guarded tool fires during a Roark test call, send the invocation here instead of executing it: Roark answers with a simulated backend response that is valid JSON, shaped by the tool contract you pass, consistent with the test scenario, and consistent with earlier mocked responses in the same call. Real callers are never affected: the guard only diverts when the agent\-config resolve response identified the session as a Roark simulation, and this endpoint independently re\-validates the simulation before answering. Failure contract for your wrapper: `404` means the simulation id is unknown to this project (treat the session as real). `409` means the simulation has already ended (stale session state: do NOT execute the real tool; return your static fallback). `5xx` means generation failed (return your static fallback). Identical retries (same tool, same arguments) within a few minutes return the stored response, so double\-fired handlers stay consistent.
+.SH "API"
+POST /v1/simulation/tool\-mock
+.SH "OPTIONS"
+.TP
+\fB\-\-simulation\-job\-id\fR \fI<value>\fR
+The simulation this session belongs to, from the agent\-config resolve response (`simulationJobId`). Roark re\-validates it against the live simulation before answering. Required.
+.TP
+\fB\-\-session\-id\fR \fI<value>\fR
+Your session or room identifier, echoed back in logs for correlation. Optional.
+.TP
+\fB\-\-tool\-name\fR \fI<value>\fR
+The tool the agent invoked. Required.
+.TP
+\fB\-\-tool\-description\fR \fI<value>\fR
+The tool's contract: its description and, ideally, its parameter and return shape. The more contract you pass, the more faithful the simulated response. Optional.
+.TP
+\fB\-\-arguments\fR \fI<value>\fR
+The arguments the agent called the tool with, verbatim. Optional.
+.SH "GLOBAL OPTIONS"
+.TP
+\fB\-\-data\fR \fI<json>\fR
+Request body as JSON, or @file to read one (@\- for stdin).
+.TP
+\fB\-y\fR, \fB\-\-yes\fR
+Skip confirmation prompts.
+.TP
+\fB\-\-no\-input\fR
+Never prompt; fail instead.
+.TP
+\fB\-\-base\-url\fR \fI<url>\fR
+API base URL.
+.TP
+\fB\-\-token\fR \fI<token>\fR
+Bearer token. Prefer ROARK_API_BEARER_TOKEN or the stored credential.
+.TP
+\fB\-\-timeout\fR \fI<ms>\fR
+Request timeout in milliseconds.
+.TP
+\fB\-\-max\-retries\fR \fI<count>\fR
+Retries for retryable failures.
+.TP
+\fB\-\-format\fR \fI<format>\fR
+Output format: auto, json, jsonl, plain.
+.TP
+\fB\-\-json\fR
+Shorthand for \-\-format json.
+.TP
+\fB\-\-no\-color\fR
+Disable colour.
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Suppress non\-essential output.
+.TP
+\fB\-\-allow\-project\-base\-url\fR
+Send the stored credential to a base URL set by a project .roark.json. Refused by default.
+.SH "EXAMPLES"
+.PP
+.RS 4
+.nf
+roark simulation tool mock \-\-simulation\-job\-id <value> \-\-tool\-name <value>
+.fi
+.RE
+.SH "ENVIRONMENT"
+.TP
+\fBROARK_API_BEARER_TOKEN\fR
+Bearer token used when \-\-token is not given.
+.TP
+\fBROARK_BASE_URL\fR
+API base URL.
+.TP
+\fBROARK_ALLOW_PROJECT_BASE_URL\fR
+Trusts a base URL set by a project .roark.json, like \-\-allow\-project\-base\-url.
+.TP
+\fBNO_COLOR\fR
+Disables colour when set to any value.
+.SH "EXIT STATUS"
+.TP
+\fB0\fR
+The command succeeded.
+.TP
+\fB1\fR
+The API rejected the request.
+.TP
+\fB2\fR
+The command line was wrong.
+.TP
+\fB3\fR
+No credential, or the credential was refused.
+.TP
+\fB4\fR
+The addressed resource does not exist.
+.TP
+\fB5\fR
+The request never completed: connection, timeout, or abort.
+.SH "SEE ALSO"
+.BR roark (1)
