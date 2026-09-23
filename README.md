@@ -241,6 +241,7 @@ roark completion fish | source
 | `roark simulation environment update <environment-id>`                                                                                                  | Update an environment               |
 | `roark simulation job get <job-id>`                                                                                                                     | Get simulation by ID                |
 | `roark simulation job lookup --roark-phone-number <value>`                                                                                              | Lookup by phone number              |
+| `roark simulation job tool-mock list <job-id>`                                                                                                          | List mocked tool invocations        |
 | `roark simulation persona create --name <value> --language <value> --accent <value> --gender <value>`                                                   | Create a new persona                |
 | `roark simulation persona get <persona-id>`                                                                                                             | Get persona by ID                   |
 | `roark simulation persona list`                                                                                                                         | List personas                       |
@@ -257,6 +258,10 @@ roark completion fish | source
 | `roark simulation run --data '{ ... }'`                                                                                                                 | Run a simulation                    |
 | `roark simulation template list`                                                                                                                        | List simulation templates           |
 | `roark simulation tool mock --simulation-job-id <value> --tool-name <value>`                                                                            | Mock a tool call during a test call |
+| `roark simulation tool-fixture create --tool-name <value>`                                                                                              | Set a tool fixture                  |
+| `roark simulation tool-fixture delete <fixture-id>`                                                                                                     | Delete a tool fixture               |
+| `roark simulation tool-fixture list`                                                                                                                    | List tool fixtures                  |
+| `roark simulation tool-fixture update <fixture-id>`                                                                                                     | Update a tool fixture               |
 
 ### webhook
 
