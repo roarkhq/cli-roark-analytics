@@ -4936,7 +4936,7 @@ export const COMMANDS: readonly CliCommand[] = [
         location: 'body',
         required: false,
         description:
-          'The value of `comparisonProperty` every other value is measured against, for example `NONE` for `BACKGROUND_NOISE` or `NORMAL` for `SPEECH_PACE`. Must be a value that property can take. Stored rather than assumed, so the report can say "compared against US accent" instead of implying Roark decided which value is normal. Most properties have an obvious baseline and the dashboard prefills it; `GENDER` has none, so choose the one you are testing against.',
+          'The reference value of `comparisonProperty`, for example `NONE` for `BACKGROUND_NOISE` or `NORMAL` for `SPEECH_PACE`: shown first in the results. Must be a value that property can take. Whether a value did significantly worse does not depend on it: that is decided against every other value combined (see `sweepAttribution`). Stored rather than assumed, so the report can say "compared against US accent" instead of implying Roark decided which value is normal. Most properties have an obvious baseline and the dashboard prefills it; `GENDER` has none, so choose the one you are testing against.',
         valueKind: 'string',
         repeatable: false,
       },
@@ -5477,7 +5477,7 @@ export const COMMANDS: readonly CliCommand[] = [
         location: 'body',
         required: false,
         description:
-          'The value every other value is measured against. See `POST /v1/simulation/plan`. A real value cannot be sent on its own: the property it belongs to decides which values are legal, and an omitted property means "leave unchanged", which this endpoint cannot check a baseline against. Send `comparisonProperty` with it, or get a `400`. `null` on its own IS allowed, and clears just the baseline while leaving the property set. Nothing needs validating when clearing, and a property with no baseline is a real state: the report falls back to that property\'s own norm, and `GENDER` has no norm to fall back to.',
+          'The reference value, shown first in the results. See `POST /v1/simulation/plan`. A real value cannot be sent on its own: the property it belongs to decides which values are legal, and an omitted property means "leave unchanged", which this endpoint cannot check a baseline against. Send `comparisonProperty` with it, or get a `400`. `null` on its own IS allowed, and clears just the baseline while leaving the property set. Nothing needs validating when clearing, and a property with no baseline is a real state: the report falls back to that property\'s own norm, and `GENDER` has no norm to fall back to.',
         valueKind: 'string',
         repeatable: false,
       },
