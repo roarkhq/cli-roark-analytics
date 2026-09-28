@@ -1,43 +1,24 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-CUSTOMER\-FLOW\-EDGE\-CASE\-UPDATE" "1" "" "roark-customer-flow-edge-case-update" "Roark Analytics API Manual"
+.TH "ROARK\-AGENT\-BUILD" "1" "" "roark-agent-build" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-customer\-flow\-edge\-case\-update \- Update an edge case
+roark\-agent\-build \- Build a Roark\-hosted agent
 .SH "SYNOPSIS"
-.B roark customer\-flow edge\-case update
-\fIflow\-id\fR \fIedge\-case\-id\fR [\fIoptions\fR]
+.B roark agent build
+[\fIoptions\fR]
 .SH "DESCRIPTION"
-Updates an edge case's title, persona, environment, brief, preceded\-by link or expectations. Omitted fields are left alone; `additionalExpectations` replaces the set wholesale rather than appending. Promoting it to the happy path is a separate call, since that also demotes the incumbent.
+Creates a new Roark\-hosted agent from a one\-line job description. Roark authors the system prompt and hosts the config, so the agent is live and self\-improvable from creation.
 .SH "API"
-PUT /v1/customer\-flow/{flowId}/edge\-case/{edgeCaseId}
-.SH "ARGUMENTS"
-.TP
-\fIflow\-id\fR
-The flow\-id.
-.TP
-\fIedge\-case\-id\fR
-The edge\-case\-id.
+POST /v1/agent/build
 .SH "OPTIONS"
 .TP
-\fB\-\-title\fR \fI<value>\fR
-Optional.
+\fB\-\-name\fR \fI<value>\fR
+Name of the agent Required.
 .TP
-\fB\-\-environment\-id\fR \fI<value>\fR
-Optional.
+\fB\-\-job\-description\fR \fI<value>\fR
+One\-line description of what the agent should do. Roark authors the system prompt from this. Required.
 .TP
-\fB\-\-prompt\fR \fI<value>\fR
-Optional.
-.TP
-\fB\-\-preceded\-by\-customer\-flow\-id\fR \fI<value>\fR
-Optional.
-.TP
-\fB\-\-preceded\-by\-customer\-flow\-variant\-id\fR \fI<value>\fR
-Optional.
-.TP
-\fB\-\-persona\-override\-id\fR \fI<value>\fR
-The persona this runs as. Null on an edge case inherits the happy path's. Optional.
-.TP
-\fB\-\-additional\-expectations\fR \fI<value>\fR
-The expectations graded on this variant only, on top of the flow's own. Sent as the complete set: it replaces whatever the variant had, so omit it to leave the set alone and send [] to clear it. Improv flows only: a scripted variant's expectations come from the agent turns on its path and are rewritten on every graph edit. Optional.
+\fB\-\-voice\fR \fI<value>\fR
+Optional voice label for the hosted agent Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -79,7 +60,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark customer\-flow edge\-case update <flow\-id> <edge\-case\-id>
+roark agent build \-\-name <value> \-\-job\-description <value>
 .fi
 .RE
 .SH "ENVIRONMENT"

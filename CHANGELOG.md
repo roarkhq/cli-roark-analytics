@@ -1,5 +1,47 @@
 # Changelog
 
+## [0.29.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.28.0...v0.29.0) (2026-09-28)
+
+
+### Features
+
+* **cli:** cli update ([#72](https://github.com/roarkhq/cli-roark-analytics/issues/72)) ([1ecc3a1](https://github.com/roarkhq/cli-roark-analytics/commit/1ecc3a1162173d6d6ac974e8c8acc89945f7d6ce))
+
+## [0.28.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.27.0...v0.28.0) (2026-09-24)
+
+
+### Features
+
+* **cli:** cli update ([#70](https://github.com/roarkhq/cli-roark-analytics/issues/70)) ([2f058da](https://github.com/roarkhq/cli-roark-analytics/commit/2f058da3433004f93cb6b24b33f2a97dd8042fe7))
+
+## [0.27.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.26.1...v0.27.0) (2026-09-23)
+
+
+### Features
+
+* **cli:** cli update ([#68](https://github.com/roarkhq/cli-roark-analytics/issues/68)) ([077cb61](https://github.com/roarkhq/cli-roark-analytics/commit/077cb6105816c02b6595e92b604d8751520d09a4))
+
+## [0.26.1](https://github.com/roarkhq/cli-roark-analytics/compare/v0.26.0...v0.26.1) (2026-09-23)
+
+
+### Bug Fixes
+
+* **deps:** require @roarkanalytics/sdk ^4.2.0 ([#64](https://github.com/roarkhq/cli-roark-analytics/issues/64)) ([ffe210e](https://github.com/roarkhq/cli-roark-analytics/commit/ffe210e06458f4c4c96b1236ba465e3eca299fb5))
+
+## [0.26.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.25.0...v0.26.0) (2026-09-23)
+
+
+### Features
+
+* **cli:** cli update ([#65](https://github.com/roarkhq/cli-roark-analytics/issues/65)) ([b897c3c](https://github.com/roarkhq/cli-roark-analytics/commit/b897c3c9088ed6bfdf39c431484cae33d526140d))
+
+## [0.25.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.24.0...v0.25.0) (2026-09-23)
+
+
+### Features
+
+* **cli:** cli update ([#62](https://github.com/roarkhq/cli-roark-analytics/issues/62)) ([940ab33](https://github.com/roarkhq/cli-roark-analytics/commit/940ab3309f5d28787e74d4644dabdbb81b6b5e45))
+
 ## [0.24.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.23.1...v0.24.0) (2026-09-22)
 
 

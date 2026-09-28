@@ -1,43 +1,30 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-CUSTOMER\-FLOW\-EDGE\-CASE\-UPDATE" "1" "" "roark-customer-flow-edge-case-update" "Roark Analytics API Manual"
+.TH "ROARK\-SIMULATION\-TOOL\-FIXTURE\-CREATE" "1" "" "roark-simulation-tool-fixture-create" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-customer\-flow\-edge\-case\-update \- Update an edge case
+roark\-simulation\-tool\-fixture\-create \- Set a tool fixture
 .SH "SYNOPSIS"
-.B roark customer\-flow edge\-case update
-\fIflow\-id\fR \fIedge\-case\-id\fR [\fIoptions\fR]
+.B roark simulation tool\-fixture create
+[\fIoptions\fR]
 .SH "DESCRIPTION"
-Updates an edge case's title, persona, environment, brief, preceded\-by link or expectations. Omitted fields are left alone; `additionalExpectations` replaces the set wholesale rather than appending. Promoting it to the happy path is a separate call, since that also demotes the incumbent.
+Create\-or\-replace by scope: one fixture per tool project\-wide, plus one per (tool, flow variant). Setting the same scope twice replaces the response, so CI can apply fixtures idempotently. During Roark test calls the tool guard answers with the fixture verbatim instead of generating a response; real callers are never affected.
 .SH "API"
-PUT /v1/customer\-flow/{flowId}/edge\-case/{edgeCaseId}
-.SH "ARGUMENTS"
-.TP
-\fIflow\-id\fR
-The flow\-id.
-.TP
-\fIedge\-case\-id\fR
-The edge\-case\-id.
+POST /v1/simulation/tool\-fixture
 .SH "OPTIONS"
 .TP
-\fB\-\-title\fR \fI<value>\fR
-Optional.
+\fB\-\-tool\-name\fR \fI<value>\fR
+The tool this fixture answers for. Required.
 .TP
-\fB\-\-environment\-id\fR \fI<value>\fR
-Optional.
+\fB\-\-response\fR \fI<value>\fR
+The exact JSON to return. Optional.
 .TP
-\fB\-\-prompt\fR \fI<value>\fR
-Optional.
+\fB\-\-customer\-flow\-variant\-id\fR \fI<value>\fR
+Pin the fixture to one flow variant (scenario). Omit for a project\-wide fixture. A variant\-pinned fixture beats the project\-wide one. Optional.
 .TP
-\fB\-\-preceded\-by\-customer\-flow\-id\fR \fI<value>\fR
-Optional.
+\fB\-\-description\fR \fI<value>\fR
+Why this fixture exists. Optional.
 .TP
-\fB\-\-preceded\-by\-customer\-flow\-variant\-id\fR \fI<value>\fR
-Optional.
-.TP
-\fB\-\-persona\-override\-id\fR \fI<value>\fR
-The persona this runs as. Null on an edge case inherits the happy path's. Optional.
-.TP
-\fB\-\-additional\-expectations\fR \fI<value>\fR
-The expectations graded on this variant only, on top of the flow's own. Sent as the complete set: it replaces whatever the variant had, so omit it to leave the set alone and send [] to clear it. Improv flows only: a scripted variant's expectations come from the agent turns on its path and are rewritten on every graph edit. Optional.
+\fB\-\-enabled\fR
+Defaults to true. Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -79,7 +66,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark customer\-flow edge\-case update <flow\-id> <edge\-case\-id>
+roark simulation tool\-fixture create \-\-tool\-name <value>
 .fi
 .RE
 .SH "ENVIRONMENT"

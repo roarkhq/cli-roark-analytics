@@ -1,6 +1,6 @@
 {
   "name": "@roarkanalytics/cli",
-  "version": "0.24.0",
+  "version": "0.29.0",
   "description": "The official command line interface for the Roark API",
   "author": "Roark <james@roark.ai>",
   "type": "commonjs",
@@ -31,7 +31,7 @@
     "fix": "eslint --fix . && prettier --write ."
   },
   "dependencies": {
-    "@roarkanalytics/sdk": "^4.2.0",
+    "@roarkanalytics/sdk": "^4.4.0",
     "commander": "^14.0.3",
     "yaml": "^2.9.0"
   },
@@ -49,6 +49,7 @@
   },
   "man": [
     "./man/roark.1",
+    "./man/roark-agent-build.1",
     "./man/roark-agent-create.1",
     "./man/roark-agent-endpoint-create.1",
     "./man/roark-agent-endpoint-get.1",
@@ -129,6 +130,7 @@
     "./man/roark-simulation-environment-update.1",
     "./man/roark-simulation-job-get.1",
     "./man/roark-simulation-job-lookup.1",
+    "./man/roark-simulation-job-tool-mock-list.1",
     "./man/roark-simulation-persona-create.1",
     "./man/roark-simulation-persona-get.1",
     "./man/roark-simulation-persona-list.1",
@@ -144,6 +146,11 @@
     "./man/roark-simulation-plan-update.1",
     "./man/roark-simulation-run.1",
     "./man/roark-simulation-template-list.1",
+    "./man/roark-simulation-tool-mock.1",
+    "./man/roark-simulation-tool-fixture-create.1",
+    "./man/roark-simulation-tool-fixture-delete.1",
+    "./man/roark-simulation-tool-fixture-list.1",
+    "./man/roark-simulation-tool-fixture-update.1",
     "./man/roark-webhook-create.1",
     "./man/roark-webhook-delete.1",
     "./man/roark-webhook-get.1",
