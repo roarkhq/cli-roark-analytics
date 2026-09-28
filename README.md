@@ -230,6 +230,12 @@ roark completion fish | source
 | `roark metric variant list <id-or-slug>`                                         | List a metric’s variants               |
 | `roark metric variant update <id-or-slug> <variant-id>`                          | Update a metric variant                |
 
+### project
+
+| Command              | Description                                |
+| -------------------- | ------------------------------------------ |
+| `roark project list` | List projects available to this credential |
+
 ### simulation
 
 | Command                                                                                                                                                 | Description                         |
@@ -271,6 +277,12 @@ roark completion fish | source
 | `roark webhook delete <webhook-id>`                   | Delete webhook    |
 | `roark webhook get <webhook-id>`                      | Get webhook by ID |
 | `roark webhook list`                                  | List webhooks     |
+
+### whoami
+
+| Command        | Description                     |
+| -------------- | ------------------------------- |
+| `roark whoami` | Describe the current credential |
 
 ## Requirements
 

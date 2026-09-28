@@ -123,6 +123,7 @@
     "./man/roark-metric-variant-get.1",
     "./man/roark-metric-variant-list.1",
     "./man/roark-metric-variant-update.1",
+    "./man/roark-project-list.1",
     "./man/roark-simulation-environment-create.1",
     "./man/roark-simulation-environment-delete.1",
     "./man/roark-simulation-environment-get.1",
@@ -154,6 +155,7 @@
     "./man/roark-webhook-create.1",
     "./man/roark-webhook-delete.1",
     "./man/roark-webhook-get.1",
-    "./man/roark-webhook-list.1"
+    "./man/roark-webhook-list.1",
+    "./man/roark-whoami.1"
   ]
 }

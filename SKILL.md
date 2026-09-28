@@ -116,6 +116,7 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark metric variant get <id-or-slug> <variant-id>` - Get a metric variant
 - `roark metric variant list <id-or-slug>` - List a metric’s variants
 - `roark metric variant update <id-or-slug> <variant-id>` - Update a metric variant
+- `roark project list` - List projects available to this credential
 - `roark simulation environment create --name <value> --background-noise <value>` - Create an environment
 - `roark simulation environment delete <environment-id>` - Delete an environment
 - `roark simulation environment get <environment-id>` - Get environment by ID
@@ -148,6 +149,7 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark webhook delete <webhook-id>` - Delete webhook
 - `roark webhook get <webhook-id>` - Get webhook by ID
 - `roark webhook list` - List webhooks
+- `roark whoami` - Describe the current credential
 
 ## Optional flags
 
