@@ -53,6 +53,10 @@ export const registerApiCommand = (
       (value: string, previous: string[] | undefined) => [...(previous ?? []), value],
     )
     .option('--base-url <url>', 'API base URL')
+    // `api` redeclares the connection options rather than inheriting the root ones, so this has to
+    // be listed here too. Without it the escape hatch is the one command a user credential cannot
+    // use: every project-scoped path 400s with no way to name a project.
+    .option('--project <id>', 'project to act on (or ROARK_PROJECT_ID, or `roark config set project`)')
     .option('--token <token>', 'bearer token')
     .option('--timeout <ms>', 'request timeout in milliseconds')
     .option('--max-retries <count>', 'retries for retryable failures')

@@ -26,6 +26,7 @@ const ENVIRONMENT_KEYS = [
   'XDG_CONFIG_HOME',
   'ROARK_API_BEARER_TOKEN',
   'ROARK_BASE_URL',
+  'ROARK_PROJECT_ID',
   'ROARK_TIMEOUT',
   'ROARK_MAX_RETRIES',
   'ROARK_ALLOW_PROJECT_BASE_URL',
@@ -137,6 +138,31 @@ describe('loadConfig precedence', () => {
     expect(resolveConfig({ baseURL: 'https://flag.example' }, cwd).config.baseURL).toBe(
       'https://flag.example',
     );
+  });
+
+  it('layers `project` like every other key, including from a project file', () => {
+    // Deliberately allowed from a project file, unlike `baseURL`. Pinning a repository to a
+    // project is the main thing a checked-in `.roark.json` is for, and a project id cannot send
+    // a credential anywhere new: it selects which of your own projects you act on.
+    writeUser({ project: 'proj_user' });
+    expect(resolveConfig({}, cwd).config.project).toBe('proj_user');
+
+    writeProject(cwd, { project: 'proj_project' });
+    expect(resolveConfig({}, cwd).config.project).toBe('proj_project');
+    expect(resolveConfig({}, cwd).sources.project).toBe('project');
+
+    process.env['ROARK_PROJECT_ID'] = 'proj_env';
+    expect(resolveConfig({}, cwd).config.project).toBe('proj_env');
+
+    expect(resolveConfig({ project: 'proj_flag' }, cwd).config.project).toBe('proj_flag');
+  });
+
+  it('does not treat a project-supplied `project` as a credential redirect', () => {
+    // The refusal in `unsafeBaseUrlRedirect` is about where the credential is SENT. A project
+    // file that names a project is not that, and must not start failing commands.
+    writeUser({ bearerToken: 'user-token' });
+    writeProject(cwd, { project: 'proj_project' });
+    expect(unsafeBaseUrlRedirect(resolveConfig({}, cwd))).toBeUndefined();
   });
 
   it('coerces the numeric environment variables and ignores unparseable ones', () => {

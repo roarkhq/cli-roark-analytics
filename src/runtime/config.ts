@@ -19,6 +19,18 @@ import { dirname, join, resolve } from 'node:path';
 export interface CliConfig {
   bearerToken?: string;
   baseURL?: string;
+  /**
+   * The project commands act on, sent as `X-Roark-Project-Id`.
+   *
+   * Only meaningful for a user credential (what `auth login` now stores): it can reach every
+   * project you belong to, so each request has to name one. A project API key already names its
+   * own project and ignores this.
+   *
+   * Unlike `baseURL`, this is safe to take from a project file. It selects which of your own
+   * projects you act on; it cannot send your credential anywhere new. See `unsafeBaseUrlRedirect`
+   * for the key where that distinction matters.
+   */
+  project?: string;
   timeout?: number;
   maxRetries?: number;
 }
@@ -65,6 +77,7 @@ const number = (value: string | undefined): number | undefined => {
 const fromEnvironment = (): CliConfig => ({
   ...(process.env['ROARK_API_BEARER_TOKEN'] ? { bearerToken: process.env['ROARK_API_BEARER_TOKEN'] } : {}),
   ...(process.env['ROARK_BASE_URL'] ? { baseURL: process.env['ROARK_BASE_URL'] } : {}),
+  ...(process.env['ROARK_PROJECT_ID'] ? { project: process.env['ROARK_PROJECT_ID'] } : {}),
   ...(number(process.env['ROARK_TIMEOUT']) !== undefined ?
     { timeout: number(process.env['ROARK_TIMEOUT'])! }
   : {}),

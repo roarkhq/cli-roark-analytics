@@ -75,8 +75,23 @@ export interface BrowserLoginOptions {
   open?: (url: string) => void;
 }
 
+/** What the token exchange hands back. */
+export interface BrowserLoginResult {
+  /** The minted bearer token. */
+  token: string;
+  /**
+   * The project chosen on the consent screen, when the server reports one.
+   *
+   * A user-scoped credential stores no project of its own, so this is the only moment the choice
+   * is communicated: `auth login` writes it to the user config so the next command works without
+   * a `--project`. Absent when the server minted a project-scoped key, which needs no project
+   * setting at all.
+   */
+  project?: string;
+}
+
 // Run the full loopback + PKCE flow and return the minted bearer token.
-export const browserLogin = async (options: BrowserLoginOptions): Promise<string> => {
+export const browserLogin = async (options: BrowserLoginOptions): Promise<BrowserLoginResult> => {
   const { verifier, challenge } = generatePkce();
   const state = base64url(randomBytes(16));
 
@@ -146,8 +161,9 @@ export const browserLogin = async (options: BrowserLoginOptions): Promise<string
     const detail = await response.text().catch(() => '');
     throw new Error(`token exchange failed (${response.status})${detail ? `: ${detail}` : ''}`);
   }
-  const body = (await response.json()) as { data?: { token?: string } };
+  const body = (await response.json()) as { data?: { token?: string; defaultProjectId?: string } };
   const token = body.data?.token;
   if (!token) throw new Error('token exchange returned no token');
-  return token;
+  const project = body.data?.defaultProjectId;
+  return { token, ...(typeof project === 'string' && project.length > 0 ? { project } : {}) };
 };

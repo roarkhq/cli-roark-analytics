@@ -40,6 +40,28 @@ a stored or environment credential to it. Pass `--allow-project-base-url` (or se
 `ROARK_ALLOW_PROJECT_BASE_URL`) once you have read the file, or `--token` to send a
 different credential.
 
+## Choose a project
+
+`auth login` gives you a credential that acts as you, and it can reach every project
+you belong to. So commands need to know which project they act on. The login writes
+the project you picked on the consent screen, and after that there is nothing to do:
+
+```sh
+roark config set project <project-id>   # change it
+roark config get project                # see it
+roark agent list --project <id>         # just this once
+export ROARK_PROJECT_ID="..."           # or for a shell
+```
+
+Precedence is the usual one: `--project`, then `ROARK_PROJECT_ID`, then `.roark.json`,
+then the user config. Committing `{"project": "..."}` in a repository's `.roark.json`
+is the intended way to pin a checkout to one project, and unlike `baseURL` it needs no
+opt-in: a project id chooses which of your own projects you act on, it cannot send your
+credential anywhere new.
+
+If you authenticate with a **project API key** instead, the key already names its
+project and all of this is ignored.
+
 ## Usage
 
 Commands read noun before verb, and the verb is one of `list`, `get`, `create`,

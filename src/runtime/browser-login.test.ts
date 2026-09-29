@@ -46,14 +46,17 @@ describe('browserLogin', () => {
   });
 
   // Intercept only the token exchange; let the loopback callback request hit the real server.
-  const stubExchange = (token: unknown, status = 200): void => {
+  const stubExchange = (token: unknown, status = 200, defaultProjectId?: string): void => {
     globalThis.fetch = (async (input: Parameters<typeof fetch>[0], init?: Parameters<typeof fetch>[1]) => {
       const url = typeof input === 'string' ? input : input.toString();
       if (url.includes('/v1/cli/auth/token')) {
-        return new Response(JSON.stringify(token === undefined ? {} : { data: { token } }), {
-          status,
-          headers: { 'content-type': 'application/json' },
-        });
+        return new Response(
+          JSON.stringify(token === undefined ? {} : { data: { token, defaultProjectId } }),
+          {
+            status,
+            headers: { 'content-type': 'application/json' },
+          },
+        );
       }
       return realFetch(input, init);
     }) as typeof fetch;
@@ -77,14 +80,29 @@ describe('browserLogin', () => {
 
   it('returns the minted token after a successful approval', async () => {
     stubExchange('roark-minted-key-1234');
-    const token = await browserLogin({
+    const login = await browserLogin({
       apiBaseUrl: 'https://api.roark.ai',
       platformOrigin: 'https://platform.roark.ai',
       clientName: 'CLI on test-host',
       timeoutMs: 5000,
       open: driveCallback({ code: 'auth-code-123' }),
     });
-    expect(token).toBe('roark-minted-key-1234');
+    expect(login).toEqual({ token: 'roark-minted-key-1234' });
+  });
+
+  it('carries back the project chosen at consent, when the server reports one', async () => {
+    // A user credential stores no project of its own, so this is the only moment the choice is
+    // communicated. `auth login` writes it to the user config; without it the next command would
+    // have to name a project.
+    stubExchange('roark-minted-key-1234', 200, 'proj_123');
+    const login = await browserLogin({
+      apiBaseUrl: 'https://api.roark.ai',
+      platformOrigin: 'https://platform.roark.ai',
+      clientName: 'CLI on test-host',
+      timeoutMs: 5000,
+      open: driveCallback({ code: 'auth-code-123' }),
+    });
+    expect(login).toEqual({ token: 'roark-minted-key-1234', project: 'proj_123' });
   });
 
   it('rejects when the browser reports the request was denied', async () => {
