@@ -1848,7 +1848,7 @@ export const COMMANDS: readonly CliCommand[] = [
     httpPath: '/v1/config/apply',
     summary: 'Apply a config bundle',
     description:
-      'Reconcile a config-as-code bundle into the project. Submit the full desired set of resources; resources already managed by config are updated, new ones created, and (unless prune is false) config-managed resources absent from the bundle are deleted. Identity is by name — no ids in the bundle.',
+      'Reconcile a config-as-code bundle. With a PROJECT API key, submit project-scoped resources (agents, personas, flows, collectors, metrics, ...). With an ORGANIZATION API key, submit `kind: project` resources, each optionally carrying its members and its own nested `resources`. Submit the full desired set; managed resources are updated, new ones created, and (unless prune is false) managed resources absent from the bundle are deleted. Identity is by name.',
     positionals: [],
     flags: [
       {
@@ -1883,7 +1883,7 @@ export const COMMANDS: readonly CliCommand[] = [
     httpPath: '/v1/config/diff',
     summary: 'Diff a config bundle',
     description:
-      'Dry run for a config-as-code apply: returns the projected changes (create / update / delete) for the submitted bundle without writing anything. Submit the full desired set of resources; identity is by name — no ids in the bundle. Run this before apply to preview what would change.',
+      'Dry run for an apply: returns the projected changes (create / update / delete) for the submitted bundle without writing anything. Works for both project and organization keys.',
     positionals: [],
     flags: [
       {
