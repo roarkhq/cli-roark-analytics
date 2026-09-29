@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.1](https://github.com/roarkhq/cli-roark-analytics/compare/v0.31.0...v0.31.1) (2026-09-29)
+
+
+### Bug Fixes
+
+* **deps:** require the SDK release that has the `project` option ([#77](https://github.com/roarkhq/cli-roark-analytics/issues/77)) ([04a2553](https://github.com/roarkhq/cli-roark-analytics/commit/04a255329242ab8abdc95acb77b26a6fcd7fff4d))
+
 ## [0.31.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.30.0...v0.31.0) (2026-09-29)
 
 
