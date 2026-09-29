@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.31.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.30.0...v0.31.0) (2026-09-29)
+
+
+### Features
+
+* **project:** choose the project a command acts on ([#61](https://github.com/roarkhq/cli-roark-analytics/issues/61)) ([240b672](https://github.com/roarkhq/cli-roark-analytics/commit/240b67220696ca58c36f15e8c846cdffc396b293))
+
 ## [0.30.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.29.0...v0.30.0) (2026-09-28)
 
 
