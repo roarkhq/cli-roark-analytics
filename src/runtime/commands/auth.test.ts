@@ -71,7 +71,7 @@ const invokeVerified = async (behavior: ProbeBehavior, ...argv: string[]): Promi
 
 /** Same, but the API answers /v1/me, so `auth status` can describe the credential. */
 const invokeDescribed = async (
-  me: { tokenScope: string; user?: { email: string } | null },
+  me: { tokenScope: string; user?: { email: string } | null; defaultProject?: { id: string } | null },
   ...argv: string[]
 ): Promise<void> => {
   const root_ = new Command();
@@ -267,6 +267,42 @@ describe('auth status', () => {
 
     expect(written()).toContain('No project selected');
     expect(written()).toContain('config set project');
+  });
+
+  it("reports the credential's own default project when nothing is configured locally", async () => {
+    // The browser flow writes the consented project into the config file, but the paste path does not,
+    // and the API falls back to the default stored on the credential either way. Reporting "commands
+    // will fail" there told people a working setup was broken.
+    writeUser({ bearerToken: 'roark-stored-token-abcd' });
+    await invokeDescribed(
+      {
+        tokenScope: 'USER',
+        user: { email: 'someone@example.com' },
+        defaultProject: { id: 'proj_from_credential' },
+      },
+      'auth',
+      'status',
+    );
+
+    expect(written()).toContain('Acting on project proj_from_credential');
+    expect(written()).toContain('stored on this credential');
+    expect(written()).not.toContain('will fail');
+  });
+
+  it("prefers the locally configured project over the credential's default", async () => {
+    writeUser({ bearerToken: 'roark-stored-token-abcd', project: 'proj_local' });
+    await invokeDescribed(
+      {
+        tokenScope: 'USER',
+        user: { email: 'someone@example.com' },
+        defaultProject: { id: 'proj_from_credential' },
+      },
+      'auth',
+      'status',
+    );
+
+    expect(written()).toContain('Acting on project proj_local');
+    expect(written()).not.toContain('proj_from_credential');
   });
 
   it('says nothing about projects for a project-scoped key, which names its own', async () => {

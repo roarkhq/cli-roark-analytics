@@ -45,7 +45,20 @@ const AUTH_PROBE_PATH = '/v1/agent';
 const AUTH_DESCRIBE_PATH = '/v1/me';
 
 type CredentialState =
-  | { kind: 'live'; scope?: string | undefined; email?: string | null | undefined }
+  | {
+      kind: 'live';
+      scope?: string | undefined;
+      email?: string | null | undefined;
+      /**
+       * The project the credential falls back to when a request names none.
+       *
+       * Reported by `/v1/me` because it lives on the credential, not in this config file: a user
+       * credential minted by the browser flow carries the project chosen at consent, so commands
+       * work with nothing set locally. Without reading it, `auth status` calls a perfectly working
+       * setup broken.
+       */
+      defaultProject?: string | undefined;
+    }
   | { kind: 'rejected' }
   | { kind: 'unknown'; reason: string };
 
@@ -78,9 +91,18 @@ const describeCredential = async (clientFor: ClientFor): Promise<CredentialState
 
   try {
     const me = (await client.get(AUTH_DESCRIBE_PATH)) as {
-      data?: { tokenScope?: string; user?: { email?: string } | null };
+      data?: {
+        tokenScope?: string;
+        user?: { email?: string } | null;
+        defaultProject?: { id?: string } | null;
+      };
     };
-    return { kind: 'live', scope: me.data?.tokenScope, email: me.data?.user?.email ?? null };
+    return {
+      kind: 'live',
+      scope: me.data?.tokenScope,
+      email: me.data?.user?.email ?? null,
+      ...(me.data?.defaultProject?.id ? { defaultProject: me.data.defaultProject.id } : {}),
+    };
   } catch (error) {
     if ((error as { status?: number }).status !== 404) return classify(error);
   }
@@ -362,17 +384,20 @@ export const registerAuthCommands = (root: Command, binaryName: string, clientFo
         if (state.scope === 'USER') {
           // A user credential reaches every project you belong to, so which one it acts on is part
           // of the answer, not a detail.
+          //
+          // Three cases, not two. A locally configured project wins; failing that the credential's
+          // own default is what the API will use, and saying "commands will fail" there would be
+          // plainly wrong (they succeed). Only a credential with neither is actually stuck.
           const project = loadConfig().project;
-          write(
-            paint(
-              project ?
-                `Acting on project ${project}. Change it with \`${binaryName} config set project <id>\`.`
-              : `No project selected: commands will fail until you set one with \`${binaryName} config set project <id>\`.`,
-              'dim',
-              color,
-            ),
-            process.stderr,
-          );
+          const message =
+            project ?
+              `Acting on project ${project}. Change it with \`${binaryName} config set project <id>\`.`
+            : state.defaultProject ?
+              `Acting on project ${state.defaultProject}, the default stored on this credential. ` +
+              `Override it with \`${binaryName} config set project <id>\`.`
+            : `No project selected, and this credential has no default: project commands will fail until ` +
+              `you run \`${binaryName} config set project <id>\`. \`${binaryName} project list\` shows the ids.`;
+          write(paint(message, 'dim', color), process.stderr);
         }
       }
 
