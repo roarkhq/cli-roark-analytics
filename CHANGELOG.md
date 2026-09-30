@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.32.1](https://github.com/roarkhq/cli-roark-analytics/compare/v0.32.0...v0.32.1) (2026-09-30)
+
+
+### Bug Fixes
+
+* **auth:** `auth status` reports the project a user credential already falls back to ([#81](https://github.com/roarkhq/cli-roark-analytics/issues/81)) ([4274667](https://github.com/roarkhq/cli-roark-analytics/commit/427466763aac7cf8144c455d3a2c78c1ba91ae03))
+
 ## [0.32.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.31.1...v0.32.0) (2026-09-29)
 
 
