@@ -46,7 +46,7 @@ New maximum number of classifications (CLASSIFICATION output only) Optional.
 Replacement set of scoped tool\-definition ids (only for metrics whose tool scoping is editable) Repeatable. Optional.
 .TP
 \fB\-\-supported\-contexts\fR \fI<value>\fR
-Replacement set of supported contexts. Omit to leave unchanged. One of: CALL, SEGMENT, TURN. Repeatable. Optional.
+Replacement set of supported contexts. Omit to leave unchanged. Scope and participantRole cannot change after create, so moving to SEGMENT or TURN grading only works on a PER_PARTICIPANT metric (see create). One of: CALL, SEGMENT, TURN. Repeatable. Optional.
 .TP
 \fB\-\-formula\fR \fI<value>\fR
 New formula expression (FORMULA only). Pass `sources` alongside if the referenced metrics change. Optional.
