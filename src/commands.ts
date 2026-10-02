@@ -4908,9 +4908,9 @@ export const COMMANDS: readonly CliCommand[] = [
         name: 'metrics',
         path: ['metrics'],
         location: 'body',
-        required: true,
+        required: false,
         description:
-          'Metric definitions to include in this run plan. Reference each by `id` (UUID) or `slug`.',
+          'Metric definitions to include in this run plan. Reference each by `id` (UUID) or `slug`. Optional when the attached `flows` carry the grading: metrics a flow declares itself (with `includeFlowMetrics`), or the Agent Expectations and Keypad Entry metrics a run adds for flows with expectations or expected keypad entries (with `includeAutomaticMetrics`). A plan with nothing to grade is rejected with a 400.',
         valueKind: 'array',
         repeatable: false,
       },
