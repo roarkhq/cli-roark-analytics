@@ -32,6 +32,12 @@ Maximum duration in seconds for each simulation Required.
 \fB\-\-silence\-timeout\-seconds\fR \fI<value>\fR
 Timeout in seconds for silence detection Optional.
 .TP
+\fB\-\-max\-no\-response\-retries\fR \fI<value>\fR
+How many more times to run a test case when the agent under test never responds: it never speaks on a call or never replies in a chat (0\-10). 0 turns retries off. Failed checks and failures on Roark’s side are never retried. Each retry is a separate attempt, billed like any other, so a plan retrying N times can place up to N + 1 calls per test case. Every silent attempt stays on the run with its own call; the run settles once each test case has a final attempt, and the agent never spoke verdict is judged on each test case’s last attempt. Optional.
+.TP
+\fB\-\-no\-response\-retry\-backoff\-seconds\fR \fI<value>\fR
+Seconds a retry waits before it dials (30\-600). Only used when `maxNoResponseRetries` is above 0. Optional.
+.TP
 \fB\-\-end\-call\-phrases\fR \fI<value>\fR
 Phrases that trigger end of call. Empty array disables the feature. Repeatable. Optional.
 .TP

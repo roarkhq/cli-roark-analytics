@@ -4837,6 +4837,26 @@ export const COMMANDS: readonly CliCommand[] = [
         repeatable: false,
       },
       {
+        name: 'max-no-response-retries',
+        path: ['maxNoResponseRetries'],
+        location: 'body',
+        required: false,
+        description:
+          'How many more times to run a test case when the agent under test never responds: it never speaks on a call or never replies in a chat (0-10). 0 turns retries off. Failed checks and failures on Roark’s side are never retried. Each retry is a separate attempt, billed like any other, so a plan retrying N times can place up to N + 1 calls per test case. Every silent attempt stays on the run with its own call; the run settles once each test case has a final attempt, and the agent never spoke verdict is judged on each test case’s last attempt.',
+        valueKind: 'integer',
+        repeatable: false,
+      },
+      {
+        name: 'no-response-retry-backoff-seconds',
+        path: ['noResponseRetryBackoffSeconds'],
+        location: 'body',
+        required: false,
+        description:
+          'Seconds a retry waits before it dials (30-600). Only used when `maxNoResponseRetries` is above 0.',
+        valueKind: 'integer',
+        repeatable: false,
+      },
+      {
         name: 'end-call-phrases',
         path: ['endCallPhrases'],
         location: 'body',
@@ -5367,6 +5387,26 @@ export const COMMANDS: readonly CliCommand[] = [
         location: 'body',
         required: false,
         description: 'Timeout in seconds for silence detection',
+        valueKind: 'integer',
+        repeatable: false,
+      },
+      {
+        name: 'max-no-response-retries',
+        path: ['maxNoResponseRetries'],
+        location: 'body',
+        required: false,
+        description:
+          'How many more times to run a test case when the agent under test never responds: it never speaks on a call or never replies in a chat (0-10). 0 turns retries off. Failed checks and failures on Roark’s side are never retried. Each retry is a separate attempt, billed like any other, so a plan retrying N times can place up to N + 1 calls per test case. Every silent attempt stays on the run with its own call; the run settles once each test case has a final attempt, and the agent never spoke verdict is judged on each test case’s last attempt.',
+        valueKind: 'integer',
+        repeatable: false,
+      },
+      {
+        name: 'no-response-retry-backoff-seconds',
+        path: ['noResponseRetryBackoffSeconds'],
+        location: 'body',
+        required: false,
+        description:
+          'Seconds a retry waits before it dials (30-600). Only used when `maxNoResponseRetries` is above 0.',
         valueKind: 'integer',
         repeatable: false,
       },
