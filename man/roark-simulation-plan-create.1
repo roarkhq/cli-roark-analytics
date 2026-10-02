@@ -54,7 +54,7 @@ Personas to include in this run plan. Required with `scenarios`; ignored with `f
 Agent endpoints to include in this run plan Required.
 .TP
 \fB\-\-metrics\fR \fI<value>\fR
-Metric definitions to include in this run plan. Reference each by `id` (UUID) or `slug`. Required.
+Metric definitions to include in this run plan. Reference each by `id` (UUID) or `slug`. Optional when the attached `flows` carry the grading: metrics a flow declares itself (with `includeFlowMetrics`), or the Agent Expectations and Keypad Entry metrics a run adds for flows with expectations or expected keypad entries (with `includeAutomaticMetrics`). A plan with nothing to grade is rejected with a 400. Optional.
 .TP
 \fB\-\-include\-flow\-metrics\fR
 Also collect each attached flow's own metrics, on top of the `metrics` named here. Default true, which is what you want when you brought your own flows and their graders. Set false for a run whose metric list is meant to be exhaustive: a template like Load Testing or Voicemail deliberately grades a narrow set, and inheriting every flow metric on top multiplies analysis cost across the volume without adding signal. GET /v1/simulation/template returns the value each template expects. Optional.
@@ -117,7 +117,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark simulation plan create \-\-name <value> \-\-direction <value> \-\-max\-simulation\-duration\-seconds <value> \-\-agent\-endpoints <value> \-\-metrics <value>
+roark simulation plan create \-\-name <value> \-\-direction <value> \-\-max\-simulation\-duration\-seconds <value> \-\-agent\-endpoints <value>
 .fi
 .RE
 .SH "ENVIRONMENT"
