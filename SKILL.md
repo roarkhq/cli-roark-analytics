@@ -83,6 +83,9 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark call transcript get <call-id>` - Get call transcript
 - `roark config apply [dir]` - Reconcile the project to a config directory (or bundle). Previews and confirms first.
 - `roark config diff [dir]` - Preview the changes a config directory (or bundle) would make. No writes.
+- `roark credential create --name <value>` - Create a personal credential
+- `roark credential list` - List your personal credentials
+- `roark credential revoke <credential-id>` - Revoke one of your personal credentials
 - `roark customer-flow create --data '{...}'` - Create a customer flow
 - `roark customer-flow delete <flow-id>` - Delete a customer flow
 - `roark customer-flow duplicate <flow-id>` - Duplicate a customer flow

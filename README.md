@@ -177,6 +177,14 @@ roark completion fish | source
 | `roark config apply [dir]` | Reconcile the project to a config directory (or bundle). Previews and confirms first. |
 | `roark config diff [dir]`  | Preview the changes a config directory (or bundle) would make. No writes.             |
 
+### credential
+
+| Command                                   | Description                             |
+| ----------------------------------------- | --------------------------------------- |
+| `roark credential create --name <value>`  | Create a personal credential            |
+| `roark credential list`                   | List your personal credentials          |
+| `roark credential revoke <credential-id>` | Revoke one of your personal credentials |
+
 ### customer-flow
 
 | Command                                                                                                                                               | Description                            |
