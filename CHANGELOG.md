@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.37.1](https://github.com/roarkhq/cli-roark-analytics/compare/v0.37.0...v0.37.1) (2026-10-06)
+
+
+### Bug Fixes
+
+* **deps:** raise the @roarkanalytics/sdk floor to the release the credential commands need ([#93](https://github.com/roarkhq/cli-roark-analytics/issues/93)) ([179a331](https://github.com/roarkhq/cli-roark-analytics/commit/179a3319003fda28947bb06593c6e10b1e5af02c))
+
 ## [0.37.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.36.0...v0.37.0) (2026-10-05)
 
 
