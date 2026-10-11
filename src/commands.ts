@@ -51,6 +51,8 @@ export const GROUPS: Readonly<Record<string, string>> = {
   'simulation persona': 'Manage simulation personas',
   'simulation plan': 'Manage simulation plans',
   'simulation plan job': 'Manage simulation plan jobs',
+  'simulation plan job debrief': 'Manage simulation plan job debrief',
+  'simulation plan job result': 'Read simulation plan job result',
   'simulation template': 'Read simulation templates',
   'simulation tool': 'Read simulation tool',
   'simulation tool-fixture': 'Manage simulation tool fixtures',
@@ -5024,6 +5026,40 @@ export const COMMANDS: readonly CliCommand[] = [
     requiresAuth: true,
   },
   {
+    commandPath: ['simulation', 'plan', 'job', 'debrief', 'create'],
+    clientProperty: 'simulationRunPlanJob',
+    methodName: 'createDebrief',
+    httpMethod: 'post',
+    httpPath: '/v1/simulation/plan/job/{jobId}/debrief',
+    summary: 'Generate simulation run debrief',
+    description:
+      'Request the written debrief for a settled run: executive summary, failure themes and recommendations. Runs with graded calls get one automatically, so this is for regenerating one (`regenerate: true`) or retrying one that failed. Returns immediately. Generation takes a few minutes: poll GET /v1/simulation/plan/job/{jobId}/results until `debrief.status` is READY or FAILED. Without `regenerate`, a debrief that is ready or already being written is returned as-is.',
+    positionals: [
+      {
+        name: 'job-id',
+        paramKey: 'jobId',
+      },
+    ],
+    flags: [
+      {
+        name: 'regenerate',
+        path: ['regenerate'],
+        location: 'body',
+        required: false,
+        description:
+          'Generate a new debrief even when a ready one exists. Without it, an existing ready or in-progress debrief is returned as-is.',
+        valueKind: 'boolean',
+        repeatable: false,
+      },
+    ],
+    hasParams: true,
+    paramsAllOptional: true,
+    bodyOpaque: false,
+    bodyVariants: [],
+    acceptsBody: true,
+    requiresAuth: true,
+  },
+  {
     commandPath: ['simulation', 'plan', 'job', 'get'],
     clientProperty: 'simulationRunPlanJob',
     methodName: 'getByID',
@@ -5124,6 +5160,40 @@ export const COMMANDS: readonly CliCommand[] = [
         required: false,
         description:
           'Filter by label name attached to the plan job. More user-friendly alternative to labelId. Case-insensitive.',
+        valueKind: 'string',
+        repeatable: false,
+      },
+    ],
+    hasParams: true,
+    paramsAllOptional: true,
+    bodyOpaque: false,
+    bodyVariants: [],
+    acceptsBody: false,
+    requiresAuth: true,
+  },
+  {
+    commandPath: ['simulation', 'plan', 'job', 'result', 'get'],
+    clientProperty: 'simulationRunPlanJob',
+    methodName: 'getResults',
+    httpMethod: 'get',
+    httpPath: '/v1/simulation/plan/job/{jobId}/results',
+    summary: 'Get simulation run results',
+    description:
+      'Everything the run report shows, in one request: the summary and score, the pass/fail verdict, per-metric aggregates, every simulation with its check results, breakdowns by agent and persona, the comparison against the previous run (or `compareToJobId`), the sweep attribution, and the written debrief with its executive summary, failure themes and recommendations. Safe to call while the run is in progress: counts reflect what has landed so far. `verdict` and `sweepAttribution` stay null until the run ends. The debrief is generated automatically a few minutes after a run with graded calls settles; poll until `debrief.status` is READY, or request one with POST /v1/simulation/plan/job/{jobId}/debrief.',
+    positionals: [
+      {
+        name: 'job-id',
+        paramKey: 'jobId',
+      },
+    ],
+    flags: [
+      {
+        name: 'compare-to-job-id',
+        path: ['compareToJobId'],
+        location: 'query',
+        required: false,
+        description:
+          "Simulation run plan job to compare this run against, e.g. the last run on your main branch. Defaults to the plan's previous settled run. Any run in the project works, including another plan's: checks are matched by metric, and a check only one run graded reads null on the other side.",
         valueKind: 'string',
         repeatable: false,
       },

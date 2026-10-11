@@ -264,8 +264,10 @@ roark completion fish | source
 | `roark simulation plan delete <plan-id>`                                                              | Delete a run plan                   |
 | `roark simulation plan get <plan-id>`                                                                 | Get run plan by ID                  |
 | `roark simulation plan job cancel <job-id>`                                                           | Cancel a simulation plan job        |
+| `roark simulation plan job debrief create <job-id>`                                                   | Generate simulation run debrief     |
 | `roark simulation plan job get <job-id>`                                                              | Get simulation plan job             |
 | `roark simulation plan job list`                                                                      | List simulation plan jobs           |
+| `roark simulation plan job result get <job-id>`                                                       | Get simulation run results          |
 | `roark simulation plan job start <plan-id>`                                                           | Run a simulation plan               |
 | `roark simulation plan list`                                                                          | List run plans                      |
 | `roark simulation plan update <plan-id>`                                                              | Update a run plan                   |
