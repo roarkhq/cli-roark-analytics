@@ -144,6 +144,11 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark simulation plan list` - List run plans
 - `roark simulation plan update <plan-id>` - Update a run plan
 - `roark simulation run --data '{...}'` - Run a simulation
+- `roark simulation run-group create` - Create a run group
+- `roark simulation run-group delete <group-id>` - Delete a run group
+- `roark simulation run-group get <group-id>` - Get a run group
+- `roark simulation run-group list` - List run groups
+- `roark simulation run-group report regenerate <group-id>` - Regenerate a run group report
 - `roark simulation template list` - List simulation templates
 - `roark simulation tool mock --simulation-job-id <value> --tool-name <value>` - Mock a tool call during a test call
 - `roark simulation tool-fixture create --tool-name <value>` - Set a tool fixture
