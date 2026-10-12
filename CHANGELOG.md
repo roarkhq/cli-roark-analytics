@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.41.1](https://github.com/roarkhq/cli-roark-analytics/compare/v0.41.0...v0.41.1) (2026-10-12)
+
+
+### Bug Fixes
+
+* **deps:** raise the @roarkanalytics/sdk floor to 5.3.0 ([#103](https://github.com/roarkhq/cli-roark-analytics/issues/103)) ([0148563](https://github.com/roarkhq/cli-roark-analytics/commit/0148563a7619a6275f76077643d05830570dd32d))
+
 ## [0.41.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.40.0...v0.41.0) (2026-10-12)
 
 
