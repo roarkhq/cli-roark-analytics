@@ -253,6 +253,12 @@ roark completion fish | source
 | `roark simulation environment get <environment-id>`                                                   | Get environment by ID               |
 | `roark simulation environment list`                                                                   | List environments                   |
 | `roark simulation environment update <environment-id>`                                                | Update an environment               |
+| `roark simulation group create --name <value> --simulation-run-plan-ids <value>`                      | Create a simulation group           |
+| `roark simulation group delete <group-id>`                                                            | Delete a simulation group           |
+| `roark simulation group get <group-id>`                                                               | Get a simulation group              |
+| `roark simulation group list`                                                                         | List simulation groups              |
+| `roark simulation group run <group-id>`                                                               | Run a simulation group              |
+| `roark simulation group update <group-id>`                                                            | Update a simulation group           |
 | `roark simulation job get <job-id>`                                                                   | Get simulation by ID                |
 | `roark simulation job lookup --roark-phone-number <value>`                                            | Lookup by phone number              |
 | `roark simulation job tool-mock list <job-id>`                                                        | List mocked tool invocations        |
