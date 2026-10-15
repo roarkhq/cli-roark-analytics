@@ -2230,6 +2230,16 @@ export const COMMANDS: readonly CliCommand[] = [
         repeatable: false,
       },
       {
+        name: 'include-flow-expectations',
+        path: ['includeFlowExpectations'],
+        location: 'body',
+        required: false,
+        description:
+          "Whether this edge case is graded on the flow's agentExpectations as well as its own additionalExpectations. Defaults to true; false grades it on its additionalExpectations only.",
+        valueKind: 'boolean',
+        repeatable: false,
+      },
+      {
         name: 'additional-expectations',
         path: ['additionalExpectations'],
         location: 'body',
@@ -2368,6 +2378,16 @@ export const COMMANDS: readonly CliCommand[] = [
         location: 'body',
         required: false,
         valueKind: 'string',
+        repeatable: false,
+      },
+      {
+        name: 'include-flow-expectations',
+        path: ['includeFlowExpectations'],
+        location: 'body',
+        required: false,
+        description:
+          "Whether this edge case is graded on the flow's agentExpectations as well as its own additionalExpectations. Defaults to true; false grades it on its additionalExpectations only.",
+        valueKind: 'boolean',
         repeatable: false,
       },
       {
@@ -2518,6 +2538,16 @@ export const COMMANDS: readonly CliCommand[] = [
         location: 'body',
         required: false,
         valueKind: 'string',
+        repeatable: false,
+      },
+      {
+        name: 'include-flow-expectations',
+        path: ['includeFlowExpectations'],
+        location: 'body',
+        required: false,
+        description:
+          "Whether this edge case is graded on the flow's agentExpectations as well as its own additionalExpectations. Defaults to true; false grades it on its additionalExpectations only.",
+        valueKind: 'boolean',
         repeatable: false,
       },
       {

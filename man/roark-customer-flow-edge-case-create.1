@@ -30,6 +30,9 @@ Optional.
 \fB\-\-preceded\-by\-customer\-flow\-variant\-id\fR \fI<value>\fR
 Optional.
 .TP
+\fB\-\-include\-flow\-expectations\fR
+Whether this edge case is graded on the flow's agentExpectations as well as its own additionalExpectations. Defaults to true; false grades it on its additionalExpectations only. Optional.
+.TP
 \fB\-\-additional\-expectations\fR \fI<value>\fR
 The expectations graded on this variant only, on top of the flow's own. Sent as the complete set: it replaces whatever the variant had, so omit it to leave the set alone and send [] to clear it. Improv flows only: a scripted variant's expectations come from the agent turns on its path and are rewritten on every graph edit. Optional.
 .TP
