@@ -1,0 +1,100 @@
+.\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
+.TH "ROARK\-CALL\-PROPERTY\-UPDATE" "1" "" "roark-call-property-update" "Roark Analytics API Manual"
+.SH "NAME"
+roark\-call\-property\-update \- Update the properties of a call
+.SH "SYNOPSIS"
+.B roark call property update
+\fIcall\-id\fR [\fIoptions\fR]
+.SH "DESCRIPTION"
+Add, overwrite or remove custom properties on an already\-existing call. Use this for data that becomes available after the call was created, e.g. an outcome your system validates a few minutes later. Merge semantics: a value adds or overwrites the property, null removes it, and properties left out are untouched. The patch is applied whole or not at all: a property Roark sets itself, or a value whose type differs from the type the project already stores that property as, rejects the request with a 400 and nothing is written. A 409 means another request created one of the properties with a different value type at the same moment; nothing was written. Optionally pass `metrics` to (re)score metrics over the updated properties, which triggers a billed metric collection job and requires the `metric:create` permission.
+.SH "API"
+PATCH /v1/call/{callId}/properties
+.SH "ARGUMENTS"
+.TP
+\fIcall\-id\fR
+The call\-id.
+.SH "OPTIONS"
+.TP
+\fB\-\-properties\fR \fI<value>\fR
+Properties to change on the call. A string, number or boolean value adds the property or overwrites it; null removes it. Properties left out are untouched. Keys are stored in snake_case, as on POST /v1/call. A property keeps the value type it was first stored with in the project, so a value of another type is rejected. Properties Roark sets itself (direction, duration_seconds, agent_id, ...) can't be changed. Max 100 per request. Required.
+.TP
+\fB\-\-metrics\fR \fI<value>\fR
+Optional. Metric definitions to (re)score on this call once the properties are written, e.g. metrics that read the call's properties. Triggers a metric collection job (billed, credit\-gated) and requires the 'metric:create' permission. Omit to update properties without scoring. Max 20. Optional.
+.SH "GLOBAL OPTIONS"
+.TP
+\fB\-\-data\fR \fI<json>\fR
+Request body as JSON, or @file to read one (@\- for stdin).
+.TP
+\fB\-y\fR, \fB\-\-yes\fR
+Skip confirmation prompts.
+.TP
+\fB\-\-no\-input\fR
+Never prompt; fail instead.
+.TP
+\fB\-\-base\-url\fR \fI<url>\fR
+API base URL.
+.TP
+\fB\-\-token\fR \fI<token>\fR
+Bearer token. Prefer ROARK_API_BEARER_TOKEN or the stored credential.
+.TP
+\fB\-\-timeout\fR \fI<ms>\fR
+Request timeout in milliseconds.
+.TP
+\fB\-\-max\-retries\fR \fI<count>\fR
+Retries for retryable failures.
+.TP
+\fB\-\-format\fR \fI<format>\fR
+Output format: auto, json, jsonl, plain.
+.TP
+\fB\-\-json\fR
+Shorthand for \-\-format json.
+.TP
+\fB\-\-no\-color\fR
+Disable colour.
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Suppress non\-essential output.
+.TP
+\fB\-\-allow\-project\-base\-url\fR
+Send the stored credential to a base URL set by a project .roark.json. Refused by default.
+.SH "EXAMPLES"
+.PP
+.RS 4
+.nf
+roark call property update <call\-id> \-\-properties <value>
+.fi
+.RE
+.SH "ENVIRONMENT"
+.TP
+\fBROARK_API_BEARER_TOKEN\fR
+Bearer token used when \-\-token is not given.
+.TP
+\fBROARK_BASE_URL\fR
+API base URL.
+.TP
+\fBROARK_ALLOW_PROJECT_BASE_URL\fR
+Trusts a base URL set by a project .roark.json, like \-\-allow\-project\-base\-url.
+.TP
+\fBNO_COLOR\fR
+Disables colour when set to any value.
+.SH "EXIT STATUS"
+.TP
+\fB0\fR
+The command succeeded.
+.TP
+\fB1\fR
+The API rejected the request.
+.TP
+\fB2\fR
+The command line was wrong.
+.TP
+\fB3\fR
+No credential, or the credential was refused.
+.TP
+\fB4\fR
+The addressed resource does not exist.
+.TP
+\fB5\fR
+The request never completed: connection, timeout, or abort.
+.SH "SEE ALSO"
+.BR roark (1)

@@ -85,6 +85,7 @@
     "./man/roark-call-get.1",
     "./man/roark-call-list.1",
     "./man/roark-call-metric-list.1",
+    "./man/roark-call-property-update.1",
     "./man/roark-call-sentiment-run-list.1",
     "./man/roark-call-tool-invocation-append.1",
     "./man/roark-call-transcript-get.1",
