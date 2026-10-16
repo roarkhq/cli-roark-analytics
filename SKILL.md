@@ -78,6 +78,7 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark call get <call-id>` - Get a call by ID
 - `roark call list` - List calls
 - `roark call metric list <call-id>` - List call metrics
+- `roark call property update <call-id> --properties <value>` - Update the properties of a call
 - `roark call sentiment-run list <call-id>` - List call sentiment runs
 - `roark call tool-invocation append <call-id> --tool-invocations <value>` - Append tool invocations to a call
 - `roark call transcript get <call-id>` - Get call transcript

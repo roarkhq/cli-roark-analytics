@@ -28,6 +28,7 @@ export const GROUPS: Readonly<Record<string, string>> = {
   'benchmark target score-sample': 'Read benchmark target score samples',
   call: 'Manage calls',
   'call metric': 'Read call metrics',
+  'call property': 'Manage call property',
   'call sentiment-run': 'Read call sentiment runs',
   'call tool-invocation': 'Manage call tool invocations',
   'call transcript': 'Read call transcript',
@@ -1784,6 +1785,50 @@ export const COMMANDS: readonly CliCommand[] = [
     bodyOpaque: false,
     bodyVariants: [],
     acceptsBody: false,
+    requiresAuth: true,
+  },
+  {
+    commandPath: ['call', 'property', 'update'],
+    clientProperty: 'call',
+    methodName: 'updateProperties',
+    httpMethod: 'patch',
+    httpPath: '/v1/call/{callId}/properties',
+    summary: 'Update the properties of a call',
+    description:
+      'Add, overwrite or remove custom properties on an already-existing call. Use this for data that becomes available after the call was created, e.g. an outcome your system validates a few minutes later. Merge semantics: a value adds or overwrites the property, null removes it, and properties left out are untouched. The patch is applied whole or not at all: a property Roark sets itself, or a value whose type differs from the type the project already stores that property as, rejects the request with a 400 and nothing is written. A 409 means another request created one of the properties with a different value type at the same moment; nothing was written. Optionally pass `metrics` to (re)score metrics over the updated properties, which triggers a billed metric collection job and requires the `metric:create` permission.',
+    positionals: [
+      {
+        name: 'call-id',
+        paramKey: 'callId',
+      },
+    ],
+    flags: [
+      {
+        name: 'properties',
+        path: ['properties'],
+        location: 'body',
+        required: true,
+        description:
+          "Properties to change on the call. A string, number or boolean value adds the property or overwrites it; null removes it. Properties left out are untouched. Keys are stored in snake_case, as on POST /v1/call. A property keeps the value type it was first stored with in the project, so a value of another type is rejected. Properties Roark sets itself (direction, duration_seconds, agent_id, ...) can't be changed. Max 100 per request.",
+        valueKind: 'object',
+        repeatable: false,
+      },
+      {
+        name: 'metrics',
+        path: ['metrics'],
+        location: 'body',
+        required: false,
+        description:
+          "Optional. Metric definitions to (re)score on this call once the properties are written, e.g. metrics that read the call's properties. Triggers a metric collection job (billed, credit-gated) and requires the 'metric:create' permission. Omit to update properties without scoring. Max 20.",
+        valueKind: 'array',
+        repeatable: false,
+      },
+    ],
+    hasParams: true,
+    paramsAllOptional: false,
+    bodyOpaque: false,
+    bodyVariants: [],
+    acceptsBody: true,
     requiresAuth: true,
   },
   {
