@@ -222,7 +222,7 @@ roark completion fish | source
 
 | Command                                                                          | Description                            |
 | -------------------------------------------------------------------------------- | -------------------------------------- |
-| `roark metric collection-job create --metrics <value>`                           | Create and run a metric collection job |
+| `roark metric collection-job create`                                             | Create and run a metric collection job |
 | `roark metric collection-job get <job-id>`                                       | Get metric collection job by ID        |
 | `roark metric collection-job list`                                               | List metric collection jobs            |
 | `roark metric definition create --data '{ ... }'`                                | Create custom metric definition        |

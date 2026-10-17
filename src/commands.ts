@@ -3046,7 +3046,7 @@ export const COMMANDS: readonly CliCommand[] = [
     httpPath: '/v1/metric/collection-jobs',
     summary: 'Create and run a metric collection job',
     description:
-      'Creates a metric collection job for the specified calls or chats and metrics, then triggers processing. Provide exactly one of callIds or chatIds.',
+      'Creates a metric collection job for the specified calls or chats and metrics, then triggers processing. Provide exactly one of callIds or chatIds. Pass policyId to score with a metric policy’s settings (for example to re-score past calls after changing which properties Property Verification checks); metrics then defaults to every metric that policy collects.',
     positionals: [],
     flags: [
       {
@@ -3071,14 +3071,25 @@ export const COMMANDS: readonly CliCommand[] = [
         name: 'metrics',
         path: ['metrics'],
         location: 'body',
-        required: true,
-        description: 'Metric definitions to collect. Max 20 per request.',
+        required: false,
+        description:
+          'Metric definitions to collect. Max 20 per request. Required unless policyId is given; with policyId, defaults to every metric that policy collects, and each one listed must be in it.',
         valueKind: 'array',
+        repeatable: false,
+      },
+      {
+        name: 'policy-id',
+        path: ['policyId'],
+        location: 'body',
+        required: false,
+        description:
+          "Optional. A metric policy (collector) whose settings to score with: each metric runs at the version that policy runs it at, with its per-collector setting (such as the properties Property Verification checks), instead of the metric's default. A metric the policy runs at its default runs at its default here too. The policy's conditions are not applied: the listed conversations are scored as given. Use it to re-score past conversations after changing a policy's settings.",
+        valueKind: 'string',
         repeatable: false,
       },
     ],
     hasParams: true,
-    paramsAllOptional: false,
+    paramsAllOptional: true,
     bodyOpaque: false,
     bodyVariants: [],
     acceptsBody: true,

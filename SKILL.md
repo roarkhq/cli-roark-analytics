@@ -104,7 +104,7 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark http-request-definition get <definition-id>` - Get HTTP request definition by ID
 - `roark http-request-definition list` - List HTTP request definitions
 - `roark http-request-definition update <definition-id>` - Update HTTP request definition
-- `roark metric collection-job create --metrics <value>` - Create and run a metric collection job
+- `roark metric collection-job create` - Create and run a metric collection job
 - `roark metric collection-job get <job-id>` - Get metric collection job by ID
 - `roark metric collection-job list` - List metric collection jobs
 - `roark metric definition create --data '{...}'` - Create custom metric definition
