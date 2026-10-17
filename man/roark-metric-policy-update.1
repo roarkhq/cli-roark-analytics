@@ -25,7 +25,7 @@ Status of the policy One of: ACTIVE, INACTIVE. Optional.
 Condition groups. Omit to keep existing, provide empty array to remove all conditions. Optional.
 .TP
 \fB\-\-metrics\fR \fI<value>\fR
-Metric definitions to collect when this policy matches Optional.
+Metric definitions to collect when this policy matches. Replaces the policy's whole metric list: a metric sent without settings goes back to its default, so resend a metric's settings to keep them. Omit to keep the current metrics. Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR

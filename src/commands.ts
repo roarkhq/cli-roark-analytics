@@ -3530,7 +3530,7 @@ export const COMMANDS: readonly CliCommand[] = [
         path: ['metrics'],
         location: 'body',
         required: true,
-        description: 'Metric definitions to collect when this policy matches',
+        description: 'Metric definitions to collect when this policy matches, each with an optional setting',
         valueKind: 'array',
         repeatable: false,
       },
@@ -3683,7 +3683,8 @@ export const COMMANDS: readonly CliCommand[] = [
         path: ['metrics'],
         location: 'body',
         required: false,
-        description: 'Metric definitions to collect when this policy matches',
+        description:
+          "Metric definitions to collect when this policy matches. Replaces the policy's whole metric list: a metric sent without settings goes back to its default, so resend a metric's settings to keep them. Omit to keep the current metrics.",
         valueKind: 'array',
         repeatable: false,
       },
