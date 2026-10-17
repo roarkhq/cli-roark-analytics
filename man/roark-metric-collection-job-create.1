@@ -6,7 +6,7 @@ roark\-metric\-collection\-job\-create \- Create and run a metric collection job
 .B roark metric collection\-job create
 [\fIoptions\fR]
 .SH "DESCRIPTION"
-Creates a metric collection job for the specified calls or chats and metrics, then triggers processing. Provide exactly one of callIds or chatIds.
+Creates a metric collection job for the specified calls or chats and metrics, then triggers processing. Provide exactly one of callIds or chatIds. Pass policyId to score with a metric policy’s settings (for example to re\-score past calls after changing which properties Property Verification checks); metrics then defaults to every metric that policy collects.
 .SH "API"
 POST /v1/metric/collection\-jobs
 .SH "OPTIONS"
@@ -18,7 +18,10 @@ Call IDs to collect metrics for. Mutually exclusive with chatIds. Max 500 per re
 Chat IDs to collect metrics for. Mutually exclusive with callIds. Max 500 per request. Repeatable. Optional.
 .TP
 \fB\-\-metrics\fR \fI<value>\fR
-Metric definitions to collect. Max 20 per request. Required.
+Metric definitions to collect. Max 20 per request. Required unless policyId is given; with policyId, defaults to every metric that policy collects, and each one listed must be in it. Optional.
+.TP
+\fB\-\-policy\-id\fR \fI<value>\fR
+Optional. A metric policy (collector) whose settings to score with: each metric runs at the version that policy runs it at, with its per\-collector setting (such as the properties Property Verification checks), instead of the metric's default. A metric the policy runs at its default runs at its default here too. The policy's conditions are not applied: the listed conversations are scored as given. Use it to re\-score past conversations after changing a policy's settings. Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -60,7 +63,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark metric collection\-job create \-\-metrics <value>
+roark metric collection\-job create
 .fi
 .RE
 .SH "ENVIRONMENT"
