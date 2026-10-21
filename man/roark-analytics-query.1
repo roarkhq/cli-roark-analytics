@@ -1,0 +1,114 @@
+.\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
+.TH "ROARK\-ANALYTICS\-QUERY" "1" "" "roark-analytics-query" "Roark Analytics API Manual"
+.SH "NAME"
+roark\-analytics\-query \- Run an analytics query
+.SH "SYNOPSIS"
+.B roark analytics query
+[\fIoptions\fR]
+.SH "DESCRIPTION"
+Aggregates metric values and conversation counts over a time window and returns one series per measure, with a total for the window and per\-interval buckets. The same query a dashboard widget runs, without saving anything. \- `measures`: what to aggregate. A METRIC measure names its metric by slug; CONVERSATION counts conversations; UPTIME reads health checks. The aggregation defaults by the metric's output type. \- `timeRange`: LAST n DAYS/WEEKS/MONTHS, a CALENDAR_ALIGNED period (TODAY, THIS_MONTH, ...), FIXED from/to, or SINCE. Defaults to the last 30 days; at most 731 days. Calendar periods and buckets align to `timezone` (IANA, default UTC). \- `filters` apply to every measure; a measure's own `filters` add to them. \- `breakdown` on a measure returns one series per value (largest 50 kept). \- `comparisonGroups` (2 to 5) run every measure once per named filter set; `comparisonMode: PREVIOUS_PERIOD` adds the preceding window's values. Values are in the metric's display units. A PASS_RATE is a 0 to 1 share; `sampleSize` 0 means no data. A query the analytics store cannot answer returns 400 naming the unsupported part.
+.SH "API"
+POST /v1/analytics/query
+.SH "OPTIONS"
+.TP
+\fB\-\-measures\fR \fI<value>\fR
+What to aggregate: 1 to 10 measures. Required.
+.TP
+\fB\-\-filters\fR \fI<value>\fR
+Applied to every measure, on top of each measure's own filters. Optional.
+.TP
+\fB\-\-interval\fR \fI<value>\fR
+Bucket size. Defaults from the window's length and steps coarser when the window would exceed 500 buckets. One of: HOUR, DAY, WEEK, MONTH. Optional.
+.TP
+\fB\-\-comparison\-mode\fR \fI<value>\fR
+PREVIOUS_PERIOD adds the preceding window of the same length to every series. One of: NONE, PREVIOUS_PERIOD. Optional.
+.TP
+\fB\-\-comparison\-groups\fR \fI<value>\fR
+Run every measure once per named filter set, e.g. one group per agent. Optional.
+.TP
+\fB\-\-time\-range\fR \fI<value>\fR
+Defaults to the last 30 days. Optional.
+.TP
+\fB\-\-timezone\fR \fI<value>\fR
+IANA zone that buckets and calendar periods align to, e.g. America/New_York. Defaults to UTC. Optional.
+.TP
+\fB\-\-include\-buckets\fR
+Set false to return only the window totals. Optional.
+.SH "GLOBAL OPTIONS"
+.TP
+\fB\-\-data\fR \fI<json>\fR
+Request body as JSON, or @file to read one (@\- for stdin).
+.TP
+\fB\-y\fR, \fB\-\-yes\fR
+Skip confirmation prompts.
+.TP
+\fB\-\-no\-input\fR
+Never prompt; fail instead.
+.TP
+\fB\-\-base\-url\fR \fI<url>\fR
+API base URL.
+.TP
+\fB\-\-token\fR \fI<token>\fR
+Bearer token. Prefer ROARK_API_BEARER_TOKEN or the stored credential.
+.TP
+\fB\-\-timeout\fR \fI<ms>\fR
+Request timeout in milliseconds.
+.TP
+\fB\-\-max\-retries\fR \fI<count>\fR
+Retries for retryable failures.
+.TP
+\fB\-\-format\fR \fI<format>\fR
+Output format: auto, json, jsonl, plain.
+.TP
+\fB\-\-json\fR
+Shorthand for \-\-format json.
+.TP
+\fB\-\-no\-color\fR
+Disable colour.
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Suppress non\-essential output.
+.TP
+\fB\-\-allow\-project\-base\-url\fR
+Send the stored credential to a base URL set by a project .roark.json. Refused by default.
+.SH "EXAMPLES"
+.PP
+.RS 4
+.nf
+roark analytics query \-\-measures <value>
+.fi
+.RE
+.SH "ENVIRONMENT"
+.TP
+\fBROARK_API_BEARER_TOKEN\fR
+Bearer token used when \-\-token is not given.
+.TP
+\fBROARK_BASE_URL\fR
+API base URL.
+.TP
+\fBROARK_ALLOW_PROJECT_BASE_URL\fR
+Trusts a base URL set by a project .roark.json, like \-\-allow\-project\-base\-url.
+.TP
+\fBNO_COLOR\fR
+Disables colour when set to any value.
+.SH "EXIT STATUS"
+.TP
+\fB0\fR
+The command succeeded.
+.TP
+\fB1\fR
+The API rejected the request.
+.TP
+\fB2\fR
+The command line was wrong.
+.TP
+\fB3\fR
+No credential, or the credential was refused.
+.TP
+\fB4\fR
+The addressed resource does not exist.
+.TP
+\fB5\fR
+The request never completed: connection, timeout, or abort.
+.SH "SEE ALSO"
+.BR roark (1)
