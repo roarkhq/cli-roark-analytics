@@ -1,0 +1,112 @@
+.\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
+.TH "ROARK\-DASHBOARD\-UPDATE" "1" "" "roark-dashboard-update" "Roark Analytics API Manual"
+.SH "NAME"
+roark\-dashboard\-update \- Update a dashboard
+.SH "SYNOPSIS"
+.B roark dashboard update
+\fIdashboard\-id\fR [\fIoptions\fR]
+.SH "DESCRIPTION"
+Edits a dashboard. Omitted fields keep their current value. `widgets`, when sent, replaces the list: widgets are matched by name, so a widget that keeps its name keeps its id; a new name adds a widget and a name no longer listed removes it. To change one widget, PUT /v1/dashboard/{dashboardId}/widget/{widgetId}.
+.SH "API"
+PUT /v1/dashboard/{dashboardId}
+.SH "ARGUMENTS"
+.TP
+\fIdashboard\-id\fR
+The dashboard ID
+.SH "OPTIONS"
+.TP
+\fB\-\-name\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-description\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-time\-range\fR \fI<value>\fR
+The window: LAST n DAYS/WEEKS/MONTHS up to now, a CALENDAR_ALIGNED period (TODAY, YESTERDAY, THIS_WEEK, LAST_WEEK, THIS_MONTH, LAST_MONTH, THIS_YEAR, LAST_YEAR), FIXED from/to, or SINCE a date. At most 731 days (two years). Optional.
+.TP
+\fB\-\-filters\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-is\-default\fR
+Optional.
+.TP
+\fB\-\-widgets\fR \fI<value>\fR
+Optional.
+.SH "GLOBAL OPTIONS"
+.TP
+\fB\-\-data\fR \fI<json>\fR
+Request body as JSON, or @file to read one (@\- for stdin).
+.TP
+\fB\-y\fR, \fB\-\-yes\fR
+Skip confirmation prompts.
+.TP
+\fB\-\-no\-input\fR
+Never prompt; fail instead.
+.TP
+\fB\-\-base\-url\fR \fI<url>\fR
+API base URL.
+.TP
+\fB\-\-token\fR \fI<token>\fR
+Bearer token. Prefer ROARK_API_BEARER_TOKEN or the stored credential.
+.TP
+\fB\-\-timeout\fR \fI<ms>\fR
+Request timeout in milliseconds.
+.TP
+\fB\-\-max\-retries\fR \fI<count>\fR
+Retries for retryable failures.
+.TP
+\fB\-\-format\fR \fI<format>\fR
+Output format: auto, json, jsonl, plain.
+.TP
+\fB\-\-json\fR
+Shorthand for \-\-format json.
+.TP
+\fB\-\-no\-color\fR
+Disable colour.
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Suppress non\-essential output.
+.TP
+\fB\-\-allow\-project\-base\-url\fR
+Send the stored credential to a base URL set by a project .roark.json. Refused by default.
+.SH "EXAMPLES"
+.PP
+.RS 4
+.nf
+roark dashboard update <dashboard\-id>
+.fi
+.RE
+.SH "ENVIRONMENT"
+.TP
+\fBROARK_API_BEARER_TOKEN\fR
+Bearer token used when \-\-token is not given.
+.TP
+\fBROARK_BASE_URL\fR
+API base URL.
+.TP
+\fBROARK_ALLOW_PROJECT_BASE_URL\fR
+Trusts a base URL set by a project .roark.json, like \-\-allow\-project\-base\-url.
+.TP
+\fBNO_COLOR\fR
+Disables colour when set to any value.
+.SH "EXIT STATUS"
+.TP
+\fB0\fR
+The command succeeded.
+.TP
+\fB1\fR
+The API rejected the request.
+.TP
+\fB2\fR
+The command line was wrong.
+.TP
+\fB3\fR
+No credential, or the credential was refused.
+.TP
+\fB4\fR
+The addressed resource does not exist.
+.TP
+\fB5\fR
+The request never completed: connection, timeout, or abort.
+.SH "SEE ALSO"
+.BR roark (1)

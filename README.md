@@ -134,6 +134,13 @@ roark completion fish | source
 | `roark agent-config staging delete <key>`                              | Discard the staging revision  |
 | `roark agent-config update <key> --channel <value> --document <value>` | Write a config revision       |
 
+### analytics
+
+| Command                                    | Description              |
+| ------------------------------------------ | ------------------------ |
+| `roark analytics query --measures <value>` | Run an analytics query   |
+| `roark analytics schema get`               | Get the analytics schema |
+
 ### autoimprove
 
 | Command                                                                                                              | Description                          |
@@ -202,6 +209,21 @@ roark completion fish | source
 | `roark customer-flow happy-path update <flow-id>`                                                                                                     | Update a flow's happy path             |
 | `roark customer-flow list`                                                                                                                            | List customer flows                    |
 | `roark customer-flow update <flow-id> --off-script-policy.reaction <value> --off-script-policy.max-attempts <value> --off-script-policy.then <value>` | Update a customer flow                 |
+
+### dashboard
+
+| Command                                                                                      | Description        |
+| -------------------------------------------------------------------------------------------- | ------------------ |
+| `roark dashboard create --name <value>`                                                      | Create a dashboard |
+| `roark dashboard data get <dashboard-id>`                                                    | Get dashboard data |
+| `roark dashboard delete <dashboard-id>`                                                      | Delete a dashboard |
+| `roark dashboard get <dashboard-id>`                                                         | Get a dashboard    |
+| `roark dashboard list`                                                                       | List dashboards    |
+| `roark dashboard update <dashboard-id>`                                                      | Update a dashboard |
+| `roark dashboard widget create <dashboard-id> --measures <value> --name <value>`             | Add a widget       |
+| `roark dashboard widget delete <dashboard-id> <widget-id>`                                   | Remove a widget    |
+| `roark dashboard widget update <dashboard-id> <widget-id> --measures <value> --name <value>` | Replace a widget   |
+| `roark dashboard widget-data get <dashboard-id> <widget-id>`                                 | Get widget data    |
 
 ### health
 

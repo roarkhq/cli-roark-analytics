@@ -1,0 +1,121 @@
+.\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
+.TH "ROARK\-DASHBOARD\-WIDGET\-CREATE" "1" "" "roark-dashboard-widget-create" "Roark Analytics API Manual"
+.SH "NAME"
+roark\-dashboard\-widget\-create \- Add a widget
+.SH "SYNOPSIS"
+.B roark dashboard widget create
+\fIdashboard\-id\fR [\fIoptions\fR]
+.SH "DESCRIPTION"
+Adds a widget to the top of a dashboard. Its name must be unique on the dashboard.
+.SH "API"
+POST /v1/dashboard/{dashboardId}/widget
+.SH "ARGUMENTS"
+.TP
+\fIdashboard\-id\fR
+The dashboard ID
+.SH "OPTIONS"
+.TP
+\fB\-\-measures\fR \fI<value>\fR
+What to aggregate: 1 to 10 measures. Required.
+.TP
+\fB\-\-filters\fR \fI<value>\fR
+Applied to every measure, on top of each measure's own filters. Optional.
+.TP
+\fB\-\-interval\fR \fI<value>\fR
+Bucket size. Defaults from the window's length and steps coarser when the window would exceed 500 buckets. One of: HOUR, DAY, WEEK, MONTH. Optional.
+.TP
+\fB\-\-comparison\-mode\fR \fI<value>\fR
+PREVIOUS_PERIOD adds the preceding window of the same length to every series. One of: NONE, PREVIOUS_PERIOD. Optional.
+.TP
+\fB\-\-comparison\-groups\fR \fI<value>\fR
+Run every measure once per named filter set, e.g. one group per agent. Optional.
+.TP
+\fB\-\-name\fR \fI<value>\fR
+Unique on the dashboard: how the widget is matched on update. Required.
+.TP
+\fB\-\-description\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-display\fR \fI<value>\fR
+Chart type. Defaults to LINE. One of: LINE, NUMBER, RADAR, STACKED_BAR, TABLE. Optional.
+.TP
+\fB\-\-size\fR \fI<value>\fR
+Grid width. Defaults to MEDIUM. One of: SMALL, MEDIUM, LARGE, EXTRA_LARGE. Optional.
+.SH "GLOBAL OPTIONS"
+.TP
+\fB\-\-data\fR \fI<json>\fR
+Request body as JSON, or @file to read one (@\- for stdin).
+.TP
+\fB\-y\fR, \fB\-\-yes\fR
+Skip confirmation prompts.
+.TP
+\fB\-\-no\-input\fR
+Never prompt; fail instead.
+.TP
+\fB\-\-base\-url\fR \fI<url>\fR
+API base URL.
+.TP
+\fB\-\-token\fR \fI<token>\fR
+Bearer token. Prefer ROARK_API_BEARER_TOKEN or the stored credential.
+.TP
+\fB\-\-timeout\fR \fI<ms>\fR
+Request timeout in milliseconds.
+.TP
+\fB\-\-max\-retries\fR \fI<count>\fR
+Retries for retryable failures.
+.TP
+\fB\-\-format\fR \fI<format>\fR
+Output format: auto, json, jsonl, plain.
+.TP
+\fB\-\-json\fR
+Shorthand for \-\-format json.
+.TP
+\fB\-\-no\-color\fR
+Disable colour.
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Suppress non\-essential output.
+.TP
+\fB\-\-allow\-project\-base\-url\fR
+Send the stored credential to a base URL set by a project .roark.json. Refused by default.
+.SH "EXAMPLES"
+.PP
+.RS 4
+.nf
+roark dashboard widget create <dashboard\-id> \-\-measures <value> \-\-name <value>
+.fi
+.RE
+.SH "ENVIRONMENT"
+.TP
+\fBROARK_API_BEARER_TOKEN\fR
+Bearer token used when \-\-token is not given.
+.TP
+\fBROARK_BASE_URL\fR
+API base URL.
+.TP
+\fBROARK_ALLOW_PROJECT_BASE_URL\fR
+Trusts a base URL set by a project .roark.json, like \-\-allow\-project\-base\-url.
+.TP
+\fBNO_COLOR\fR
+Disables colour when set to any value.
+.SH "EXIT STATUS"
+.TP
+\fB0\fR
+The command succeeded.
+.TP
+\fB1\fR
+The API rejected the request.
+.TP
+\fB2\fR
+The command line was wrong.
+.TP
+\fB3\fR
+No credential, or the credential was refused.
+.TP
+\fB4\fR
+The addressed resource does not exist.
+.TP
+\fB5\fR
+The request never completed: connection, timeout, or abort.
+.SH "SEE ALSO"
+.BR roark (1)
