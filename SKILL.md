@@ -76,6 +76,7 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark benchmark target get <target-key> --suite <value>` - Get a benchmark target
 - `roark benchmark target history list <target-key> --suite <value>` - List a target’s published generations
 - `roark benchmark target score-sample list <target-key> --suite <value>` - List score samples for a target
+- `roark call cost get <call-id>` - Get call cost
 - `roark call create --recording-url <value> --started-at <value> --interface-type <value> --call-direction <value> --customer.phone-number-e164 <value>` - Create a call
 - `roark call get <call-id>` - Get a call by ID
 - `roark call list` - List calls
@@ -155,6 +156,7 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark simulation plan delete <plan-id>` - Delete a run plan
 - `roark simulation plan get <plan-id>` - Get run plan by ID
 - `roark simulation plan job cancel <job-id>` - Cancel a simulation plan job
+- `roark simulation plan job cost get <job-id>` - Get simulation run cost
 - `roark simulation plan job debrief create <job-id>` - Generate simulation run debrief
 - `roark simulation plan job get <job-id>` - Get simulation plan job
 - `roark simulation plan job list` - List simulation plan jobs

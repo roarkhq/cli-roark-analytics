@@ -29,6 +29,7 @@ export const GROUPS: Readonly<Record<string, string>> = {
   'benchmark target history': 'Read benchmark target histories',
   'benchmark target score-sample': 'Read benchmark target score samples',
   call: 'Manage calls',
+  'call cost': 'Read call cost',
   'call metric': 'Read call metrics',
   'call property': 'Manage call property',
   'call sentiment-run': 'Read call sentiment runs',
@@ -59,6 +60,7 @@ export const GROUPS: Readonly<Record<string, string>> = {
   'simulation persona': 'Manage simulation personas',
   'simulation plan': 'Manage simulation plans',
   'simulation plan job': 'Manage simulation plan jobs',
+  'simulation plan job cost': 'Read simulation plan job cost',
   'simulation plan job debrief': 'Manage simulation plan job debrief',
   'simulation plan job result': 'Read simulation plan job result',
   'simulation run-group': 'Manage simulation run groups',
@@ -1482,6 +1484,29 @@ export const COMMANDS: readonly CliCommand[] = [
     ],
     hasParams: true,
     paramsAllOptional: false,
+    bodyOpaque: false,
+    bodyVariants: [],
+    acceptsBody: false,
+    requiresAuth: true,
+  },
+  {
+    commandPath: ['call', 'cost', 'get'],
+    clientProperty: 'call',
+    methodName: 'getCost',
+    httpMethod: 'get',
+    httpPath: '/v1/call/{callId}/cost',
+    summary: 'Get call cost',
+    description:
+      'The billable spend attributed to one call, split by cost type, with every cost line behind it. Simulated calls include the costs their simulation incurred before the call connected. Amounts are billable spend only, in exact micro-dollars (`*UsdMicros`) and dollars (`*Usd`, for display). Requires an API key with the `billing:read` permission.',
+    positionals: [
+      {
+        name: 'call-id',
+        paramKey: 'callId',
+      },
+    ],
+    flags: [],
+    hasParams: false,
+    paramsAllOptional: true,
     bodyOpaque: false,
     bodyVariants: [],
     acceptsBody: false,
@@ -6060,6 +6085,29 @@ export const COMMANDS: readonly CliCommand[] = [
     requiresAuth: true,
   },
   {
+    commandPath: ['simulation', 'plan', 'job', 'cost', 'get'],
+    clientProperty: 'simulationRunPlanJob',
+    methodName: 'getCost',
+    httpMethod: 'get',
+    httpPath: '/v1/simulation/plan/job/{jobId}/cost',
+    summary: 'Get simulation run cost',
+    description:
+      'The billable spend for one simulation run (run plan job), split by cost type, with the spend of each simulated call in it. Safe to call while the run is in progress: totals reflect the costs recorded so far. Amounts are billable spend only, in exact micro-dollars (`*UsdMicros`) and dollars (`*Usd`, for display). Requires an API key with the `billing:read` permission.',
+    positionals: [
+      {
+        name: 'job-id',
+        paramKey: 'jobId',
+      },
+    ],
+    flags: [],
+    hasParams: false,
+    paramsAllOptional: true,
+    bodyOpaque: false,
+    bodyVariants: [],
+    acceptsBody: false,
+    requiresAuth: true,
+  },
+  {
     commandPath: ['simulation', 'plan', 'job', 'debrief', 'create'],
     clientProperty: 'simulationRunPlanJob',
     methodName: 'createDebrief',
@@ -7039,7 +7087,7 @@ export const COMMANDS: readonly CliCommand[] = [
     httpPath: '/v1/usage',
     summary: 'Get usage & cost',
     description:
-      'Report billable usage and cost for the organization over a time window, broken down by project (highest spend first). Pass `from`/`to` as ISO 8601 timestamps; optionally pass `projectId` to scope the report to one project. Amounts are billable spend only (what we absorb is never included). Authenticated by an organization API key with the `usage:read` permission.',
+      "Report billable usage and cost for the organization over a time window, broken down by project (highest spend first). Pass `from`/`to` as ISO 8601 timestamps; optionally pass `projectId` to scope the report to one project. Amounts are billable spend only (what we absorb is never included). Authenticated by either an organization API key with the `usage:read` permission (any project in the organization), or a project API key with the `billing:read` permission (that key's own project only; any other `projectId` is a 403).",
     positionals: [],
     flags: [
       {
