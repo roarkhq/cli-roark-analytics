@@ -174,6 +174,7 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark simulation tool-fixture delete <fixture-id>` - Delete a tool fixture
 - `roark simulation tool-fixture list` - List tool fixtures
 - `roark simulation tool-fixture update <fixture-id>` - Update a tool fixture
+- `roark usage get --from <value> --to <value>` - Get usage & cost
 - `roark webhook create --url <value> --events <value>` - Create webhook
 - `roark webhook delete <webhook-id>` - Delete webhook
 - `roark webhook get <webhook-id>` - Get webhook by ID

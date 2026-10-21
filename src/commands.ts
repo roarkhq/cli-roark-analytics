@@ -66,6 +66,7 @@ export const GROUPS: Readonly<Record<string, string>> = {
   'simulation template': 'Read simulation templates',
   'simulation tool': 'Read simulation tool',
   'simulation tool-fixture': 'Manage simulation tool fixtures',
+  usage: 'Read usage',
   webhook: 'Manage webhooks',
 };
 
@@ -7028,6 +7029,53 @@ export const COMMANDS: readonly CliCommand[] = [
     bodyOpaque: false,
     bodyVariants: [],
     acceptsBody: true,
+    requiresAuth: true,
+  },
+  {
+    commandPath: ['usage', 'get'],
+    clientProperty: 'usage',
+    methodName: 'get',
+    httpMethod: 'get',
+    httpPath: '/v1/usage',
+    summary: 'Get usage & cost',
+    description:
+      'Report billable usage and cost for the organization over a time window, broken down by project (highest spend first). Pass `from`/`to` as ISO 8601 timestamps; optionally pass `projectId` to scope the report to one project. Amounts are billable spend only (what we absorb is never included). Authenticated by an organization API key with the `usage:read` permission.',
+    positionals: [],
+    flags: [
+      {
+        name: 'from',
+        path: ['from'],
+        location: 'query',
+        required: true,
+        description: 'Start of the window (inclusive), ISO 8601.',
+        valueKind: 'string',
+        repeatable: false,
+      },
+      {
+        name: 'to',
+        path: ['to'],
+        location: 'query',
+        required: true,
+        description:
+          'End of the window (exclusive), ISO 8601. Must be after `from`, and the window may not exceed 366 days.',
+        valueKind: 'string',
+        repeatable: false,
+      },
+      {
+        name: 'project-id',
+        path: ['projectId'],
+        location: 'query',
+        required: false,
+        description: 'Limit the report to a single project. Omit for the whole organization.',
+        valueKind: 'string',
+        repeatable: false,
+      },
+    ],
+    hasParams: true,
+    paramsAllOptional: false,
+    bodyOpaque: false,
+    bodyVariants: [],
+    acceptsBody: false,
     requiresAuth: true,
   },
   {

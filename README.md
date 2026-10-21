@@ -313,6 +313,12 @@ roark completion fish | source
 | `roark simulation tool-fixture list`                                                                  | List tool fixtures                  |
 | `roark simulation tool-fixture update <fixture-id>`                                                   | Update a tool fixture               |
 
+### usage
+
+| Command                                       | Description      |
+| --------------------------------------------- | ---------------- |
+| `roark usage get --from <value> --to <value>` | Get usage & cost |
+
 ### webhook
 
 | Command                                               | Description       |
