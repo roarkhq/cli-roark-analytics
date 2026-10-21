@@ -181,6 +181,7 @@
     "./man/roark-simulation-tool-fixture-delete.1",
     "./man/roark-simulation-tool-fixture-list.1",
     "./man/roark-simulation-tool-fixture-update.1",
+    "./man/roark-usage-get.1",
     "./man/roark-webhook-create.1",
     "./man/roark-webhook-delete.1",
     "./man/roark-webhook-get.1",
