@@ -43,6 +43,9 @@ true: only simulated calls their run's results count (not invalidated, for examp
 .TP
 \fB\-\-exclude\-hidden\-runs\fR \fI<value>\fR
 true: leave out calls from runs hidden from the runs list. Live calls stay in. false is the same as leaving it out. One of: true, false. Optional.
+.TP
+\fB\-\-properties\fR \fI<value>\fR
+Filter on custom properties, one entry per property name: properties[<name>][exists]=true keeps calls that have the property set (whatever the value), properties[<name>][exists]=false keeps calls missing it (never sent, sent as null, or removed). A property the project has never seen is missing on every call. Names match the way properties are stored, so planTier and plan_tier are one property. At most 20 properties; a name taken by a built\-in call filter, such as status, is rejected with 400. Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR

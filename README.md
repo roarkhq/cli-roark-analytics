@@ -169,8 +169,10 @@ roark completion fish | source
 
 | Command                                                                                                                                                 | Description                       |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
+| `roark call batch delete --call-ids <value>`                                                                                                            | Delete calls in batch             |
 | `roark call cost get <call-id>`                                                                                                                         | Get call cost                     |
 | `roark call create --recording-url <value> --started-at <value> --interface-type <value> --call-direction <value> --customer.phone-number-e164 <value>` | Create a call                     |
+| `roark call delete <call-id>`                                                                                                                           | Delete a call                     |
 | `roark call get <call-id>`                                                                                                                              | Get a call by ID                  |
 | `roark call list`                                                                                                                                       | List calls                        |
 | `roark call metric list <call-id>`                                                                                                                      | List call metrics                 |
