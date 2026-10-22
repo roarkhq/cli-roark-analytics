@@ -126,6 +126,7 @@
     "./man/roark-http-request-definition-get.1",
     "./man/roark-http-request-definition-list.1",
     "./man/roark-http-request-definition-update.1",
+    "./man/roark-metric-collection-job-cancel.1",
     "./man/roark-metric-collection-job-create.1",
     "./man/roark-metric-collection-job-get.1",
     "./man/roark-metric-collection-job-list.1",

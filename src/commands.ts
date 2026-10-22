@@ -3813,6 +3813,30 @@ export const COMMANDS: readonly CliCommand[] = [
     requiresAuth: true,
   },
   {
+    commandPath: ['metric', 'collection-job', 'cancel'],
+    clientProperty: 'metricCollectionJob',
+    methodName: 'cancel',
+    httpMethod: 'post',
+    httpPath: '/v1/metric/collection-jobs/{jobId}/cancel',
+    summary: 'Cancel a metric collection job',
+    description:
+      'Stops a metric collection job that has not finished. No further conversations are processed and the job ends in CANCELED. Items the job had not reached are marked SKIPPED. Metric values already produced are kept, and items that were mid-computation when the cancel arrived may still complete. Only the items that completed are billed. Safe to call more than once: a job that has already finished (COMPLETED, FAILED, or CANCELED) is returned unchanged.',
+    positionals: [
+      {
+        name: 'job-id',
+        paramKey: 'jobId',
+        description: 'The ID of the metric collection job to cancel',
+      },
+    ],
+    flags: [],
+    hasParams: false,
+    paramsAllOptional: true,
+    bodyOpaque: false,
+    bodyVariants: [],
+    acceptsBody: false,
+    requiresAuth: true,
+  },
+  {
     commandPath: ['metric', 'collection-job', 'create'],
     clientProperty: 'metricCollectionJob',
     methodName: 'create',
