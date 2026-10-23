@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.51.2](https://github.com/roarkhq/cli-roark-analytics/compare/v0.51.1...v0.51.2) (2026-10-23)
+
+
+### Bug Fixes
+
+* **confirm:** name the calls a batch delete will remove, not the command typed ([#133](https://github.com/roarkhq/cli-roark-analytics/issues/133)) ([e9a7d2f](https://github.com/roarkhq/cli-roark-analytics/commit/e9a7d2fab4fd074ce7be34e01f69c80e98aa09c2))
+
 ## [0.51.1](https://github.com/roarkhq/cli-roark-analytics/compare/v0.51.0...v0.51.1) (2026-10-22)
 
 
