@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
-import { assertBaseUrlIsTrusted, createProgram, resolveOutput, run } from './program';
+import { assertBaseUrlIsTrusted, createProgram, deletionTarget, resolveOutput, run } from './program';
 import { resolveConfig, type CliConfig } from './config';
 import { EXIT, UsageError } from './errors';
 import type { CliCommand } from './types';
@@ -31,6 +31,50 @@ const AGENT_LIST: CliCommand = {
   positionals: [],
   flags: [{ name: 'limit', path: ['limit'], location: 'query', required: false, valueKind: 'integer' }],
   hasParams: true,
+  paramsAllOptional: true,
+  bodyOpaque: false,
+  bodyVariants: [],
+  acceptsBody: false,
+  requiresAuth: true,
+};
+
+const CALL_BATCH_DELETE: CliCommand = {
+  commandPath: ['call', 'batch', 'delete'],
+  clientProperty: 'call',
+  methodName: 'batchDelete',
+  httpMethod: 'post',
+  httpPath: '/v1/call/batch-delete',
+  summary: 'Delete calls in batch',
+  positionals: [],
+  flags: [
+    {
+      name: 'call-ids',
+      path: ['callIds'],
+      location: 'body',
+      required: true,
+      valueKind: 'array',
+      repeatable: true,
+    },
+    { name: 'dry-run', path: ['dryRun'], location: 'body', required: false, valueKind: 'boolean' },
+  ],
+  hasParams: true,
+  paramsAllOptional: false,
+  bodyOpaque: false,
+  bodyVariants: [],
+  acceptsBody: true,
+  requiresAuth: true,
+};
+
+const CALL_DELETE: CliCommand = {
+  commandPath: ['call', 'delete'],
+  clientProperty: 'call',
+  methodName: 'delete',
+  httpMethod: 'delete',
+  httpPath: '/v1/call/{callId}',
+  summary: 'Delete a call',
+  positionals: [{ name: 'call-id', paramKey: 'callId' }],
+  flags: [],
+  hasParams: false,
   paramsAllOptional: true,
   bodyOpaque: false,
   bodyVariants: [],
@@ -402,5 +446,49 @@ describe('resolveOutput', () => {
 
   it('lets --no-color win over a colour-capable terminal', () => {
     expect(resolveOutput({ color: false }).color).toBe(false);
+  });
+});
+
+describe('deletionTarget', () => {
+  it('reads back the path parameter, which IS the thing being deleted', () => {
+    expect(deletionTarget(CALL_DELETE, ['abc123'], {})).toBe('abc123');
+  });
+
+  it('names both path parameters when a command takes two', () => {
+    expect(deletionTarget(CALL_DELETE, ['flow-1', 'edge-2'], {})).toBe('flow-1 edge-2');
+  });
+
+  it('names the ids a batch delete was given, not the command that was typed', () => {
+    // The whole point: `call batch delete` has no positional, and the old
+    // fallback asked "Permanently delete call batch delete?" - a sentence that
+    // cannot help someone who passed the wrong ids.
+    expect(deletionTarget(CALL_BATCH_DELETE, [], { callIds: ['abc123', 'def456'] })).toBe(
+      '2 calls: abc123, def456',
+    );
+  });
+
+  it('keeps the noun singular for one id', () => {
+    expect(deletionTarget(CALL_BATCH_DELETE, [], { callIds: ['abc123'] })).toBe('1 call: abc123');
+  });
+
+  it('accepts a single value that is not an array', () => {
+    expect(deletionTarget(CALL_BATCH_DELETE, [], { callIds: 'abc123' })).toBe('1 call: abc123');
+  });
+
+  it('counts the tail rather than printing a prompt nobody reads', () => {
+    const ids = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
+    expect(deletionTarget(CALL_BATCH_DELETE, [], { callIds: ids })).toBe('7 calls: a, b, c, d, e and 2 more');
+  });
+
+  it('ignores flags that do not identify the targets', () => {
+    expect(deletionTarget(CALL_BATCH_DELETE, [], { callIds: ['abc123'], dryRun: true })).toBe(
+      '1 call: abc123',
+    );
+  });
+
+  it('falls back to the command path rather than saying nothing', () => {
+    // Reachable only if a destructive command identifies its target some other
+    // way. Wrong, but never silent.
+    expect(deletionTarget(CALL_BATCH_DELETE, [], {})).toBe('call batch delete');
   });
 });

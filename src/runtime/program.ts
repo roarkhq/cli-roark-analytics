@@ -24,7 +24,7 @@ import {
   type ResolvedConfig,
 } from './config';
 import { AuthRequiredError, EXIT, exitCodeFor, reportError, UsageError } from './errors';
-import { buildArgs, readData, readStdin, stdinIsPiped } from './input';
+import { buildArgs, optionKey, readData, readStdin, stdinIsPiped } from './input';
 import { OUTPUT_FORMATS, paint, render, supportsColor, write, type OutputFormat } from './output';
 import type { CliCommand, CliFlag } from './types';
 
@@ -43,6 +43,52 @@ const DESTRUCTIVE_VERBS = new Set(['delete']);
 
 const isDestructive = (command: CliCommand): boolean =>
   DESTRUCTIVE_VERBS.has(command.commandPath.at(-1) ?? '');
+
+/** Values beyond this are counted rather than listed; a prompt nobody reads is not a prompt. */
+const MAX_LISTED_TARGETS = 5;
+
+/**
+ * What the confirmation prompt names as the thing being deleted.
+ *
+ * A path parameter IS that thing, so a command with one reads it back:
+ * `call delete abc123` asks about `abc123`.
+ *
+ * A batch delete has no path parameter - its targets arrive in a required flag -
+ * and the fallback named the command instead, so `call batch delete` asked
+ * "Permanently delete call batch delete?". That sentence cannot help the one
+ * person the prompt exists for: someone who typed the wrong `--call-ids` and has
+ * a last chance to notice. It is also the only destructive command without a
+ * positional, and the only one that deletes in bulk, so the single worst place
+ * to say nothing useful.
+ *
+ * So the targets come from the required flags, which are what identifies them.
+ * The command path stays as the last resort, for a destructive command that one
+ * day identifies its target some other way - wrong, but never silent.
+ */
+export const deletionTarget = (
+  command: CliCommand,
+  positionals: string[],
+  options: Record<string, unknown>,
+): string => {
+  if (positionals.length > 0) return positionals.join(' ');
+
+  const targets = command.flags
+    .filter((flag) => flag.required)
+    .flatMap((flag) => {
+      const raw = options[optionKey(flag.name)];
+      if (raw === undefined) return [];
+      return (Array.isArray(raw) ? raw : [raw]).map((value) => String(value));
+    });
+  if (targets.length === 0) return command.commandPath.join(' ');
+
+  // `call batch delete` -> `call`, so the count reads as the thing it counts.
+  const noun = command.commandPath[0] ?? 'record';
+  const listed = targets.slice(0, MAX_LISTED_TARGETS).join(', ');
+  const rest = targets.length - MAX_LISTED_TARGETS;
+  return `${targets.length} ${noun}${targets.length === 1 ? '' : 's'}: ${listed}${
+    rest > 0 ? ` and ${rest} more` : ''
+  }`;
+};
 
 interface GlobalOptions {
   baseUrl?: string;
@@ -283,7 +329,7 @@ const runApiCommand = async (
   const output = resolveOutput(options);
 
   if (isDestructive(definition)) {
-    await confirm(`Permanently delete ${positionals.join(' ') || definition.commandPath.join(' ')}?`, {
+    await confirm(`Permanently delete ${deletionTarget(definition, positionals, options)}?`, {
       assumeYes: options.yes === true,
       noInput: options.input === false,
     });
