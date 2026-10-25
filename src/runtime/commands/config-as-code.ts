@@ -2,15 +2,19 @@
  * `roark config diff [dir]` and `roark config apply [dir]` - config as code.
  *
  * These wrap the generated `config.diff` / `config.apply` SDK methods with the one client-side
- * step they need to be useful: building the bundle from a directory of YAML files. Point either
- * at a config directory and it reads `*.yaml`, inlines `file://` references, and submits the
- * `{ resources, prune }` bundle. `--data`/stdin still take a pre-built bundle for scripting.
+ * step they need to be useful: building the `{ resources, prune }` bundle. Point either at a
+ * directory of YAML (`*.yaml`, with `file://` references inlined) or at a TypeScript config file
+ * (`roark.config.ts`, whose `defineConfig(...)` default export is evaluated with jiti); with no
+ * argument it auto-detects `roark.config.ts` in the cwd. `--data`/stdin still take a pre-built
+ * bundle for scripting.
  *
  * `apply` previews the diff and asks to confirm before writing (config-managed resources absent
  * from the bundle are deleted unless `--no-prune`), so a destructive apply is never a surprise.
  * These replace the raw generated `config diff`/`apply` (excluded in program.ts) so there's one
  * obvious way to run each.
  */
+
+import { stat } from 'node:fs/promises';
 
 import { Command } from 'commander';
 import type Roark from '@roarkanalytics/sdk';
@@ -20,6 +24,7 @@ import { UsageError } from '../errors';
 import { readData, readStdin, stdinIsPiped } from '../input';
 import { render, write, type OutputFormat } from '../output';
 import { buildBundle, type ConfigBundle } from '../config-bundle';
+import { findDefaultConfigModule, isConfigModulePath, loadConfigModule } from '../config-module';
 
 const OP_MARK: Record<string, string> = { create: '+', update: '~', delete: '-', noop: ' ' };
 
@@ -47,15 +52,26 @@ const formatChanges = (data: {
 const changeCount = (summary: Record<string, number>): number =>
   (summary['create'] ?? 0) + (summary['update'] ?? 0) + (summary['delete'] ?? 0);
 
-/** Resolve the bundle: a directory (build it) or a pre-built bundle via --data / piped stdin. */
+/**
+ * Resolve the bundle from a `path`, `--data`/stdin, or an auto-detected config file:
+ *  - a directory          → build it from YAML
+ *  - a `.ts`/`.js` file   → evaluate it (the `defineConfig(...)` default export)
+ *  - `--data`/piped stdin → a pre-built JSON bundle
+ *  - nothing              → auto-detect `roark.config.ts` in the cwd (like `sst.config.ts`)
+ */
 const resolveBundle = async (
-  dir: string | undefined,
+  path: string | undefined,
   options: Record<string, unknown>,
 ): Promise<ConfigBundle> => {
   const prune = options['prune'] === false ? false : undefined;
+  const pruneOpt = prune === undefined ? {} : { prune };
 
-  if (dir !== undefined) {
-    return buildBundle(dir, { ...(prune === undefined ? {} : { prune }) });
+  if (path !== undefined) {
+    const info = await stat(path).catch(() => null);
+    if (info?.isDirectory()) return buildBundle(path, pruneOpt);
+    if (info?.isFile() && isConfigModulePath(path)) return loadConfigModule(path, pruneOpt);
+    if (!info) throw new UsageError(`path not found: ${path}`);
+    throw new UsageError(`${path} is not a config directory or a .ts/.js config file`);
   }
 
   const explicit = options['data'] === undefined ? undefined : readData(options['data'] as string);
@@ -67,11 +83,19 @@ const resolveBundle = async (
       })()
     : undefined;
   const body = explicit ?? piped;
-  if (body === undefined || typeof body !== 'object') {
-    throw new UsageError('provide a config directory (e.g. `./roark`), or a bundle via --data / stdin');
+  if (body !== undefined) {
+    if (typeof body !== 'object') throw new UsageError('--data / stdin must be a JSON bundle object');
+    const bundle = body as ConfigBundle;
+    return prune === undefined ? bundle : { ...bundle, prune };
   }
-  const bundle = body as ConfigBundle;
-  return prune === undefined ? bundle : { ...bundle, prune };
+
+  // Nothing given: fall back to a config file in the working directory.
+  const auto = findDefaultConfigModule(process.cwd());
+  if (auto) return loadConfigModule(auto, pruneOpt);
+
+  throw new UsageError(
+    'provide a config directory (e.g. `./roark`), a .ts config file, or a bundle via --data / stdin',
+  );
 };
 
 const configGroup = (root: Command): Command => {
@@ -104,11 +128,19 @@ export const registerConfigAsCodeCommands = (
 ): void => {
   const config = configGroup(root);
 
-  withCommonOptions(config.command('diff [dir]'))
-    .description('Preview the changes a config directory (or bundle) would make. No writes.')
-    .addHelpText('after', ['', 'Examples:', `  ${binaryName} config diff ./roark`].join('\n'))
-    .action(async (dir: string | undefined, options: Record<string, unknown>) => {
-      const bundle = await resolveBundle(dir, options);
+  withCommonOptions(config.command('diff [path]'))
+    .description('Preview the changes a config directory, .ts config file, or bundle would make. No writes.')
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Examples:',
+        `  ${binaryName} config diff ./roark`,
+        `  ${binaryName} config diff roark.config.ts`,
+      ].join('\n'),
+    )
+    .action(async (path: string | undefined, options: Record<string, unknown>) => {
+      const bundle = await resolveBundle(path, options);
       const client = clientFor(options as never);
       const result = await client.config.diff(bundle as never);
       const output = resolveOutput(options as never);
@@ -119,13 +151,23 @@ export const registerConfigAsCodeCommands = (
       );
     });
 
-  withCommonOptions(config.command('apply [dir]'))
-    .description('Reconcile the project to a config directory (or bundle). Previews and confirms first.')
+  withCommonOptions(config.command('apply [path]'))
+    .description(
+      'Reconcile the project to a config directory, .ts config file, or bundle. Previews and confirms first.',
+    )
     .option('-y, --yes', 'skip the confirmation prompt')
     .option('--no-input', 'never prompt; fail instead')
-    .addHelpText('after', ['', 'Examples:', `  ${binaryName} config apply ./roark`].join('\n'))
-    .action(async (dir: string | undefined, options: Record<string, unknown>) => {
-      const bundle = await resolveBundle(dir, options);
+    .addHelpText(
+      'after',
+      [
+        '',
+        'Examples:',
+        `  ${binaryName} config apply ./roark`,
+        `  ${binaryName} config apply roark.config.ts`,
+      ].join('\n'),
+    )
+    .action(async (path: string | undefined, options: Record<string, unknown>) => {
+      const bundle = await resolveBundle(path, options);
       const client = clientFor(options as never);
       const output = resolveOutput(options as never);
       const json = output.format === 'json' || options['json'] === true;
@@ -157,9 +199,10 @@ export const registerConfigAsCodeCommands = (
     'after',
     [
       '',
-      'Config as code: keep your Roark resources as YAML in git and sync them.',
-      `  ${binaryName} config diff ./roark    # preview`,
-      `  ${binaryName} config apply ./roark   # reconcile (asks to confirm)`,
+      'Config as code: keep your Roark resources in git (YAML or TypeScript) and sync them.',
+      `  ${binaryName} config apply ./roark            # a directory of YAML`,
+      `  ${binaryName} config apply roark.config.ts    # a TypeScript config (defineConfig)`,
+      `  ${binaryName} config apply                     # auto-detects roark.config.ts in the cwd`,
     ].join('\n'),
   );
 };
