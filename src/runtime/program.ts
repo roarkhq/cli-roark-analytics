@@ -27,6 +27,7 @@ import { AuthRequiredError, EXIT, exitCodeFor, reportError, UsageError } from '.
 import { buildArgs, optionKey, readData, readStdin, stdinIsPiped } from './input';
 import { OUTPUT_FORMATS, paint, render, supportsColor, write, type OutputFormat } from './output';
 import type { CliCommand, CliFlag } from './types';
+import { version } from '../version';
 
 export interface ProgramOptions {
   binaryName: string;
@@ -202,6 +203,10 @@ const clientFor = (options: GlobalOptions, requiresAuth = true): Roark => {
     ...(config.baseURL === undefined ? {} : { baseURL: config.baseURL }),
     ...(config.timeout === undefined ? {} : { timeout: config.timeout }),
     ...(config.maxRetries === undefined ? {} : { maxRetries: config.maxRetries }),
+    // Tells the API this request came from the CLI. The SDK's own user agent is
+    // the same for every program built on it, so without this a CLI command is
+    // counted as plain SDK usage.
+    defaultHeaders: { 'X-Roark-Client': `cli/${version}` },
   });
 };
 

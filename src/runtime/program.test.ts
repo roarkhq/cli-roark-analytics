@@ -6,6 +6,7 @@ import { assertBaseUrlIsTrusted, createProgram, deletionTarget, resolveOutput, r
 import { resolveConfig, type CliConfig } from './config';
 import { EXIT, UsageError } from './errors';
 import type { CliCommand } from './types';
+import { version } from '../version';
 
 /**
  * These drive the real command tree against a stubbed global `fetch`, which is
@@ -269,6 +270,12 @@ describe('run: credential routing', () => {
     writeUser({ bearerToken: 'stored-token' });
     expect(await invoke('agent', 'list')).toBe(EXIT.ok);
     expect(requests[0]!.headers.get('authorization')).toBe('Bearer stored-token');
+  });
+
+  it('names the CLI and its version on every request, so the API can tell it from the SDK', async () => {
+    writeUser({ bearerToken: 'stored-token' });
+    expect(await invoke('agent', 'list')).toBe(EXIT.ok);
+    expect(requests[0]!.headers.get('x-roark-client')).toBe(`cli/${version}`);
   });
 });
 
