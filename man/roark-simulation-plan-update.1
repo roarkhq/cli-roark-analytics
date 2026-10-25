@@ -86,6 +86,15 @@ The reference value, shown first in the results. See `POST /v1/simulation/plan`.
 .TP
 \fB\-\-comparison\-values\fR \fI<value>\fR
 The arms to run. See `POST /v1/simulation/plan`. Omitting it keeps the arms the plan already has, pins included, so an edit that only renames the plan never widens a sweep you deliberately narrowed, and never multiplies what it costs. Send it with `comparisonProperty` and `flows`, which the arms are rebuilt from. Optional.
+.TP
+\fB\-\-notifications\fR \fI<value>\fR
+Where each run's report announces itself once it is ready. Optional.
+.TP
+\fB\-\-notifications.email\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-notifications.slack\fR \fI<value>\fR
+Channels in the project's connected Slack workspace to post the report to (at most 10). Slack must be connected to the project first. Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
