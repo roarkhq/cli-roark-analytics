@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.53.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.52.0...v0.53.0) (2026-10-25)
+
+
+### Features
+
+* **cli:** send X-Roark-Client on every API request ([#137](https://github.com/roarkhq/cli-roark-analytics/issues/137)) ([8efb7e8](https://github.com/roarkhq/cli-roark-analytics/commit/8efb7e8d78775f6e8185c9fe85764ed69c49be10))
+
 ## [0.52.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.51.2...v0.52.0) (2026-10-25)
 
 
