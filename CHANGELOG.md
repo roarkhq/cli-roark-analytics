@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.52.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.51.2...v0.52.0) (2026-10-25)
+
+
+### Features
+
+* **config:** evaluate a TypeScript config file, not just a YAML directory ([#135](https://github.com/roarkhq/cli-roark-analytics/issues/135)) ([85779d1](https://github.com/roarkhq/cli-roark-analytics/commit/85779d1f8b0b3d8660e08a463159fe57458b16ea))
+
 ## [0.51.2](https://github.com/roarkhq/cli-roark-analytics/compare/v0.51.1...v0.51.2) (2026-10-23)
 
 
