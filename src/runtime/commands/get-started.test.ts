@@ -666,3 +666,143 @@ describe('roark get-started, run again', () => {
     expect(plan['direction']).toBe('OUTBOUND');
   });
 });
+
+/**
+ * A minimal `@roarkanalytics/sdk` in the project, so a config module can actually be loaded.
+ *
+ * A stub rather than the real package: these tests are about `get-started` writing a module and
+ * driving it through diff and apply, and the helpers are thin enough that a real one would only
+ * slow the suite down. `src/runtime/get-started/module.test.ts` pins the source they are given,
+ * and the generated file was type-checked against the published SDK by hand.
+ */
+const installStubSdk = (dir: string): void => {
+  const root = join(dir, 'node_modules', '@roarkanalytics', 'sdk');
+  mkdirSync(join(root, 'lib'), { recursive: true });
+  writeFileSync(
+    join(root, 'package.json'),
+    JSON.stringify({ name: '@roarkanalytics/sdk', version: '5.16.0', exports: { './lib/*': './lib/*.js' } }),
+  );
+  const define = (kind: string): string =>
+    `exports.define${kind[0]!.toUpperCase()}${kind.slice(
+      1,
+    )} = (resource) => ({ kind: '${kind}', ...resource });`;
+  writeFileSync(
+    join(root, 'lib', 'config.js'),
+    [
+      define('agent'),
+      define('persona'),
+      define('metric'),
+      "exports.defineImprovFlow = (resource) => ({ kind: 'flow', type: 'improv', ...resource });",
+      define('simulationPlan'),
+      'exports.defineConfig = (bundle) => bundle;',
+    ].join('\n'),
+  );
+};
+
+describe('roark get-started --ts', () => {
+  it('writes one TypeScript config in the working directory, not a YAML tree', async () => {
+    // `roark.config.ts` in the cwd is what `config apply` finds with no argument, which is why
+    // --ts defaults there rather than to ./roark.
+    const dir = tempDir();
+
+    await run({ argv: ['get-started', '--dir', dir, '--ts', '--scaffold-only'], interactive: false });
+
+    expect(readdirSync(dir)).toEqual(['roark.config.ts']);
+    const source = readFileSync(join(dir, 'roark.config.ts'), 'utf8');
+    expect(source).toContain("from '@roarkanalytics/sdk/lib/config'");
+    expect(source).toContain('export default defineConfig(');
+  });
+
+  it('says so when the project cannot import the helpers', async () => {
+    // The file is still written: the fix is one `npm install`, and a config that is right but
+    // not yet loadable beats no config at all.
+    const dir = tempDir();
+
+    await run({ argv: ['get-started', '--dir', dir, '--ts', '--scaffold-only'], interactive: false });
+
+    expect(said()).toContain('does not have');
+    expect(readdirSync(dir)).toEqual(['roark.config.ts']);
+  });
+
+  it('refuses both formats at once rather than picking one', async () => {
+    const dir = tempDir();
+
+    await expect(
+      run({ argv: ['get-started', '--dir', dir, '--ts', '--yaml'], interactive: false }),
+    ).rejects.toThrow(UsageError);
+  });
+
+  it('walks the whole flow and applies the module it wrote', async () => {
+    const dir = tempDir();
+    installStubSdk(dir);
+
+    const recorded = await run({
+      argv: ['get-started', '--dir', dir, '--ts'],
+      answers: HAPPY_PATH_ANSWERS,
+    });
+
+    expect(readdirSync(dir).sort()).toEqual(['node_modules', 'roark.config.ts']);
+    expect(recorded.calls).toContain('config.apply');
+    expect(recorded.runBodies).toEqual([{ planId: 'plan_1' }]);
+  });
+
+  it('offers the choice only where a config module could actually load', async () => {
+    // Asked: the project declares the SDK, so both forms work.
+    const withSdk = tempDir();
+    installStubSdk(withSdk);
+    await run({
+      argv: ['get-started', '--dir', withSdk, '--no-run'],
+      answers: ['1', ...HAPPY_PATH_ANSWERS],
+    });
+    expect(said()).toContain('How should the config be written?');
+
+    // Not asked: nothing to import from, so TypeScript is not a real option.
+    stderr.mockClear();
+    const withoutSdk = tempDir();
+    await run({ argv: ['get-started', '--dir', withoutSdk, '--no-run'], answers: HAPPY_PATH_ANSWERS });
+    expect(said()).not.toContain('How should the config be written?');
+  });
+
+  it('will not half-author a config module somebody already wrote', async () => {
+    // One file holds everything, so there is no way to add a resource to it without editing
+    // code someone wrote. Asking questions whose answers have nowhere to go is the alternative.
+    const dir = tempDir();
+    writeFileSync(
+      join(dir, 'roark.config.ts'),
+      "export default { resources: [{ kind: 'agent', name: 'frontdesk' }] }\n",
+    );
+
+    await expect(run({ argv: ['get-started', '--dir', dir, '--ts'], answers: [] })).rejects.toThrow(
+      /already exists/,
+    );
+    // And it stops before asking anything, rather than collecting answers it cannot write.
+    expect(said()).not.toContain('What should we call the caller?');
+  });
+
+  it('runs an existing config module that is already complete', async () => {
+    const dir = tempDir();
+    writeFileSync(
+      join(dir, 'roark.config.ts'),
+      [
+        'export default {',
+        '  resources: [',
+        "    { kind: 'agent', name: 'frontdesk' },",
+        "    { kind: 'persona', name: 'caller' },",
+        "    { kind: 'flow', name: 'first-scenario' },",
+        "    { kind: 'simulationPlan', name: 'first-run' },",
+        '  ],',
+        '}',
+      ].join('\n'),
+    );
+
+    const recorded = await run({
+      argv: ['get-started', '--dir', dir, '--ts'],
+      overrides: { emptyDiff: true, plans: [{ id: 'plan_1', name: 'first-run' }] },
+      answers: ['' /* yes, start the run */],
+    });
+
+    expect(said()).toContain('already declares everything');
+    expect(recorded.calls).not.toContain('config.apply');
+    expect(recorded.runBodies).toEqual([{ planId: 'plan_1' }]);
+  });
+});

@@ -52,9 +52,14 @@ run itself. Each step writes one YAML file under `./roark` and the directory is 
 `config apply`, so the setup is yours to commit, re-running it fills in whatever is missing,
 and nothing is ever pruned.
 
+It writes YAML by default, which needs nothing installed. In a project that has the SDK it
+offers TypeScript instead: one `roark.config.ts` using the typed `define*` helpers, which
+`config apply` finds by name.
+
 ```sh
-roark get-started --scaffold-only   # write the files with placeholders; no questions, no API calls
+roark get-started --scaffold-only   # write the config with placeholders; no questions, no API calls
 roark get-started --no-run          # set it all up, start the run yourself later
+roark get-started --ts              # TypeScript config instead of YAML
 ```
 
 ## Usage

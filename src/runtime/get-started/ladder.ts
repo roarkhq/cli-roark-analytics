@@ -33,12 +33,14 @@ export const STEPS: readonly LadderStep[] = [
 
 const label = (index: number): string => `${index + 1}/${STEPS.length}`;
 
-export const intro = (binaryName: string, dir: string, color: boolean): string =>
+export const intro = (binaryName: string, target: string, format: 'yaml' | 'ts', color: boolean): string =>
   [
     '',
     paint(`${binaryName}: let's get your first graded simulation running.`, 'bold', color),
     paint(
-      `${STEPS.length} steps. Everything is written to ${dir}/ as YAML you own and can commit.`,
+      `${STEPS.length} steps. Everything is written to ${target} as ${
+        format === 'ts' ? 'TypeScript' : 'YAML'
+      } you own and can commit.`,
       'dim',
       color,
     ),
@@ -74,16 +76,19 @@ export const note = (text: string, color: boolean, style: Style = 'dim'): string
 
 export interface NextSteps {
   binaryName: string;
+  /** What to call the config when pointing at it: a directory, or a file. */
   dir: string;
+  /** The apply command for this config, spelled the way a person would type it. */
+  apply: string;
   lines: readonly string[];
 }
 
-export const nextSteps = ({ binaryName, dir, lines }: NextSteps, color: boolean): string =>
+export const nextSteps = ({ dir, apply, lines }: NextSteps, color: boolean): string =>
   [
     '',
     paint('What next:', 'bold', color),
     ...lines.map((line) => `  ${line}`),
     `  ${paint(`git add ${dir}`, 'cyan', color)}  keep it in git; CI can run the same two commands`,
-    `  ${paint(`${binaryName} config apply ${dir}`, 'cyan', color)}  redeploy after you edit the YAML`,
+    `  ${paint(apply, 'cyan', color)}  redeploy after you edit the config`,
     '',
   ].join('\n');

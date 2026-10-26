@@ -122,133 +122,154 @@ const document = (notes: readonly string[], resource: Record<string, unknown>): 
     stringify(resource, { lineWidth: 0 }),
   ].join('\n');
 
-const agentFile = (agent: AgentSetup): ScaffoldFile => ({
+/** Which serialization the config is written in. The resources are the same either way. */
+export type ConfigFormat = 'yaml' | 'ts';
+
+export interface ResourceEntry {
+  /** The config `kind`, which the TypeScript helpers supply themselves. */
+  kind: string;
+  /** Where the YAML form puts it, relative to the config directory. */
+  path: string;
+  resource: Record<string, unknown>;
+  /** Comments to write above it. A few differ by format, because the escape hatches do. */
+  notes: string[];
+}
+
+const agentEntry = (agent: AgentSetup, format: ConfigFormat): ResourceEntry => ({
+  kind: 'agent',
   path: `agents/${agent.name}.yaml`,
-  contents: document(
-    [
-      'The agent under test. Roark does not run it; this is how Roark reaches it.',
-      ...(agent.endpoints === undefined ?
-        ['Its endpoints live in Roark already, so they are not declared here.']
-      : ['Add `prompt: file://prompts/<name>.md` to keep its system prompt in git too.']),
-    ],
-    {
-      kind: 'agent',
-      name: agent.name,
-      ...(agent.displayName === undefined ? {} : { displayName: agent.displayName }),
-      ...(agent.endpoints === undefined ?
-        {}
-      : {
-          endpoints: agent.endpoints.map((endpoint) => ({
-            value: endpoint.value,
-            direction: endpoint.direction,
-          })),
-        }),
-    },
-  ),
+  notes: [
+    'The agent under test. Roark does not run it; this is how Roark reaches it.',
+    ...(agent.endpoints === undefined ?
+      ['Its endpoints live in Roark already, so they are not declared here.']
+    : format === 'ts' ?
+      ["Add `prompt: readFileSync('./prompts/<name>.md', 'utf8')` to keep its system prompt here too."]
+    : ['Add `prompt: file://prompts/<name>.md` to keep its system prompt in git too.']),
+  ],
+  resource: {
+    kind: 'agent',
+    name: agent.name,
+    ...(agent.displayName === undefined ? {} : { displayName: agent.displayName }),
+    ...(agent.endpoints === undefined ?
+      {}
+    : {
+        endpoints: agent.endpoints.map((endpoint) => ({
+          value: endpoint.value,
+          direction: endpoint.direction,
+        })),
+      }),
+  },
 });
 
-const personaFile = (persona: PersonaSetup): ScaffoldFile => ({
+const personaEntry = (persona: PersonaSetup): ResourceEntry => ({
+  kind: 'persona',
   path: `personas/${persona.name}.yaml`,
-  contents: document(
-    [
-      'The simulated caller. Everything else about them has a sensible default:',
-      'baseEmotion, speechPace, backgroundNoise, interruption and more.',
-    ],
-    {
-      kind: 'persona',
-      name: persona.name,
-      language: persona.language,
-      accent: persona.accent,
-      gender: persona.gender,
-    },
-  ),
+  notes: [
+    'The simulated caller. Everything else about them has a sensible default:',
+    'baseEmotion, speechPace, backgroundNoise, interruption and more.',
+  ],
+  resource: {
+    kind: 'persona',
+    name: persona.name,
+    language: persona.language,
+    accent: persona.accent,
+    gender: persona.gender,
+  },
 });
 
-const flowFile = (flow: FlowSetup, agentName: string, personaName: string): ScaffoldFile => ({
+const flowEntry = (flow: FlowSetup, agentName: string, personaName: string): ResourceEntry => ({
+  kind: 'flow',
   path: `flows/${flow.name}.yaml`,
-  contents: document(
-    [
-      'What the call is about. `improv` means the caller is given a goal and talks freely;',
-      'use `type: scripted` when you need an exact turn-by-turn script.',
-      'Add `edgeCases:` to test the same call going wrong in a specific way.',
-    ],
-    {
-      kind: 'flow',
-      type: 'improv',
-      name: flow.name,
-      agents: [agentName],
-      happyPath: {
-        persona: personaName,
-        environment: DEFAULT_ENVIRONMENT,
-        prompt: flow.goal,
-      },
-      ...(flow.expectation === undefined ? {} : { expectations: [flow.expectation] }),
+  notes: [
+    'What the call is about. `improv` means the caller is given a goal and talks freely;',
+    'a scripted flow is the other kind, for an exact turn-by-turn script.',
+    'Add `edgeCases` to test the same call going wrong in a specific way.',
+  ],
+  resource: {
+    kind: 'flow',
+    type: 'improv',
+    name: flow.name,
+    agents: [agentName],
+    happyPath: {
+      persona: personaName,
+      environment: DEFAULT_ENVIRONMENT,
+      prompt: flow.goal,
     },
-  ),
+    ...(flow.expectation === undefined ? {} : { expectations: [flow.expectation] }),
+  },
 });
 
-const metricFile = (metric: CustomMetricSetup): ScaffoldFile => ({
+const metricEntry = (metric: CustomMetricSetup): ResourceEntry => ({
+  kind: 'metric',
   path: `metrics/${metric.name}.yaml`,
-  contents: document(
-    [
-      'A custom metric, graded by an LLM against the transcript.',
-      '`name` is the slug a plan references. `type` and `name` are fixed once created.',
-    ],
-    {
-      kind: 'metric',
-      name: metric.name,
-      displayName: titleize(metric.name).slice(0, 100),
-      type: 'BOOLEAN',
-      // The grading prompt has to reference a transcript source and the world context, so the
-      // question is wrapped rather than used raw: a prompt that names neither is rejected.
-      prompt: `Using {{transcript}} and {{world_context}}, ${metric.question}`,
-      trueLabel: 'Yes',
-      falseLabel: 'No',
-    },
-  ),
+  notes: [
+    'A custom metric, graded by an LLM against the transcript.',
+    '`name` is the slug a plan references. `type` and `name` are fixed once created.',
+  ],
+  resource: {
+    kind: 'metric',
+    name: metric.name,
+    displayName: titleize(metric.name).slice(0, 100),
+    type: 'BOOLEAN',
+    // The grading prompt has to reference a transcript source and the world context, so the
+    // question is wrapped rather than used raw: a prompt that names neither is rejected.
+    prompt: `Using {{transcript}} and {{world_context}}, ${metric.question}`,
+    trueLabel: 'Yes',
+    falseLabel: 'No',
+  },
 });
 
-const planFile = (setup: Setup, plan: PlanSetup): ScaffoldFile => {
+const planEntry = (setup: Setup, plan: PlanSetup): ResourceEntry => {
   const dial = setup.agent.dial;
-  // The line is named only when it could be ambiguous. An agent whose file declares exactly one
+  // The line is named only when it could be ambiguous. An agent whose config declares exactly one
   // endpoint has nothing to disambiguate, and naming it there would mean the same number lived in
-  // two files that could drift apart. An adopted agent is the other case: Roark may hold several
+  // two places that could drift apart. An adopted agent is the other case: Roark may hold several
   // endpoints for it, and apply refuses to guess rather than dial the wrong one.
   const declaresOneEndpoint = setup.agent.endpoints?.length === 1;
   const value = !declaresOneEndpoint && dial !== undefined && 'value' in dial ? dial.value : undefined;
+
   return {
+    kind: 'simulationPlan',
     path: `simulation-plans/${plan.name}.yaml`,
-    contents: document(
-      [
-        'The saved run: which line to call, which flows to run, and what grades them.',
-        'Applying this declares the plan. Starting a run is a separate, deliberate step.',
-        'Add `schedule:` to run it on a cadence, or `iterations:` to run each case more than once.',
+    notes: [
+      'The saved run: which line to call, which flows to run, and what grades them.',
+      'Applying this declares the plan. Starting a run is a separate, deliberate step.',
+      'Add `schedule` to run it on a cadence, or `iterations` to run each case more than once.',
+    ],
+    resource: {
+      kind: 'simulationPlan',
+      name: plan.name,
+      direction: directionFor(dial?.direction),
+      agentEndpoints: [
+        {
+          agent: setup.agent.name,
+          ...(value === undefined ? {} : { value, direction: dial?.direction }),
+        },
       ],
-      {
-        kind: 'simulationPlan',
-        name: plan.name,
-        direction: directionFor(dial?.direction),
-        agentEndpoints: [
-          {
-            agent: setup.agent.name,
-            // Omitted when the agent has exactly one endpoint, which is unambiguous. Named when
-            // it does not: apply refuses to guess between endpoints rather than dial the wrong one.
-            ...(value === undefined ? {} : { value, direction: dial?.direction }),
-          },
-        ],
-        metrics: [...setup.metrics],
-        flows: [{ flow: setup.flow.name }],
-        maxDurationSeconds: plan.maxDurationSeconds,
-      },
-    ),
+      metrics: [...setup.metrics],
+      flows: [{ flow: setup.flow.name }],
+      maxDurationSeconds: plan.maxDurationSeconds,
+    },
   };
 };
 
-/** Every file this setup implies, in apply order (which is also a sensible reading order). */
-export const setupFiles = (setup: Setup): ScaffoldFile[] => [
-  ...(setup.customMetric === undefined ? [] : [metricFile(setup.customMetric)]),
-  personaFile(setup.persona),
-  agentFile(setup.agent),
-  flowFile(setup.flow, setup.agent.name, setup.persona.name),
-  ...(setup.plan === undefined ? [] : [planFile(setup, setup.plan)]),
+/**
+ * Every resource this setup implies, in apply order (which is also a sensible reading order).
+ *
+ * Shared by both serializations, so the YAML and the TypeScript forms cannot describe different
+ * projects: they are the same objects, written two ways.
+ */
+export const resourcesFor = (setup: Setup, format: ConfigFormat = 'yaml'): ResourceEntry[] => [
+  ...(setup.customMetric === undefined ? [] : [metricEntry(setup.customMetric)]),
+  personaEntry(setup.persona),
+  agentEntry(setup.agent, format),
+  flowEntry(setup.flow, setup.agent.name, setup.persona.name),
+  ...(setup.plan === undefined ? [] : [planEntry(setup, setup.plan)]),
 ];
+
+/** The YAML form: one file per resource, under the config directory. */
+export const setupFiles = (setup: Setup): ScaffoldFile[] =>
+  resourcesFor(setup, 'yaml').map((entry) => ({
+    path: entry.path,
+    contents: document(entry.notes, entry.resource),
+  }));

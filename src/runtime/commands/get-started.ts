@@ -19,12 +19,13 @@
  */
 
 import { existsSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 
 import { Command } from 'commander';
 import type Roark from '@roarkanalytics/sdk';
 
-import { buildBundle, EmptyConfigDirectoryError } from '../config-bundle';
+import { buildBundle, EmptyConfigDirectoryError, type ConfigBundle } from '../config-bundle';
+import { loadConfigModule } from '../config-module';
 import { changeCount, formatChanges } from '../config-changes';
 import { isInteractive } from '../confirm';
 import { AuthRequiredError, UsageError } from '../errors';
@@ -46,16 +47,75 @@ import {
   setupFiles,
   slugify,
   type AgentSetup,
+  type ConfigFormat,
   type CustomMetricSetup,
   type EndpointDirection,
   type EndpointSetup,
   type Setup,
 } from '../get-started/resources';
+import { CONFIG_MODULE_FILE, CONFIG_MODULE_IMPORT, setupModule } from '../get-started/module';
 import { writeScaffold } from '../get-started/scaffold';
 import { metricOptions, type AvailableMetric } from '../get-started/starter-metrics';
 import { sleep, verdictLine, verdictStyle, watchJob, type JobSnapshot } from '../get-started/watch';
 
 const DEFAULT_DIR = './roark';
+
+/**
+ * Where the config is written, and in which form.
+ *
+ * YAML needs nothing installed, so it is the default and the only thing offered to someone who
+ * reached the CLI through a global install. TypeScript gives types and editor completion, but its
+ * `define*` helpers are imported from the SDK, so it is only usable in a project that has the SDK
+ * to import from - which is why it is offered rather than assumed.
+ */
+interface Target {
+  format: ConfigFormat;
+  /** The directory for YAML, the containing directory for a config module. */
+  dir: string;
+  /** What to print when pointing at the config: a directory, or the file. */
+  label: string;
+  /** What `config diff` / `config apply` should be given. */
+  argument: string;
+}
+
+const targetFor = (format: ConfigFormat, dir: string): Target =>
+  format === 'yaml' ?
+    { format, dir, label: `${dir}/`, argument: dir }
+  : {
+      format,
+      dir,
+      label: join(dir, CONFIG_MODULE_FILE),
+      // `config apply` finds `roark.config.ts` in the working directory on its own, so the
+      // common case is given no argument at all.
+      argument: dir === '.' ? '' : join(dir, CONFIG_MODULE_FILE),
+    };
+
+/** The command that applies this target, spelled the way a person would type it. */
+const applyCommand = (binaryName: string, target: Target): string =>
+  `${binaryName} config apply${target.argument === '' ? '' : ` ${target.argument}`}`;
+
+/**
+ * Whether a config module could actually be loaded from here.
+ *
+ * `roark.config.ts` imports its helpers from the SDK, and jiti resolves that from the config
+ * file's own project. Offering TypeScript where the import cannot resolve would hand someone a
+ * config that fails on the next command, so the question is only asked where it can work.
+ */
+const sdkIsInstalled = (dir: string): boolean => {
+  // Installed, not merely declared in a package.json: the difference decides whether the config
+  // loads or throws, and a dependency somebody has not run an install for yet would offer a
+  // format that breaks on the very next step, after every question has been answered.
+  //
+  // Walked upwards because a workspace hoists its dependencies to the repository root, where a
+  // package in `packages/x` has no `node_modules` of its own.
+  let root = resolve(dir);
+  for (;;) {
+    if (existsSync(join(root, 'node_modules', '@roarkanalytics', 'sdk'))) return true;
+    const parent = dirname(root);
+    if (parent === root) return false;
+    root = parent;
+  }
+};
 
 /** How long to wait for the first run, and how often to ask. A simulated call takes a minute or two. */
 const WATCH_TIMEOUT_MS = 6 * 60_000;
@@ -126,10 +186,15 @@ const pickCode = async (
  * with it (unparseable YAML, a resource with no kind) is raised, because `apply` would hit it
  * two steps later anyway and this is the better place to find out.
  */
-const readExisting = async (dir: string): Promise<Record<string, unknown>[]> => {
-  if (!existsSync(resolve(dir))) return [];
+const readExisting = async (target: Target): Promise<Record<string, unknown>[]> => {
+  if (target.format === 'ts') {
+    const file = join(target.dir, CONFIG_MODULE_FILE);
+    if (!existsSync(resolve(file))) return [];
+    return (await loadConfigModule(file)).resources;
+  }
+  if (!existsSync(resolve(target.dir))) return [];
   try {
-    return (await buildBundle(dir)).resources;
+    return (await buildBundle(target.dir)).resources;
   } catch (error) {
     // An empty directory is a fresh start, not a problem. Anything else (unparseable YAML, a
     // resource with no kind) is a real error the user has to see: apply would hit it two steps
@@ -358,10 +423,14 @@ const placeholderSetup = (): Setup => ({
   plan: { name: 'first-run', maxDurationSeconds: DEFAULT_MAX_DURATION_SECONDS },
 });
 
-const PLACEHOLDER_TODOS = [
-  'Replace the endpoint value in agents/my-agent.yaml with the number Roark should call.',
-  'Rewrite the scenario prompt in flows/first-scenario.yaml so it describes a real call.',
-];
+const placeholderTodos = (format: ConfigFormat): string[] => {
+  const agent = format === 'ts' ? CONFIG_MODULE_FILE : 'agents/my-agent.yaml';
+  const flow = format === 'ts' ? CONFIG_MODULE_FILE : 'flows/first-scenario.yaml';
+  return [
+    `Replace the endpoint value in ${agent} with the number Roark should call.`,
+    `Rewrite the scenario prompt in ${flow} so it describes a real call.`,
+  ];
+};
 
 const withCommonOptions = (command: Command): Command =>
   command
@@ -385,7 +454,12 @@ export const registerGetStartedCommand = (
   withCommonOptions(root.command('get-started'))
     .alias('init')
     .description('Guided setup: an agent, a caller, a scenario, metrics, and your first graded run')
-    .option('--dir <path>', 'where to write the config files', DEFAULT_DIR)
+    // No commander default: the default depends on the format (`./roark` for YAML, the working
+    // directory for a config module, where `config apply` finds it by name), and a default here
+    // would make "was --dir given?" unanswerable.
+    .option('--dir <path>', `where to write the config (default: ${DEFAULT_DIR}, or . for --ts)`)
+    .option('--ts', `write TypeScript (${CONFIG_MODULE_FILE}) instead of YAML`)
+    .option('--yaml', 'write YAML, without asking')
     .option('--scaffold-only', 'write the files with placeholder values and stop: no questions, no API calls')
     .option('--no-run', 'apply the config but do not start a simulation')
     .option('-y, --yes', 'skip both confirmations: the apply, and placing the call')
@@ -401,6 +475,7 @@ export const registerGetStartedCommand = (
         `  ${binaryName} get-started                  # answer the questions`,
         `  ${binaryName} get-started --scaffold-only  # just write the files`,
         `  ${binaryName} get-started --no-run         # set everything up, run it later`,
+        `  ${binaryName} get-started --ts             # TypeScript config instead of YAML`,
         '',
         'Two things are confirmed before they happen: the apply, and the run. `--yes` skips both,',
         'so in a script it will place a real, billed call. Pair it with `--no-run` if that is not',
@@ -409,53 +484,140 @@ export const registerGetStartedCommand = (
     )
     .action(async (options: Record<string, unknown>) => {
       const color = supportsColor(process.stderr);
-      const dir = typeof options['dir'] === 'string' ? options['dir'] : DEFAULT_DIR;
       const scaffoldOnly = options['scaffoldOnly'] === true;
       const quiet = options['quiet'] === true;
       const say = (text: string): void => {
         if (!quiet) write(text, process.stderr);
       };
 
+      const wantsTs = options['ts'] === true;
+      const wantsYaml = options['yaml'] === true;
+      if (wantsTs && wantsYaml) {
+        throw new UsageError('--ts and --yaml ask for two different files. Pick one.');
+      }
+      const chosenDir = typeof options['dir'] === 'string' ? options['dir'] : undefined;
+      // A TypeScript config defaults to the working directory rather than `./roark`, because
+      // `config apply` finds `roark.config.ts` there by itself and then needs no argument.
+      const dir = chosenDir ?? (wantsTs ? '.' : DEFAULT_DIR);
+      // Settled up front for the non-interactive paths; the question below can still change it.
+      let target = targetFor(wantsTs ? 'ts' : 'yaml', dir);
+
       if (!scaffoldOnly && (options['input'] === false || !isInteractive())) {
         throw new UsageError(
           [
             `${binaryName} get-started asks questions, so it needs a terminal.`,
             '',
-            `Run it in one, or use --scaffold-only to write ${dir}/ with placeholder values and`,
-            `fill them in by hand (then \`${binaryName} config apply ${dir}\`).`,
+            `Run it in one, or use --scaffold-only to write ${target.label} with placeholder values`,
+            `and fill them in by hand (then \`${applyCommand(binaryName, target)}\`).`,
           ].join('\n'),
         );
       }
 
-      say(intro(binaryName, dir, color));
+      /** Said once the target is settled, because a config module that cannot import is useless. */
+      const warnIfUnimportable = (): void => {
+        if (target.format !== 'ts' || sdkIsInstalled(dir)) return;
+        say(
+          note(
+            `${CONFIG_MODULE_FILE} imports from ${CONFIG_MODULE_IMPORT}, which this project does not have. Install @roarkanalytics/sdk here, or use --yaml.`,
+            color,
+            'yellow',
+          ),
+        );
+      };
 
       if (scaffoldOnly) {
-        const result = await writeScaffold(dir, setupFiles(placeholderSetup()));
+        say(intro(binaryName, target.label, target.format, color));
+        warnIfUnimportable();
+        const placeholder = placeholderSetup();
+        const files = target.format === 'ts' ? [setupModule(placeholder)] : setupFiles(placeholder);
+        const result = await writeScaffold(dir, files);
         for (const path of result.written) say(`${paint('+', 'green', color)} ${path}`);
         for (const path of result.skipped)
           say(`${paint('·', 'yellow', color)} ${path} (already there, left alone)`);
         say('');
-        for (const todo of PLACEHOLDER_TODOS) say(note(`TODO: ${todo}`, color, 'yellow'));
+        for (const todo of placeholderTodos(target.format)) say(note(`TODO: ${todo}`, color, 'yellow'));
         say(
           nextSteps(
             {
               binaryName,
-              dir,
+              dir: target.label,
+              apply: applyCommand(binaryName, target),
               lines: [
-                `${paint(`${binaryName} config diff ${dir}`, 'cyan', color)}  preview what it would create`,
+                `${paint(
+                  `${binaryName} config diff${target.argument === '' ? '' : ` ${target.argument}`}`,
+                  'cyan',
+                  color,
+                )}  preview what it would create`,
               ],
             },
             color,
           ),
         );
-        if (!quiet) write(dir);
+        if (!quiet) write(target.label);
         return;
       }
 
-      const existing = await readExisting(dir);
       const prompter = createPrompter();
 
       try {
+        // Only where it is a real choice. A project without the SDK cannot load a config module,
+        // and someone who passed --ts or --yaml has already answered.
+        if (!wantsTs && !wantsYaml && sdkIsInstalled(dir)) {
+          const picked = await prompter.select(
+            'How should the config be written?',
+            [
+              { value: 'yaml', label: `YAML files in ${chosenDir ?? DEFAULT_DIR}`, hint: 'no dependencies' },
+              {
+                value: 'ts',
+                label: `TypeScript in ${join(chosenDir ?? '.', CONFIG_MODULE_FILE)}`,
+                hint: 'typed helpers, imported from the SDK',
+              },
+            ],
+            'yaml',
+          );
+          target = targetFor(
+            picked === 'ts' ? 'ts' : 'yaml',
+            chosenDir ?? (picked === 'ts' ? '.' : DEFAULT_DIR),
+          );
+        }
+
+        say(intro(binaryName, target.label, target.format, color));
+        warnIfUnimportable();
+        const existing = await readExisting(target);
+
+        // A config module is one file holding everything, so there is no way to add a resource
+        // to one without editing code somebody wrote. The YAML form has no such problem: a
+        // missing resource is a missing file, and writing it touches nothing else.
+        //
+        // So when the module already exists it is taken as final. Complete (it declares a plan)
+        // means the useful re-run still works: skip the questions, apply, offer the run. Partial
+        // means stopping, rather than asking questions whose answers have nowhere to go.
+        if (target.format === 'ts' && existing.length > 0) {
+          // Every kind, not just the plan: a module with no persona would still send step 3 to
+          // the prompt, and its answer could not be written. Complete means nothing left to ask.
+          const missing = (
+            [
+              ['an agent', 'agent'],
+              ['a caller', 'persona'],
+              ['a scenario', 'flow'],
+              ['a run plan', 'simulationPlan'],
+            ] as const
+          ).filter(([, kind]) => namesOfKind(existing, kind).length === 0);
+
+          if (missing.length > 0) {
+            throw new UsageError(
+              [
+                `${target.label} already exists, and ${binaryName} get-started writes that file whole`,
+                'rather than editing one you wrote.',
+                '',
+                `Add what it is missing yourself (${missing.map(([label]) => label).join(', ')}), then`,
+                `\`${applyCommand(binaryName, target)}\`.`,
+              ].join('\n'),
+            );
+          }
+          say(note(`${target.label} already declares everything, so this only runs it.`, color));
+        }
+
         // ---- 1. Account ------------------------------------------------------------------
         say(stepHeader(0, color));
         let client: Roark;
@@ -705,13 +867,20 @@ export const registerGetStartedCommand = (
 
         // Only the files for steps that actually ran: a step read back out of the directory is
         // already on disk, and rewriting it is how an edit gets lost.
-        const pending = setupFiles(setup).filter((file) => {
-          if (file.path.startsWith('agents/')) return configuredAgents.length === 0;
-          if (file.path.startsWith('personas/')) return configuredPersonas.length === 0;
-          if (file.path.startsWith('flows/')) return configuredFlows.length === 0;
-          if (file.path.startsWith('simulation-plans/')) return configuredPlans.length === 0;
-          return true;
-        });
+        const pending =
+          target.format === 'ts' ?
+            // One file, written whole or not at all. The guard above means we only reach a write
+            // when there was nothing there before.
+            existing.length === 0 ?
+              [setupModule(setup)]
+            : []
+          : setupFiles(setup).filter((file) => {
+              if (file.path.startsWith('agents/')) return configuredAgents.length === 0;
+              if (file.path.startsWith('personas/')) return configuredPersonas.length === 0;
+              if (file.path.startsWith('flows/')) return configuredFlows.length === 0;
+              if (file.path.startsWith('simulation-plans/')) return configuredPlans.length === 0;
+              return true;
+            });
 
         say('');
         const result = await writeScaffold(dir, pending);
@@ -722,7 +891,10 @@ export const registerGetStartedCommand = (
         // ---- Apply -----------------------------------------------------------------------
         // `prune: false`, always. This directory is a subset of a real config, and a quickstart
         // that deleted a resource someone already managed would be indefensible.
-        const bundle = await buildBundle(dir, { prune: false });
+        const bundle: ConfigBundle =
+          target.format === 'ts' ?
+            await loadConfigModule(join(dir, CONFIG_MODULE_FILE), { prune: false })
+          : await buildBundle(dir, { prune: false });
         const preview = await client.config.diff(bundle as never);
         const count = changeCount(preview.data.summary as unknown as Record<string, number>);
 
@@ -758,7 +930,8 @@ export const registerGetStartedCommand = (
             quiet,
             options,
             planName,
-            dir,
+            dir: target.label,
+            apply: applyCommand(binaryName, target),
             dial: agent.dial,
             applied,
             resolveOutput,
@@ -772,7 +945,8 @@ export const registerGetStartedCommand = (
           nextSteps(
             {
               binaryName,
-              dir,
+              dir: target.label,
+              apply: applyCommand(binaryName, target),
               lines:
                 planName === undefined ?
                   [
@@ -787,7 +961,7 @@ export const registerGetStartedCommand = (
             color,
           ),
         );
-        if (!quiet) write(dir);
+        if (!quiet) write(target.label);
       } finally {
         prompter.close();
       }
@@ -803,8 +977,10 @@ interface RunPhase {
   quiet: boolean;
   options: Record<string, unknown>;
   planName: string;
-  /** Where the config lives, for the closing "what next" block. */
+  /** What to call the config in the closing "what next" block. */
   dir: string;
+  /** The apply command for that config, which differs between YAML and a config module. */
+  apply: string;
   /** The line the run will dial, quoted back in the confirmation. */
   dial: AgentSetup['dial'];
   /** The apply result, when there was one. Absent when the project already matched the files. */
@@ -900,6 +1076,7 @@ const startRun = async (phase: RunPhase): Promise<boolean> => {
       {
         binaryName,
         dir: phase.dir,
+        apply: phase.apply,
         lines: [
           `${paint(
             `${binaryName} simulation plan job get ${jobId}`,
