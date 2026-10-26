@@ -504,11 +504,14 @@ export const registerGetStartedCommand = (
         throw new UsageError('--ts and --yaml ask for two different files. Pick one.');
       }
       const chosenDir = typeof options['dir'] === 'string' ? options['dir'] : undefined;
+      // Settled up front for the non-interactive paths; the question below can still change it,
+      // which is why nothing else keeps its own copy of the directory. It did once, and a
+      // TypeScript config chosen at the prompt was written to `./roark` and then loaded from the
+      // working directory, because only one of the two had been recomputed.
+      //
       // A TypeScript config defaults to the working directory rather than `./roark`, because
       // `config apply` finds `roark.config.ts` there by itself and then needs no argument.
-      const dir = chosenDir ?? (wantsTs ? '.' : DEFAULT_DIR);
-      // Settled up front for the non-interactive paths; the question below can still change it.
-      let target = targetFor(wantsTs ? 'ts' : 'yaml', dir);
+      let target = targetFor(wantsTs ? 'ts' : 'yaml', chosenDir ?? (wantsTs ? '.' : DEFAULT_DIR));
 
       if (!scaffoldOnly && (options['input'] === false || !isInteractive())) {
         throw new UsageError(
@@ -523,7 +526,7 @@ export const registerGetStartedCommand = (
 
       /** Said once the target is settled, because a config module that cannot import is useless. */
       const warnIfUnimportable = (): void => {
-        if (target.format !== 'ts' || sdkIsInstalled(dir)) return;
+        if (target.format !== 'ts' || sdkIsInstalled(target.dir)) return;
         say(
           note(
             `${CONFIG_MODULE_FILE} imports ${CONFIG_MODULE_IMPORT}, which this project cannot resolve. Install a recent @roarkanalytics/sdk here, or use --yaml.`,
@@ -538,7 +541,7 @@ export const registerGetStartedCommand = (
         warnIfUnimportable();
         const placeholder = placeholderSetup();
         const files = target.format === 'ts' ? [setupModule(placeholder)] : setupFiles(placeholder);
-        const result = await writeScaffold(dir, files);
+        const result = await writeScaffold(target.dir, files);
         for (const path of result.written) say(`${paint('+', 'green', color)} ${path}`);
         for (const path of result.skipped)
           say(`${paint('·', 'yellow', color)} ${path} (already there, left alone)`);
@@ -570,7 +573,7 @@ export const registerGetStartedCommand = (
       try {
         // Only where it is a real choice. A project without the SDK cannot load a config module,
         // and someone who passed --ts or --yaml has already answered.
-        if (!wantsTs && !wantsYaml && sdkIsInstalled(dir)) {
+        if (!wantsTs && !wantsYaml && sdkIsInstalled(target.dir)) {
           const picked = await prompter.select(
             'How should the config be written?',
             [
@@ -668,7 +671,7 @@ export const registerGetStartedCommand = (
         let agent: AgentSetup;
         if (configuredAgents.length > 0) {
           agent = { name: configuredAgents[0]! };
-          say(stepSkipped(1, `${agent.name}, already declared in ${dir}`, color));
+          say(stepSkipped(1, `${agent.name}, already declared in ${target.label}`, color));
           // The declared file is the source of truth for its endpoints, and reading them back out
           // of YAML to re-derive a direction would just duplicate what apply already resolves.
           const declared = existing.find(
@@ -731,12 +734,12 @@ export const registerGetStartedCommand = (
         let planName: string | undefined;
         if (configuredPlans.length > 0) {
           planName = configuredPlans[0]!;
-          say(stepSkipped(5, `${planName}, already declared in ${dir}`, color));
+          say(stepSkipped(5, `${planName}, already declared in ${target.label}`, color));
         } else if (agent.dial === undefined) {
           say(
             stepSkipped(
               5,
-              `waiting on a line to call. Add an endpoint to ${dir}/agents/${agent.name}.yaml and run this again`,
+              `waiting on a line to call. Add an endpoint to ${agent.name}'s config and run this again`,
               color,
             ),
           );
@@ -778,7 +781,7 @@ export const registerGetStartedCommand = (
             });
 
         say('');
-        const result = await writeScaffold(dir, pending);
+        const result = await writeScaffold(target.dir, pending);
         for (const path of result.written) say(`${paint('+', 'green', color)} ${path}`);
         for (const path of result.skipped)
           say(`${paint('·', 'yellow', color)} ${path} (already there, left alone)`);

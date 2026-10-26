@@ -753,6 +753,31 @@ describe('roark get-started --ts', () => {
     expect(said()).toContain('cannot resolve');
   });
 
+  it('writes the module where it then loads it from, when the format came from the question', async () => {
+    // The case every other test here misses, because they pass --dir and --ts together so both
+    // halves agree by accident. Choosing TypeScript at the prompt with no --dir is the one path
+    // where the write target and the load target were computed separately: the file landed in
+    // ./roark and the loader looked in the working directory. Found by running it for real.
+    const dir = tempDir();
+    installStubSdk(dir);
+    const cwd = process.cwd();
+    process.chdir(dir);
+
+    try {
+      const recorded = await run({
+        argv: ['get-started', '--no-run'],
+        answers: ['2', ...HAPPY_PATH_ANSWERS],
+      });
+
+      expect(readdirSync(dir).sort()).toEqual(['node_modules', 'roark.config.ts']);
+      // Reached only if the module was found and evaluated where it was written.
+      expect(recorded.calls).toContain('config.diff');
+      expect(recorded.calls).toContain('config.apply');
+    } finally {
+      process.chdir(cwd);
+    }
+  });
+
   it('refuses both formats at once rather than picking one', async () => {
     const dir = tempDir();
 
