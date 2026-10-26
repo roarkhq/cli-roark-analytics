@@ -31,7 +31,11 @@ const stubClient = (overrides: Partial<Record<string, unknown>> = {}) => {
     agent: {
       list: async () => {
         note('agent.list');
-        return { data: (overrides['agents'] as { id: string; name: string }[]) ?? [] };
+        if (overrides['agentsFail'] === true) throw new Error('agent list unavailable');
+        return {
+          data: (overrides['agents'] as { id: string; name: string }[]) ?? [],
+          pagination: { hasMore: overrides['agentsTruncated'] === true },
+        };
       },
     },
     agentEndpoint: {
@@ -56,6 +60,9 @@ const stubClient = (overrides: Partial<Record<string, unknown>> = {}) => {
       diff: async (body: unknown) => {
         note('config.diff');
         recorded.diffBodies.push(body);
+        if (overrides['emptyDiff'] === true) {
+          return { data: { changes: [], summary: { create: 0, update: 0, delete: 0, noop: 4 } } };
+        }
         return {
           data: {
             changes: [{ op: 'create', configKey: 'agent/frontdesk' }],
@@ -103,7 +110,10 @@ const stubClient = (overrides: Partial<Record<string, unknown>> = {}) => {
       },
     },
     simulationRunPlan: {
-      list: async () => ({ data: [] }),
+      list: async () => {
+        note('simulationRunPlan.list');
+        return { data: (overrides['plans'] as { id: string; name: string }[]) ?? [] };
+      },
     },
   } as unknown as Roark;
 
@@ -467,5 +477,160 @@ describe('roark get-started', () => {
     expect(plan['agentEndpoints']).toEqual([
       { agent: 'dental-clinic', value: '+15559998888', direction: 'INCOMING' },
     ]);
+  });
+});
+
+describe('roark get-started, run again', () => {
+  /** A directory that is already complete and already applied: the second-run case. */
+  const seedApplied = (dir: string): void => {
+    mkdirSync(join(dir, 'agents'), { recursive: true });
+    mkdirSync(join(dir, 'personas'), { recursive: true });
+    mkdirSync(join(dir, 'flows'), { recursive: true });
+    mkdirSync(join(dir, 'simulation-plans'), { recursive: true });
+    writeFileSync(
+      join(dir, 'agents/frontdesk.yaml'),
+      'kind: agent\nname: frontdesk\nendpoints:\n  - value: "+15550001111"\n    direction: INCOMING\n',
+    );
+    writeFileSync(
+      join(dir, 'personas/caller.yaml'),
+      'kind: persona\nname: caller\nlanguage: EN\naccent: US\ngender: FEMALE\n',
+    );
+    writeFileSync(
+      join(dir, 'flows/first-scenario.yaml'),
+      'kind: flow\ntype: improv\nname: first-scenario\nagents:\n  - frontdesk\nhappyPath:\n  persona: caller\n  environment: Quiet line\n  prompt: You call about a booking.\n',
+    );
+    writeFileSync(
+      join(dir, 'simulation-plans/first-run.yaml'),
+      'kind: simulationPlan\nname: first-run\ndirection: INBOUND\nagentEndpoints:\n  - agent: frontdesk\nmetrics:\n  - agent_responsive\nflows:\n  - flow: first-scenario\nmaxDurationSeconds: 300\n',
+    );
+  };
+
+  it('still offers the run when there is nothing left to apply', async () => {
+    // The whole "safe to re-run, it finishes the job" story depends on this: someone who stopped
+    // at --no-run, or declined the call, comes back and the diff is empty. Gating the run on
+    // there being changes made the command unable to do the thing it tells you to re-run it for.
+    const dir = tempDir();
+    seedApplied(dir);
+
+    const recorded = await run({
+      argv: ['get-started', '--dir', dir],
+      overrides: { emptyDiff: true, plans: [{ id: 'plan_1', name: 'first-run' }] },
+      answers: ['' /* yes, start the run */],
+    });
+
+    expect(said()).toContain('Nothing to apply');
+    expect(recorded.calls).not.toContain('config.apply');
+    // The plan id came from a lookup, because no apply result carried one.
+    expect(recorded.calls).toContain('simulationRunPlan.list');
+    expect(recorded.runBodies).toEqual([{ planId: 'plan_1' }]);
+  });
+
+  it('does not ask about metrics when the plan that would use them already exists', async () => {
+    // Step 5 used to prompt, collect the picks, and then drop them: the plan file is left alone,
+    // so there was nothing for the answers to attach to.
+    const dir = tempDir();
+    seedApplied(dir);
+
+    const recorded = await run({
+      argv: ['get-started', '--dir', dir, '--no-run'],
+      overrides: { emptyDiff: true },
+      answers: [],
+    });
+
+    expect(recorded.calls).not.toContain('metric.listDefinitions');
+    expect(said()).toContain('already names the metrics it grades on');
+  });
+
+  it("says so when the project's agents cannot be read", async () => {
+    const dir = tempDir();
+
+    await run({
+      argv: ['get-started', '--dir', dir, '--no-run'],
+      overrides: { agentsFail: true },
+      answers: [
+        'frontdesk', // agent name: asked because the list could not be read
+        '2', // not reachable yet
+        'curious-caller',
+        '',
+        '',
+        '',
+        'You call about a booking.',
+        '',
+        '',
+        '',
+        '',
+        '', // apply
+      ],
+    });
+
+    expect(said()).toContain("Could not read this project's agents");
+  });
+
+  it('warns when a reused flow does not target the agent it just declared', async () => {
+    const dir = tempDir();
+    mkdirSync(join(dir, 'flows'), { recursive: true });
+    writeFileSync(
+      join(dir, 'flows/first-scenario.yaml'),
+      'kind: flow\ntype: improv\nname: first-scenario\nagents:\n  - somebody-else\nhappyPath:\n  persona: caller\n  environment: Quiet line\n  prompt: You call about a booking.\n',
+    );
+
+    await run({
+      argv: ['get-started', '--dir', dir, '--no-run'],
+      answers: [
+        'frontdesk', // agent name
+        '1', // reachable at a phone number
+        '+15551234567',
+        'curious-caller',
+        '',
+        '',
+        '',
+        // No scenario questions: the flow is already declared.
+        '', // metrics
+        '', // no metric of my own
+        '', // plan name
+        '', // apply
+      ],
+    });
+
+    expect(said()).toContain('does not list frontdesk');
+  });
+
+  it('asks which line to call when the declared agent has several', async () => {
+    const dir = tempDir();
+    mkdirSync(join(dir, 'agents'), { recursive: true });
+    writeFileSync(
+      join(dir, 'agents/frontdesk.yaml'),
+      'kind: agent\nname: frontdesk\nendpoints:\n  - value: "+15550001111"\n    direction: INCOMING\n  - value: "+15550001111"\n    direction: OUTGOING\n',
+    );
+
+    await run({
+      argv: ['get-started', '--dir', dir, '--no-run'],
+      answers: [
+        '2', // the outgoing line, not the first one
+        'curious-caller',
+        '',
+        '',
+        '',
+        'You call about a booking.',
+        '',
+        '',
+        '',
+        '',
+        '', // plan name
+        '', // apply
+      ],
+    });
+
+    expect(said()).toContain('declares several lines');
+    const plan = parse(readFileSync(join(dir, 'simulation-plans/first-run.yaml'), 'utf8')) as Record<
+      string,
+      unknown
+    >;
+    // One number, two endpoints: the direction is what tells them apart, and picking the wrong
+    // one runs the opposite test.
+    expect(plan['agentEndpoints']).toEqual([
+      { agent: 'frontdesk', value: '+15550001111', direction: 'OUTGOING' },
+    ]);
+    expect(plan['direction']).toBe('OUTBOUND');
   });
 });

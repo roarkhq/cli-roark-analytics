@@ -18,6 +18,12 @@ export const TERMINAL_STATUSES: ReadonlySet<string> = new Set([
   'CANCELLED',
 ]);
 
+/** How many polls in a row may fail before the wait is given up on. */
+const ERROR_TOLERANCE = 3;
+
+/** Stands in for a run we never managed to read, so the caller still has something to print. */
+const UNREADABLE: JobSnapshot = { status: 'UNKNOWN' };
+
 export interface JobVerdict {
   passed: boolean;
   score?: number | null;
@@ -40,10 +46,15 @@ export interface WatchOptions {
   now: () => number;
 }
 
+/**
+ * How the wait ended. `settled` is the run reaching a terminal status; the other two are this
+ * command giving up, which is not a failed run and must not be reported as one.
+ */
+export type WatchOutcome = 'settled' | 'timeout' | 'unreachable';
+
 export interface WatchResult {
   snapshot: JobSnapshot;
-  /** False when the wait was given up on, not when the run failed. */
-  settled: boolean;
+  outcome: WatchOutcome;
 }
 
 export const progressLine = (snapshot: JobSnapshot): string => {
@@ -56,31 +67,65 @@ export const progressLine = (snapshot: JobSnapshot): string => {
 export const watchJob = async (options: WatchOptions): Promise<WatchResult> => {
   const started = options.now();
   let last: string | undefined;
+  let latest: JobSnapshot | undefined;
+  let failures = 0;
 
   for (;;) {
-    const snapshot = await options.getJob(options.jobId);
-    const line = progressLine(snapshot);
-    if (line !== last) {
-      options.onProgress(line);
-      last = line;
+    // A poll that throws must not take the command down with it. The run has already started by
+    // the time we are here, so an exception would lose the job id and the "check it later" line
+    // over one network blip. A few in a row is a different matter: then we stop waiting and say so.
+    let snapshot: JobSnapshot | undefined;
+    try {
+      snapshot = await options.getJob(options.jobId);
+      failures = 0;
+    } catch {
+      failures += 1;
+      if (failures >= ERROR_TOLERANCE) return { snapshot: latest ?? UNREADABLE, outcome: 'unreachable' };
     }
-    if (TERMINAL_STATUSES.has(snapshot.status)) return { snapshot, settled: true };
-    if (options.now() - started >= options.timeoutMs) return { snapshot, settled: false };
+
+    if (snapshot !== undefined) {
+      latest = snapshot;
+      const line = progressLine(snapshot);
+      if (line !== last) {
+        options.onProgress(line);
+        last = line;
+      }
+      if (TERMINAL_STATUSES.has(snapshot.status)) return { snapshot, outcome: 'settled' };
+    }
+
+    if (options.now() - started >= options.timeoutMs) {
+      return { snapshot: latest ?? UNREADABLE, outcome: 'timeout' };
+    }
     await options.sleep(options.pollMs);
   }
 };
 
 /**
- * The headline. A null verdict is not a pass and not a failure: it means the run carried no
- * pass/fail criterion, and saying so is more useful than inventing one.
+ * The headline.
+ *
+ * Two different absences of a verdict, and conflating them is a lie either way. A COMPLETED run
+ * with no verdict carried no pass/fail criterion, so there was nothing to judge. A run that ended
+ * FAILED, TIMED_OUT or CANCELLED also has no verdict, but there "no pass/fail criteria on this
+ * run" would read as reassurance about a run that fell over.
  */
 export const verdictLine = (snapshot: JobSnapshot): string => {
+  if (snapshot.status !== 'COMPLETED') {
+    return `The run ended ${snapshot.status}, so nothing was graded.`;
+  }
   const verdict = snapshot.verdict;
   if (verdict === undefined || verdict === null) {
     return 'No pass/fail criteria on this run, so there is no verdict. The metric values are on the run.';
   }
   const score = typeof verdict.score === 'number' ? `, score ${Math.round(verdict.score)}/100` : '';
   return verdict.passed ? `Passed${score}` : `Failed${score}`;
+};
+
+/** Green for a pass, red for a failed check or a run that fell over, yellow for nothing judged. */
+export const verdictStyle = (snapshot: JobSnapshot): 'green' | 'red' | 'yellow' => {
+  if (snapshot.status !== 'COMPLETED') return 'red';
+  const passed = snapshot.verdict?.passed;
+  if (passed === undefined) return 'yellow';
+  return passed ? 'green' : 'red';
 };
 
 export const sleep = (ms: number): Promise<void> =>

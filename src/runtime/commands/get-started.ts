@@ -24,7 +24,7 @@ import { resolve } from 'node:path';
 import { Command } from 'commander';
 import type Roark from '@roarkanalytics/sdk';
 
-import { buildBundle } from '../config-bundle';
+import { buildBundle, EmptyConfigDirectoryError } from '../config-bundle';
 import { changeCount, formatChanges } from '../config-changes';
 import { isInteractive } from '../confirm';
 import { AuthRequiredError, UsageError } from '../errors';
@@ -46,12 +46,14 @@ import {
   setupFiles,
   slugify,
   type AgentSetup,
+  type CustomMetricSetup,
   type EndpointDirection,
+  type EndpointSetup,
   type Setup,
 } from '../get-started/resources';
 import { writeScaffold } from '../get-started/scaffold';
-import { metricOptions } from '../get-started/starter-metrics';
-import { sleep, verdictLine, watchJob, type JobSnapshot } from '../get-started/watch';
+import { metricOptions, type AvailableMetric } from '../get-started/starter-metrics';
+import { sleep, verdictLine, verdictStyle, watchJob, type JobSnapshot } from '../get-started/watch';
 
 const DEFAULT_DIR = './roark';
 
@@ -66,6 +68,9 @@ const FALLBACK_METRIC = 'agent_responsive';
 const AGENT_PAGE = 10;
 
 type ClientFor = (options: never) => Roark;
+
+/** One entry of an apply result, which is where a created resource's id comes back. */
+type ConfigChange = { configKey: string; id?: string };
 type ResolveOutput = (options: never) => { format: OutputFormat; color: boolean };
 
 const nameRules = (what: string) => (answer: string) =>
@@ -123,7 +128,10 @@ const readExisting = async (dir: string): Promise<Record<string, unknown>[]> => 
   try {
     return (await buildBundle(dir)).resources;
   } catch (error) {
-    if (error instanceof UsageError && error.message.includes('no config resources')) return [];
+    // An empty directory is a fresh start, not a problem. Anything else (unparseable YAML, a
+    // resource with no kind) is a real error the user has to see: apply would hit it two steps
+    // later anyway, and this is the better place to find out.
+    if (error instanceof EmptyConfigDirectoryError) return [];
     throw error;
   }
 };
@@ -177,11 +185,22 @@ interface AgentChoice {
   name: string;
 }
 
+interface AgentList {
+  agents: AgentChoice[];
+  /** The project has more than one page of them, so the picker is not the whole truth. */
+  truncated: boolean;
+}
+
 /** The project's existing agents, or undefined when they could not be read. */
-const listAgents = async (client: Roark): Promise<AgentChoice[] | undefined> => {
+const listAgents = async (client: Roark): Promise<AgentList | undefined> => {
   try {
     const response = await client.agent.list({ limit: AGENT_PAGE });
-    return response.data.map((agent) => ({ id: agent.id, name: agent.name }));
+    return {
+      agents: response.data.map((agent) => ({ id: agent.id, name: agent.name })),
+      // Not paged through. A picker with fifty entries is not a picker, so the honest move is
+      // to say the list is partial rather than to make it longer or to pretend it is complete.
+      truncated: response.pagination?.hasMore === true,
+    };
   } catch {
     return undefined;
   }
@@ -213,14 +232,29 @@ const chooseAgent = async (
   binaryName: string,
   color: boolean,
 ): Promise<AgentSetup> => {
-  const existing = await listAgents(client);
+  const listed = await listAgents(client);
   const CREATE = '\u0000create';
 
-  if (existing !== undefined && existing.length > 0) {
+  if (listed === undefined) {
+    // Said out loud rather than swallowed: without it, a project full of agents looks empty and
+    // the obvious next step is to create a duplicate of one that already exists.
+    say(note("Could not read this project's agents, so this will declare a new one.", color, 'yellow'));
+  }
+
+  const existing = listed?.agents ?? [];
+  if (existing.length > 0) {
     const choices: Choice<string>[] = [
       ...existing.map((agent) => ({ value: agent.id, label: agent.name, hint: 'already in Roark' })),
       { value: CREATE, label: 'A new agent', hint: 'not in Roark yet' },
     ];
+    if (listed?.truncated === true) {
+      say(
+        note(
+          `Showing the first ${AGENT_PAGE} agents. If the one you want is not here, pick "A new agent" and give it the same name to adopt it.`,
+          color,
+        ),
+      );
+    }
     const picked = await prompter.select('Which agent are we testing?', choices, existing[0]!.id);
 
     if (picked !== CREATE) {
@@ -441,18 +475,38 @@ export const registerGetStartedCommand = (
           const declared = existing.find(
             (resource) => resource['kind'] === 'agent' && resource['name'] === agent.name,
           );
-          const endpoints = (declared?.['endpoints'] ?? []) as { value?: unknown; direction?: unknown }[];
-          const first = endpoints[0];
-          if (first !== undefined && typeof first['value'] === 'string') {
-            agent = {
-              ...agent,
-              dial: {
-                value: first['value'],
-                direction: (typeof first['direction'] === 'string' ?
-                  first['direction']
-                : 'INCOMING') as EndpointDirection,
-              },
-            };
+          const endpoints = ((declared?.['endpoints'] ?? []) as { value?: unknown; direction?: unknown }[])
+            .filter((endpoint): endpoint is { value: string; direction?: unknown } => {
+              return typeof endpoint['value'] === 'string';
+            })
+            .map((endpoint) => ({
+              value: endpoint.value,
+              // The DSL's own default when the file leaves it out, so this reads the file rather
+              // than guessing at it.
+              direction: (typeof endpoint.direction === 'string' ?
+                endpoint.direction
+              : 'INCOMING') as EndpointDirection,
+            }));
+
+          if (endpoints.length === 1) {
+            agent = { ...agent, dial: endpoints[0]! };
+          } else if (endpoints.length > 1) {
+            // Several declared lines, and they are not interchangeable: one may be the inbound
+            // number and another the outbound one, which run opposite tests. Picking the first
+            // would quietly call the wrong line.
+            // Keyed on value AND direction: one number routinely carries an inbound endpoint and
+            // an outbound one, so the number alone does not identify a line.
+            const key = (endpoint: EndpointSetup): string => `${endpoint.value}::${endpoint.direction}`;
+            const line = await prompter.select(
+              `${agent.name} declares several lines. Which should the run call?`,
+              endpoints.map((endpoint) => ({
+                value: key(endpoint),
+                label: endpoint.value,
+                hint: endpoint.direction.toLowerCase().replace(/_/g, ' '),
+              })),
+              key(endpoints[0]!),
+            );
+            agent = { ...agent, dial: endpoints.find((endpoint) => key(endpoint) === line)! };
           }
         } else {
           say(stepHeader(1, color));
@@ -497,6 +551,23 @@ export const registerGetStartedCommand = (
         if (configuredFlows.length > 0) {
           flowName = configuredFlows[0]!;
           say(stepSkipped(3, `${flowName}, already declared in ${dir}`, color));
+
+          // A flow names the agents it is written for. Reusing one that does not name the agent
+          // we just declared would produce a plan whose flow targets somebody else, which the
+          // apply accepts and the run then does something unexpected with.
+          const flowResource = existing.find(
+            (resource) => resource['kind'] === 'flow' && resource['name'] === flowName,
+          );
+          const targets = Array.isArray(flowResource?.['agents']) ? flowResource['agents'] : [];
+          if (configuredAgents.length === 0 && !targets.includes(agent.name)) {
+            say(
+              note(
+                `${flowName} does not list ${agent.name} under \`agents:\`. Add it in ${dir}/flows/${flowName}.yaml, or the run will exercise a scenario written for a different agent.`,
+                color,
+                'yellow',
+              ),
+            );
+          }
         } else {
           say(stepHeader(3, color));
           goal = await prompter.ask('What is the caller calling about? Say it as you would to them');
@@ -515,50 +586,64 @@ export const registerGetStartedCommand = (
         }
 
         // ---- 5. Metrics ------------------------------------------------------------------
-        say(stepHeader(4, color));
-        const available = await (async () => {
+        // A plan names the metrics, so when one is already declared there is nothing these
+        // answers could attach to: that plan file is left alone, and the picks would be collected
+        // and then quietly dropped. Not asking is better than asking and ignoring.
+        const configuredPlans = namesOfKind(existing, 'simulationPlan');
+        const metrics: string[] = [];
+        let customMetric: CustomMetricSetup | undefined;
+
+        if (configuredPlans.length > 0) {
+          say(stepSkipped(4, `${configuredPlans[0]!} already names the metrics it grades on`, color));
+        } else {
+          say(stepHeader(4, color));
+
+          let available: AvailableMetric[] | undefined;
           try {
             const response = await client.metric.listDefinitions({ limit: 500 });
-            return response.data.map((metric) => ({ metricId: metric.metricId, name: metric.name }));
+            available = response.data.map((metric) => ({ metricId: metric.metricId, name: metric.name }));
           } catch {
-            return undefined;
+            available = undefined;
           }
-        })();
-        const options_ = metricOptions(available);
-        if (!options_.verified) {
-          say(
-            note("Could not read this project's metrics, so these are Roark's usual ones.", color, 'yellow'),
-          );
-        }
-        const picked = await prompter.multiSelect(
-          'Which metrics should grade the run?',
-          options_.choices,
-          options_.recommended,
-        );
-        const wantsCustom = await prompter.confirm('Add a metric of your own?', false);
-        const customMetric =
-          wantsCustom ?
-            await (async () => {
-              const name = await prompter.ask('Short name for it', {
-                default: 'my_metric',
-                validate: nameRules('slug'),
-              });
-              const question = await prompter.ask(
-                'The yes/no question Roark should judge, e.g. "did the agent confirm the booking date?"',
-              );
-              return { name, question };
-            })()
-          : undefined;
 
-        const metrics = [...picked, ...(customMetric === undefined ? [] : [customMetric.name])];
-        if (metrics.length === 0) {
-          metrics.push(FALLBACK_METRIC);
-          say(note(`A run needs at least one metric, so ${FALLBACK_METRIC} was kept.`, color, 'yellow'));
+          const offered = metricOptions(available);
+          if (!offered.verified) {
+            say(
+              note(
+                "Could not read this project's metrics, so these are Roark's usual ones.",
+                color,
+                'yellow',
+              ),
+            );
+          }
+          metrics.push(
+            ...(await prompter.multiSelect(
+              'Which metrics should grade the run?',
+              offered.choices,
+              offered.recommended,
+            )),
+          );
+
+          if (await prompter.confirm('Add a metric of your own?', false)) {
+            const name = await prompter.ask('Short name for it', {
+              default: 'my_metric',
+              validate: nameRules('slug'),
+            });
+            const question = await prompter.ask(
+              'The yes/no question Roark should judge, e.g. "did the agent confirm the booking date?"',
+            );
+            customMetric = { name, question };
+            metrics.push(name);
+          }
+
+          if (metrics.length === 0) {
+            metrics.push(FALLBACK_METRIC);
+            say(note(`A run needs at least one metric, so ${FALLBACK_METRIC} was kept.`, color, 'yellow'));
+          }
+          say(stepDone(4, metrics.join(', '), color));
         }
-        say(stepDone(4, metrics.join(', '), color));
 
         // ---- 6. Plan ---------------------------------------------------------------------
-        const configuredPlans = namesOfKind(existing, 'simulationPlan');
         let planName: string | undefined;
         if (configuredPlans.length > 0) {
           planName = configuredPlans[0]!;
@@ -615,6 +700,7 @@ export const registerGetStartedCommand = (
         const count = changeCount(preview.data.summary as unknown as Record<string, number>);
 
         say('');
+        let applied: ConfigChange[] | undefined;
         if (count === 0) {
           say('Nothing to apply: the project already matches these files.');
         } else {
@@ -629,115 +715,32 @@ export const registerGetStartedCommand = (
             if (!quiet) write(dir);
             return;
           }
-          const applied = await client.config.apply(bundle as never);
-          say(formatChanges(applied.data as never));
-
-          // ---- 7. Run --------------------------------------------------------------------
-          if (planName !== undefined && options['run'] !== false) {
-            say(stepHeader(6, color));
-            const change = applied.data.changes.find(
-              (entry) => entry.configKey === `simulationPlan/${planName}`,
-            );
-            const planId = change?.id ?? (await findPlanId(client, planName));
-            if (planId === undefined) {
-              say(
-                note(
-                  `Applied, but could not work out the plan's id. Find it with \`${binaryName} simulation plan list\` and run \`${binaryName} simulation run --data '{"planId":"<id>"}'\`.`,
-                  color,
-                  'yellow',
-                ),
-              );
-            } else {
-              // A run places a real call on a real line and is billed, so it is confirmed on its
-              // own rather than riding on the apply. `--yes` covers both, `--no-run` skips it.
-              const dialled =
-                agent.dial !== undefined && 'value' in agent.dial ? agent.dial.value : 'your agent';
-              const start =
-                options['yes'] === true ||
-                (await prompter.confirm(`Start the run? It places a real call to ${dialled}.`, true));
-              if (!start) {
-                say(stepSkipped(6, 'not started', color));
-                say('');
-                say(
-                  `The plan is saved. Start it whenever you like: \`${binaryName} simulation run --data '{"planId":"${planId}"}'\`.`,
-                );
-                if (!quiet) write(planId);
-                return;
-              }
-
-              const run = await client.simulation.run({ planId });
-              const jobId = run.data.simulationRunPlanJobId;
-              say(echoCommand(`${binaryName} simulation run --data '{"planId":"${planId}"}'`, color));
-              say(
-                `Started ${paint(jobId, 'cyan', color)}: ${
-                  run.data.simulationJobCount
-                } call(s). Waiting for the verdict...`,
-              );
-
-              const watched = await watchJob({
-                jobId,
-                getJob: async (id) => (await client.simulationRunPlanJob.getByID(id)).data as JobSnapshot,
-                onProgress: (line) => say(`  ${paint(line, 'dim', color)}`),
-                timeoutMs: WATCH_TIMEOUT_MS,
-                pollMs: POLL_MS,
-                sleep,
-                now: () => Date.now(),
-              });
-
-              if (watched.settled) {
-                const passed = watched.snapshot.verdict?.passed;
-                const style =
-                  passed === undefined ? 'yellow'
-                  : passed ? 'green'
-                  : 'red';
-                say(stepDone(6, paint(verdictLine(watched.snapshot), style, color), color));
-              } else {
-                say(
-                  stepSkipped(
-                    6,
-                    `still running after ${Math.round(
-                      WATCH_TIMEOUT_MS / 60_000,
-                    )} minutes. It will finish on its own`,
-                    color,
-                  ),
-                );
-              }
-
-              say(
-                nextSteps(
-                  {
-                    binaryName,
-                    dir,
-                    lines: [
-                      `${paint(
-                        `${binaryName} simulation plan job get ${jobId}`,
-                        'cyan',
-                        color,
-                      )}  every call, with its metrics`,
-                      `${paint(
-                        `${binaryName} simulation run --data '{"planId":"${planId}"}'`,
-                        'cyan',
-                        color,
-                      )}  run it again`,
-                    ],
-                  },
-                  color,
-                ),
-              );
-
-              if (!quiet) {
-                const output = resolveOutput(options as never);
-                write(
-                  output.format === 'json' || options['json'] === true ?
-                    render({ planId, jobId, status: watched.snapshot.status }, output)
-                  : jobId,
-                );
-              }
-              return;
-            }
-          }
+          const response = await client.config.apply(bundle as never);
+          applied = response.data.changes;
+          say(formatChanges(response.data as never));
         }
 
+        // ---- 7. Run ----------------------------------------------------------------------
+        if (planName !== undefined && options['run'] !== false) {
+          const started = await startRun({
+            client,
+            prompter,
+            say,
+            binaryName,
+            color,
+            quiet,
+            options,
+            planName,
+            dir,
+            dial: agent.dial,
+            applied,
+            resolveOutput,
+          });
+          if (started) return;
+        }
+
+        // Everything that did not start a run: no plan yet, `--no-run`, or a plan whose id we
+        // could not resolve. The directory is still the useful result, so it goes to stdout.
         say(
           nextSteps(
             {
@@ -752,13 +755,7 @@ export const registerGetStartedCommand = (
                       color,
                     )}  run this again once the agent has a line to call`,
                   ]
-                : [
-                    `${paint(
-                      `${binaryName} simulation plan list`,
-                      'cyan',
-                      color,
-                    )}  find the plan, then start a run`,
-                  ],
+                : [`${paint(`${binaryName} get-started`, 'cyan', color)}  run this again to start the run`],
             },
             color,
           ),
@@ -768,6 +765,140 @@ export const registerGetStartedCommand = (
         prompter.close();
       }
     });
+};
+
+interface RunPhase {
+  client: Roark;
+  prompter: Prompter;
+  say: (text: string) => void;
+  binaryName: string;
+  color: boolean;
+  quiet: boolean;
+  options: Record<string, unknown>;
+  planName: string;
+  /** Where the config lives, for the closing "what next" block. */
+  dir: string;
+  /** The line the run will dial, quoted back in the confirmation. */
+  dial: AgentSetup['dial'];
+  /** The apply result, when there was one. Absent when the project already matched the files. */
+  applied: ConfigChange[] | undefined;
+  resolveOutput: ResolveOutput;
+}
+
+/**
+ * Step 7: start the run and watch it to a verdict.
+ *
+ * Its own function because it is the one phase that stands alone (everything it needs is a plan
+ * id and a line), and because it is where the interesting failure modes live: a plan id that has
+ * to be resolved two ways, a billable action that needs its own confirmation, and a wait that can
+ * end three different ways.
+ *
+ * Returns true when it has reported the outcome and the command is finished, false when it could
+ * not start and the caller should print its own closing text.
+ */
+const startRun = async (phase: RunPhase): Promise<boolean> => {
+  const { client, prompter, say, binaryName, color, quiet, options, planName } = phase;
+  say(stepHeader(6, color));
+
+  // Two ways to the id, because there are two ways to get here: an apply that just created the
+  // plan carries it, and a re-run over an already-applied directory has no apply result at all.
+  const planId =
+    phase.applied?.find((entry) => entry.configKey === `simulationPlan/${planName}`)?.id ??
+    (await findPlanId(client, planName));
+
+  if (planId === undefined) {
+    say(
+      note(
+        `Could not work out the plan's id. Find it with \`${binaryName} simulation plan list\` and run \`${binaryName} simulation run --data '{"planId":"<id>"}'\`.`,
+        color,
+        'yellow',
+      ),
+    );
+    return false;
+  }
+
+  // A run places a real call on a real line and is billed, so it is confirmed on its own rather
+  // than riding on the apply. `--yes` covers both, `--no-run` skips it.
+  const dialled = phase.dial !== undefined && 'value' in phase.dial ? phase.dial.value : 'your agent';
+  const start =
+    options['yes'] === true ||
+    (await prompter.confirm(`Start the run? It places a real call to ${dialled}.`, true));
+  if (!start) {
+    say(stepSkipped(6, 'not started', color));
+    say('');
+    say(
+      `The plan is saved. Start it whenever you like: \`${binaryName} simulation run --data '{"planId":"${planId}"}'\`.`,
+    );
+    if (!quiet) write(planId);
+    return true;
+  }
+
+  const run = await client.simulation.run({ planId });
+  const jobId = run.data.simulationRunPlanJobId;
+  say(echoCommand(`${binaryName} simulation run --data '{"planId":"${planId}"}'`, color));
+  say(
+    `Started ${paint(jobId, 'cyan', color)}: ${
+      run.data.simulationJobCount
+    } call(s). Waiting for the verdict...`,
+  );
+
+  const watched = await watchJob({
+    jobId,
+    getJob: async (id) => (await client.simulationRunPlanJob.getByID(id)).data as JobSnapshot,
+    onProgress: (line) => say(`  ${paint(line, 'dim', color)}`),
+    timeoutMs: WATCH_TIMEOUT_MS,
+    pollMs: POLL_MS,
+    sleep,
+    now: () => Date.now(),
+  });
+
+  if (watched.outcome === 'settled') {
+    say(stepDone(6, paint(verdictLine(watched.snapshot), verdictStyle(watched.snapshot), color), color));
+  } else {
+    // Neither of these is a failed run: the run is fine, it is this command that stopped watching,
+    // so it is reported as a skipped step rather than as a verdict.
+    say(
+      stepSkipped(
+        6,
+        watched.outcome === 'unreachable' ?
+          'could not read the run from the API. It is still going'
+        : `still running after ${Math.round(WATCH_TIMEOUT_MS / 60_000)} minutes. It will finish on its own`,
+        color,
+      ),
+    );
+  }
+
+  say(
+    nextSteps(
+      {
+        binaryName,
+        dir: phase.dir,
+        lines: [
+          `${paint(
+            `${binaryName} simulation plan job get ${jobId}`,
+            'cyan',
+            color,
+          )}  every call, with its metrics`,
+          `${paint(
+            `${binaryName} simulation run --data '{"planId":"${planId}"}'`,
+            'cyan',
+            color,
+          )}  run it again`,
+        ],
+      },
+      color,
+    ),
+  );
+
+  if (!quiet) {
+    const output = phase.resolveOutput(options as never);
+    write(
+      output.format === 'json' || options['json'] === true ?
+        render({ planId, jobId, status: watched.snapshot.status }, output)
+      : jobId,
+    );
+  }
+  return true;
 };
 
 /** The plan's id when the apply result did not carry one, e.g. because nothing about it changed. */

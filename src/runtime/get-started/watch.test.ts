@@ -1,6 +1,16 @@
-import { TERMINAL_STATUSES, progressLine, verdictLine, watchJob, type JobSnapshot } from './watch';
+import {
+  TERMINAL_STATUSES,
+  progressLine,
+  verdictLine,
+  verdictStyle,
+  watchJob,
+  type JobSnapshot,
+} from './watch';
 
-const watcher = (snapshots: JobSnapshot[], timeoutMs = 60_000) => {
+/** A snapshot that throws instead of answering, for the transient-failure cases. */
+const BLIP = 'blip' as const;
+
+const watcher = (snapshots: (JobSnapshot | typeof BLIP)[], timeoutMs = 60_000) => {
   const progress: string[] = [];
   let clock = 0;
   let index = 0;
@@ -9,7 +19,11 @@ const watcher = (snapshots: JobSnapshot[], timeoutMs = 60_000) => {
     run: () =>
       watchJob({
         jobId: 'job_1',
-        getJob: async () => snapshots[Math.min(index++, snapshots.length - 1)]!,
+        getJob: async () => {
+          const next = snapshots[Math.min(index++, snapshots.length - 1)]!;
+          if (next === BLIP) throw new Error('socket hang up');
+          return next;
+        },
         onProgress: (line) => progress.push(line),
         timeoutMs,
         pollMs: 5_000,
@@ -47,7 +61,7 @@ describe('watchJob', () => {
 
     const result = await run();
 
-    expect(result.settled).toBe(true);
+    expect(result.outcome).toBe('settled');
     expect(result.snapshot.status).toBe('COMPLETED');
     expect(progress).toEqual(['PENDING', 'RUNNING_SIMULATIONS', 'COMPLETED']);
   });
@@ -72,15 +86,38 @@ describe('watchJob', () => {
 
     const result = await run();
 
-    expect(result.settled).toBe(false);
+    expect(result.outcome).toBe('timeout');
     expect(result.snapshot.status).toBe('RUNNING_SIMULATIONS');
   });
 
   it('treats every terminal status as settled', async () => {
     for (const status of TERMINAL_STATUSES) {
       const { run } = watcher([{ status }]);
-      await expect(run()).resolves.toMatchObject({ settled: true });
+      await expect(run()).resolves.toMatchObject({ outcome: 'settled' });
     }
+  });
+
+  it('rides out a transient poll failure', async () => {
+    // The run has already started by the time we are polling, so throwing here would lose the
+    // job id and the "check it later" line over one network blip.
+    const { run } = watcher([{ status: 'PENDING' }, BLIP, { status: 'COMPLETED' }]);
+
+    await expect(run()).resolves.toMatchObject({ outcome: 'settled' });
+  });
+
+  it('gives up as unreachable after several failures in a row, and keeps the last snapshot', async () => {
+    const { run } = watcher([{ status: 'RUNNING_SIMULATIONS' }, BLIP, BLIP, BLIP]);
+
+    const result = await run();
+
+    expect(result.outcome).toBe('unreachable');
+    expect(result.snapshot.status).toBe('RUNNING_SIMULATIONS');
+  });
+
+  it('reports an unknown status rather than throwing when the very first poll never lands', async () => {
+    const { run } = watcher([BLIP]);
+
+    await expect(run()).resolves.toEqual({ outcome: 'unreachable', snapshot: { status: 'UNKNOWN' } });
   });
 });
 
@@ -101,7 +138,28 @@ describe('verdictLine', () => {
     expect(verdictLine({ status: 'COMPLETED' })).toContain('no verdict');
   });
 
+  it('does not read a run that fell over as "nothing to judge"', () => {
+    // FAILED, TIMED_OUT and CANCELLED also carry no verdict, but "no pass/fail criteria on this
+    // run" there would be reassurance about a run that never produced a result.
+    for (const status of ['FAILED', 'TIMED_OUT', 'CANCELLED']) {
+      const line = verdictLine({ status, verdict: null });
+      expect(line).toContain(status);
+      expect(line).not.toContain('no verdict');
+    }
+  });
+
   it('omits the score when nothing was scored', () => {
     expect(verdictLine({ status: 'COMPLETED', verdict: { passed: true, score: null } })).toBe('Passed');
+  });
+});
+
+describe('verdictStyle', () => {
+  it('is red for a failed check and for a run that fell over, never yellow', () => {
+    expect(verdictStyle({ status: 'COMPLETED', verdict: { passed: true } })).toBe('green');
+    expect(verdictStyle({ status: 'COMPLETED', verdict: { passed: false } })).toBe('red');
+    expect(verdictStyle({ status: 'FAILED', verdict: null })).toBe('red');
+    expect(verdictStyle({ status: 'TIMED_OUT' })).toBe('red');
+    // Nothing judged, which is neither good news nor bad.
+    expect(verdictStyle({ status: 'COMPLETED', verdict: null })).toBe('yellow');
   });
 });
