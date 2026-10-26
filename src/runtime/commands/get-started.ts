@@ -275,12 +275,25 @@ const chooseAgent = async (
 
       if (endpoints === undefined) {
         // Distinct from "it has none": reporting a read failure as an agent with no line would
-        // skip the plan and the run over what may be a blip.
-        say(note(`Could not read ${agent.name}'s lines, so this stops before the plan.`, color, 'yellow'));
+        // skip the plan and the run over what may be a blip. Both say how to finish, because
+        // stopping early here is a pause, not a dead end.
+        say(
+          note(
+            `Could not read ${agent.name}'s lines, so this stops before the plan. Run \`${binaryName} get-started\` again to finish it.`,
+            color,
+            'yellow',
+          ),
+        );
         return base;
       }
       if (endpoints.length === 0) {
-        say(note('That agent has no endpoint yet, so there is no line to call.', color, 'yellow'));
+        say(
+          note(
+            `That agent has no endpoint yet, so there is no line to call. Add one, then run \`${binaryName} get-started\` again to finish.`,
+            color,
+            'yellow',
+          ),
+        );
         return base;
       }
       if (endpoints.length === 1) return { ...base, dial: endpoints[0]! };
@@ -767,7 +780,7 @@ export const registerGetStartedCommand = (
                       `${binaryName} get-started`,
                       'cyan',
                       color,
-                    )}  run this again once the agent has a line to call`,
+                    )}  run this again to finish the plan and the run`,
                   ]
                 : [`${paint(`${binaryName} get-started`, 'cyan', color)}  run this again to start the run`],
             },

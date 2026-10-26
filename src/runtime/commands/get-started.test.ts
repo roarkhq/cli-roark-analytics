@@ -400,6 +400,7 @@ describe('roark get-started', () => {
 
     expect(readdirSync(dir).sort()).toEqual(['agents', 'flows', 'personas']);
     expect(recorded.calls).not.toContain('simulation.run');
+    expect(said()).toContain('run this again');
   });
 
   it('skips the steps the directory already declares, and never rewrites their files', async () => {
@@ -620,6 +621,9 @@ describe('roark get-started, run again', () => {
     });
 
     expect(said()).toContain("Could not read frontdesk's lines");
+    // Stopping early is a pause, not a dead end: the agent, caller and scenario still apply,
+    // so the message has to say how to finish rather than just what went wrong.
+    expect(said()).toContain('again to finish');
     expect(readdirSync(dir)).not.toContain('simulation-plans');
   });
 
