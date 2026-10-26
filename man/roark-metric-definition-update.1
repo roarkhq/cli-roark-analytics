@@ -54,6 +54,21 @@ New formula expression (FORMULA only). Pass `sources` alongside if the reference
 \fB\-\-sources\fR \fI<value>\fR
 Replacement formula sources, required when `formula` changes the referenced metrics (FORMULA only). Optional.
 .TP
+\fB\-\-http\-request\fR \fI<value>\fR
+Replacement request (HTTP_REQUEST only). Send the whole request; omitted headers are removed. Optional.
+.TP
+\fB\-\-http\-request.url\fR \fI<value>\fR
+Public http(s) URL. May contain {{path}} placeholders into the request payload, which are URL\-encoded. Required.
+.TP
+\fB\-\-http\-request.method\fR \fI<value>\fR
+GET or POST (default POST). A GET request has no body. One of: GET, POST. Optional.
+.TP
+\fB\-\-http\-request.headers\fR \fI<value>\fR
+Request headers, for example your own Authorization header. Values may contain placeholders. Optional.
+.TP
+\fB\-\-http\-request.body\fR \fI<value>\fR
+A JSON template with {{path}} placeholders into the request payload, such as {"cardId": "{{call.properties.cardId}}"}. Omit or pass null to send the default payload. Optional.
+.TP
 \fB\-\-change\-reason\fR \fI<value>\fR
 Optional free\-text audit note recorded on the new version. Optional.
 .TP
@@ -130,7 +145,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark metric definition update <id\-or\-slug>
+roark metric definition update <id\-or\-slug> \-\-http\-request.url <value>
 .fi
 .RE
 .SH "ENVIRONMENT"
