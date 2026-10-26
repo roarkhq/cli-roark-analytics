@@ -6782,6 +6782,10 @@ export const COMMANDS: readonly CliCommand[] = [
         required: ['planId'],
       },
       {
+        name: 'RunSimulationFromConfigKey',
+        required: ['planConfigKey'],
+      },
+      {
         name: 'RunSimulationFromTemplate',
         required: ['template', 'agentEndpoints', 'direction'],
       },
