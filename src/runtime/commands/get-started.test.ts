@@ -41,6 +41,7 @@ const stubClient = (overrides: Partial<Record<string, unknown>> = {}) => {
     agentEndpoint: {
       list: async () => {
         note('agentEndpoint.list');
+        if (overrides['endpointsFail'] === true) throw new Error('endpoint list unavailable');
         return { data: (overrides['endpoints'] as unknown[]) ?? [] };
       },
     },
@@ -593,6 +594,33 @@ describe('roark get-started, run again', () => {
     });
 
     expect(said()).toContain('does not list frontdesk');
+  });
+
+  it("stops before the plan when an adopted agent's lines cannot be read", async () => {
+    // Distinct from an agent with no endpoint: treating a failed read as "no line" would skip
+    // the plan and the run over a blip, with nothing said about why.
+    const dir = tempDir();
+
+    await run({
+      argv: ['get-started', '--dir', dir],
+      overrides: { agents: [{ id: 'agent_1', name: 'frontdesk' }], endpointsFail: true },
+      answers: [
+        '1', // the existing agent
+        'curious-caller',
+        '',
+        '',
+        '',
+        'You call about a booking.',
+        '',
+        '',
+        '',
+        '',
+        '', // apply
+      ],
+    });
+
+    expect(said()).toContain("Could not read frontdesk's lines");
+    expect(readdirSync(dir)).not.toContain('simulation-plans');
   });
 
   it('asks which line to call when the declared agent has several', async () => {

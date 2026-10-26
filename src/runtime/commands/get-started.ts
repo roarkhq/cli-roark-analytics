@@ -67,6 +67,9 @@ const FALLBACK_METRIC = 'agent_responsive';
 /** How many of the project's own agents to offer. A pick list has to stay readable. */
 const AGENT_PAGE = 10;
 
+/** One agent's lines. More than this is not a picker, and no agent under test has that many. */
+const ENDPOINT_PAGE = 50;
+
 type ClientFor = (options: never) => Roark;
 
 /** One entry of an apply result, which is where a created resource's id comes back. */
@@ -211,12 +214,13 @@ interface EndpointChoice {
   direction: EndpointDirection;
 }
 
-const listEndpoints = async (client: Roark, agentId: string): Promise<EndpointChoice[]> => {
+/** The agent's lines, or undefined when they could not be read: that is not the same as none. */
+const listEndpoints = async (client: Roark, agentId: string): Promise<EndpointChoice[] | undefined> => {
   try {
-    const response = await client.agentEndpoint.list({ agentId, limit: AGENT_PAGE });
+    const response = await client.agentEndpoint.list({ agentId, limit: ENDPOINT_PAGE });
     return response.data.map((endpoint) => ({ value: endpoint.value, direction: endpoint.direction }));
   } catch {
-    return [];
+    return undefined;
   }
 };
 
@@ -269,6 +273,12 @@ const chooseAgent = async (
         ...(slug === agent.name ? {} : { displayName: agent.name }),
       };
 
+      if (endpoints === undefined) {
+        // Distinct from "it has none": reporting a read failure as an agent with no line would
+        // skip the plan and the run over what may be a blip.
+        say(note(`Could not read ${agent.name}'s lines, so this stops before the plan.`, color, 'yellow'));
+        return base;
+      }
       if (endpoints.length === 0) {
         say(note('That agent has no endpoint yet, so there is no line to call.', color, 'yellow'));
         return base;
@@ -365,7 +375,7 @@ export const registerGetStartedCommand = (
     .option('--dir <path>', 'where to write the config files', DEFAULT_DIR)
     .option('--scaffold-only', 'write the files with placeholder values and stop: no questions, no API calls')
     .option('--no-run', 'apply the config but do not start a simulation')
-    .option('-y, --yes', 'skip the confirmation before applying')
+    .option('-y, --yes', 'skip both confirmations: the apply, and placing the call')
     .option('--no-input', 'never prompt; fail instead')
     .addHelpText(
       'after',
@@ -378,6 +388,10 @@ export const registerGetStartedCommand = (
         `  ${binaryName} get-started                  # answer the questions`,
         `  ${binaryName} get-started --scaffold-only  # just write the files`,
         `  ${binaryName} get-started --no-run         # set everything up, run it later`,
+        '',
+        'Two things are confirmed before they happen: the apply, and the run. `--yes` skips both,',
+        'so in a script it will place a real, billed call. Pair it with `--no-run` if that is not',
+        'what you want.',
       ].join('\n'),
     )
     .action(async (options: Record<string, unknown>) => {
