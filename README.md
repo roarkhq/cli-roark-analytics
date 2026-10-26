@@ -46,11 +46,11 @@ different credential.
 roark get-started
 ```
 
-Seven steps from an empty project to a graded simulation: the agent under test, the caller
-that phones it, what the call is about, the metrics that grade it, the saved run, and then the
-run itself. Each step writes one YAML file under `./roark` and the directory is applied with
-`config apply`, so the setup is yours to commit, re-running it fills in whatever is missing,
-and nothing is ever pruned.
+Seven steps from an empty project to a graded simulation: the project you are in, the agent
+under test, the caller that phones it, what the call is about, the metrics that grade it, the
+saved run, and then the run itself. Each step writes one YAML file under `./roark` and the
+directory is applied with `config apply`, so the setup is yours to commit, re-running it fills
+in whatever is missing, and nothing is ever pruned.
 
 It writes YAML by default, which needs nothing installed. In a project that has the SDK it
 offers TypeScript instead: one `roark.config.ts` using the typed `define*` helpers, which
