@@ -49,6 +49,8 @@ import {
   type AgentSetup,
   type ConfigFormat,
   type CustomMetricSetup,
+  type FlowSetup,
+  type PersonaSetup,
   type EndpointDirection,
   type EndpointSetup,
   type Setup,
@@ -110,7 +112,13 @@ const sdkIsInstalled = (dir: string): boolean => {
   // package in `packages/x` has no `node_modules` of its own.
   let root = resolve(dir);
   for (;;) {
-    if (existsSync(join(root, 'node_modules', '@roarkanalytics', 'sdk'))) return true;
+    const sdk = join(root, 'node_modules', '@roarkanalytics', 'sdk');
+    if (existsSync(sdk)) {
+      // The subpath, not just the package: `lib/config` arrived in a later release, so an older
+      // SDK satisfies "installed" and then fails on the import. Checking what is actually
+      // imported is the difference between offering a format and offering a broken one.
+      return existsSync(join(sdk, 'lib', 'config.js')) || existsSync(join(sdk, 'lib', 'config.mjs'));
+    }
     const parent = dirname(root);
     if (parent === root) return false;
     root = parent;
@@ -518,7 +526,7 @@ export const registerGetStartedCommand = (
         if (target.format !== 'ts' || sdkIsInstalled(dir)) return;
         say(
           note(
-            `${CONFIG_MODULE_FILE} imports from ${CONFIG_MODULE_IMPORT}, which this project does not have. Install @roarkanalytics/sdk here, or use --yaml.`,
+            `${CONFIG_MODULE_FILE} imports ${CONFIG_MODULE_IMPORT}, which this project cannot resolve. Install a recent @roarkanalytics/sdk here, or use --yaml.`,
             color,
             'yellow',
           ),
@@ -611,7 +619,7 @@ export const registerGetStartedCommand = (
                 'rather than editing one you wrote.',
                 '',
                 `Add what it is missing yourself (${missing.map(([label]) => label).join(', ')}), then`,
-                `\`${applyCommand(binaryName, target)}\`.`,
+                `\`${applyCommand(binaryName, target)}\`. Or start a YAML config beside it with --yaml.`,
               ].join('\n'),
             );
           }
@@ -652,6 +660,8 @@ export const registerGetStartedCommand = (
             ),
           );
         }
+
+        const steps: Steps = { prompter, say, color, binaryName, existing, label: target.label };
 
         // ---- 2. Agent --------------------------------------------------------------------
         const configuredAgents = namesOfKind(existing, 'agent');
@@ -706,131 +716,16 @@ export const registerGetStartedCommand = (
         }
 
         // ---- 3. Caller -------------------------------------------------------------------
-        const configuredPersonas = namesOfKind(existing, 'persona');
-        let personaName: string;
-        let language = 'EN';
-        let accent = 'US';
-        let gender = 'FEMALE';
-        if (configuredPersonas.length > 0) {
-          personaName = configuredPersonas[0]!;
-          say(stepSkipped(2, `${personaName}, already declared in ${dir}`, color));
-        } else {
-          say(stepHeader(2, color));
-          personaName = await prompter.ask('What should we call the caller?', {
-            default: 'curious-caller',
-            validate: nameRules('name'),
-          });
-          language = await pickCode(prompter, 'What language do they speak?', LANGUAGES, 'EN');
-          accent = await pickCode(prompter, 'With which accent?', ACCENTS, 'US');
-          gender = await prompter.select('Voice?', GENDERS, 'FEMALE');
-          say(stepDone(2, `${personaName} (${language}/${accent}/${gender.toLowerCase()})`, color));
-          say(
-            echoCommand(
-              `${binaryName} simulation persona create --name ${personaName} --language ${language} --accent ${accent} --gender ${gender}`,
-              color,
-            ),
-          );
-        }
+        const persona = await chooseCaller(steps);
 
         // ---- 4. Scenario -----------------------------------------------------------------
-        const configuredFlows = namesOfKind(existing, 'flow');
-        let flowName: string;
-        let goal = '';
-        let expectation: string | undefined;
-        if (configuredFlows.length > 0) {
-          flowName = configuredFlows[0]!;
-          say(stepSkipped(3, `${flowName}, already declared in ${dir}`, color));
-
-          // A flow names the agents it is written for. Reusing one that does not name the agent
-          // we just declared would produce a plan whose flow targets somebody else, which the
-          // apply accepts and the run then does something unexpected with.
-          const flowResource = existing.find(
-            (resource) => resource['kind'] === 'flow' && resource['name'] === flowName,
-          );
-          const targets = Array.isArray(flowResource?.['agents']) ? flowResource['agents'] : [];
-          if (configuredAgents.length === 0 && !targets.includes(agent.name)) {
-            say(
-              note(
-                `${flowName} does not list ${agent.name} under \`agents:\`. Add it in ${dir}/flows/${flowName}.yaml, or the run will exercise a scenario written for a different agent.`,
-                color,
-                'yellow',
-              ),
-            );
-          }
-        } else {
-          say(stepHeader(3, color));
-          goal = await prompter.ask('What is the caller calling about? Say it as you would to them');
-          flowName = await prompter.ask('Short name for that scenario?', {
-            // Not derived from the sentence above: a slug of "You call to rebook a cancelled
-            // cleaning" reads as `you-call-to-rebook-a`, which is worse than a plain default.
-            default: 'first-scenario',
-            validate: nameRules('name'),
-          });
-          const written = await prompter.ask(
-            'What must the agent do for this call to pass? (Enter to skip)',
-            { default: '-' },
-          );
-          expectation = written === '-' ? undefined : written;
-          say(stepDone(3, flowName, color));
-        }
+        const flow = await chooseScenario(steps, agent, configuredAgents.length === 0);
 
         // ---- 5. Metrics ------------------------------------------------------------------
-        // A plan names the metrics, so when one is already declared there is nothing these
-        // answers could attach to: that plan file is left alone, and the picks would be collected
-        // and then quietly dropped. Not asking is better than asking and ignoring.
         const configuredPlans = namesOfKind(existing, 'simulationPlan');
-        const metrics: string[] = [];
-        let customMetric: CustomMetricSetup | undefined;
-
-        if (configuredPlans.length > 0) {
-          say(stepSkipped(4, `${configuredPlans[0]!} already names the metrics it grades on`, color));
-        } else {
-          say(stepHeader(4, color));
-
-          let available: AvailableMetric[] | undefined;
-          try {
-            const response = await client.metric.listDefinitions({ limit: 500 });
-            available = response.data.map((metric) => ({ metricId: metric.metricId, name: metric.name }));
-          } catch {
-            available = undefined;
-          }
-
-          const offered = metricOptions(available);
-          if (!offered.verified) {
-            say(
-              note(
-                "Could not read this project's metrics, so these are Roark's usual ones.",
-                color,
-                'yellow',
-              ),
-            );
-          }
-          metrics.push(
-            ...(await prompter.multiSelect(
-              'Which metrics should grade the run?',
-              offered.choices,
-              offered.recommended,
-            )),
-          );
-
-          if (await prompter.confirm('Add a metric of your own?', false)) {
-            const name = await prompter.ask('Short name for it', {
-              default: 'my_metric',
-              validate: nameRules('slug'),
-            });
-            const question = await prompter.ask(
-              'The yes/no question Roark should judge, e.g. "did the agent confirm the booking date?"',
-            );
-            customMetric = { name, question };
-            metrics.push(name);
-          }
-
-          if (metrics.length === 0) {
-            metrics.push(FALLBACK_METRIC);
-            say(note(`A run needs at least one metric, so ${FALLBACK_METRIC} was kept.`, color, 'yellow'));
-          }
-          say(stepDone(4, metrics.join(', '), color));
-        }
+        const graded = await chooseMetrics(steps, client, configuredPlans[0]);
+        const metrics = graded.metrics;
+        const customMetric = graded.customMetric;
 
         // ---- 6. Plan ---------------------------------------------------------------------
         let planName: string | undefined;
@@ -856,8 +751,8 @@ export const registerGetStartedCommand = (
 
         const setup: Setup = {
           agent,
-          persona: { name: personaName, language, accent, gender },
-          flow: { name: flowName, goal, ...(expectation === undefined ? {} : { expectation }) },
+          persona,
+          flow,
           metrics,
           ...(customMetric === undefined ? {} : { customMetric }),
           ...(planName === undefined ?
@@ -876,8 +771,8 @@ export const registerGetStartedCommand = (
             : []
           : setupFiles(setup).filter((file) => {
               if (file.path.startsWith('agents/')) return configuredAgents.length === 0;
-              if (file.path.startsWith('personas/')) return configuredPersonas.length === 0;
-              if (file.path.startsWith('flows/')) return configuredFlows.length === 0;
+              if (file.path.startsWith('personas/')) return persona.authored;
+              if (file.path.startsWith('flows/')) return flow.authored;
               if (file.path.startsWith('simulation-plans/')) return configuredPlans.length === 0;
               return true;
             });
@@ -889,35 +784,18 @@ export const registerGetStartedCommand = (
           say(`${paint('·', 'yellow', color)} ${path} (already there, left alone)`);
 
         // ---- Apply -----------------------------------------------------------------------
-        // `prune: false`, always. This directory is a subset of a real config, and a quickstart
-        // that deleted a resource someone already managed would be indefensible.
-        const bundle: ConfigBundle =
-          target.format === 'ts' ?
-            await loadConfigModule(join(dir, CONFIG_MODULE_FILE), { prune: false })
-          : await buildBundle(dir, { prune: false });
-        const preview = await client.config.diff(bundle as never);
-        const count = changeCount(preview.data.summary as unknown as Record<string, number>);
-
-        say('');
-        let applied: ConfigChange[] | undefined;
-        if (count === 0) {
-          say('Nothing to apply: the project already matches these files.');
-        } else {
-          say(formatChanges(preview.data as never));
-          say(note('Nothing is deleted: this applies without pruning.', color));
-          const go = options['yes'] === true || (await prompter.confirm(`Apply ${count} change(s)?`, true));
-          if (!go) {
-            say('');
-            say(
-              `Stopped before applying. The files are written; run \`${binaryName} config apply ${dir}\` when ready.`,
-            );
-            if (!quiet) write(dir);
-            return;
-          }
-          const response = await client.config.apply(bundle as never);
-          applied = response.data.changes;
-          say(formatChanges(response.data as never));
-        }
+        const outcome = await applyConfig({
+          client,
+          prompter,
+          say,
+          binaryName,
+          color,
+          quiet,
+          options,
+          target,
+        });
+        if (outcome.stopped) return;
+        const applied = outcome.applied;
 
         // ---- 7. Run ----------------------------------------------------------------------
         if (planName !== undefined && options['run'] !== false) {
@@ -966,6 +844,224 @@ export const registerGetStartedCommand = (
         prompter.close();
       }
     });
+};
+
+/**
+ * What every step needs to ask its questions: somewhere to read from, somewhere to write to, and
+ * what is already declared.
+ *
+ * One object rather than six parameters apiece, and one per step rather than one giant handler:
+ * `chooseAgent` was already written this way, so the rest being inline made the file read as two
+ * different programs.
+ */
+interface Steps {
+  prompter: Prompter;
+  say: (text: string) => void;
+  color: boolean;
+  binaryName: string;
+  /** Resources the config already declares, which is what a step skips itself for. */
+  existing: Record<string, unknown>[];
+  /** What to call the config when pointing at it. */
+  label: string;
+}
+
+/** A step's answer, plus whether this run authored it or read it back out of the config. */
+type Authored<T> = T & { authored: boolean };
+
+/** Step 3: who calls the agent. */
+const chooseCaller = async (steps: Steps): Promise<Authored<PersonaSetup>> => {
+  const { prompter, say, color, binaryName } = steps;
+  const declared = namesOfKind(steps.existing, 'persona')[0];
+
+  if (declared !== undefined) {
+    say(stepSkipped(2, `${declared}, already declared in ${steps.label}`, color));
+    // The declared file is the source of truth for the rest of its fields; nothing here reads
+    // them, because nothing here writes that file again.
+    return { name: declared, language: 'EN', accent: 'US', gender: 'FEMALE', authored: false };
+  }
+
+  say(stepHeader(2, color));
+  const name = await prompter.ask('What should we call the caller?', {
+    default: 'curious-caller',
+    validate: nameRules('name'),
+  });
+  const language = await pickCode(prompter, 'What language do they speak?', LANGUAGES, 'EN');
+  const accent = await pickCode(prompter, 'With which accent?', ACCENTS, 'US');
+  const gender = await prompter.select('Voice?', GENDERS, 'FEMALE');
+
+  say(stepDone(2, `${name} (${language}/${accent}/${gender.toLowerCase()})`, color));
+  say(
+    echoCommand(
+      `${binaryName} simulation persona create --name ${name} --language ${language} --accent ${accent} --gender ${gender}`,
+      color,
+    ),
+  );
+  return { name, language, accent, gender, authored: true };
+};
+
+/** Step 4: what the call is about. */
+const chooseScenario = async (
+  steps: Steps,
+  agent: AgentSetup,
+  agentIsNew: boolean,
+): Promise<Authored<FlowSetup>> => {
+  const { prompter, say, color } = steps;
+  const declared = namesOfKind(steps.existing, 'flow')[0];
+
+  if (declared !== undefined) {
+    say(stepSkipped(3, `${declared}, already declared in ${steps.label}`, color));
+
+    // A flow names the agents it is written for. Reusing one that does not name the agent we
+    // just declared produces a plan whose flow targets somebody else, which apply accepts and
+    // the run then does something unexpected with.
+    const resource = steps.existing.find((entry) => entry['kind'] === 'flow' && entry['name'] === declared);
+    const targets = Array.isArray(resource?.['agents']) ? resource['agents'] : [];
+    if (agentIsNew && !targets.includes(agent.name)) {
+      say(
+        note(
+          `${declared} does not list ${agent.name} under \`agents\`. Add it, or the run will exercise a scenario written for a different agent.`,
+          color,
+          'yellow',
+        ),
+      );
+    }
+    return { name: declared, goal: '', authored: false };
+  }
+
+  say(stepHeader(3, color));
+  const goal = await prompter.ask('What is the caller calling about? Say it as you would to them');
+  const name = await prompter.ask('Short name for that scenario?', {
+    // Not derived from the sentence above: a slug of "You call to rebook a cancelled cleaning"
+    // reads as `you-call-to-rebook-a`, which is worse than a plain default.
+    default: 'first-scenario',
+    validate: nameRules('name'),
+  });
+  const written = await prompter.ask('What must the agent do for this call to pass? (Enter to skip)', {
+    default: '-',
+  });
+
+  say(stepDone(3, name, color));
+  return { name, goal, ...(written === '-' ? {} : { expectation: written }), authored: true };
+};
+
+/** Step 5: how the call is graded. */
+const chooseMetrics = async (
+  steps: Steps,
+  client: Roark,
+  declaredPlan: string | undefined,
+): Promise<{ metrics: string[]; customMetric?: CustomMetricSetup }> => {
+  const { prompter, say, color } = steps;
+
+  // A plan names the metrics, so when one is already declared there is nothing these answers
+  // could attach to: that plan is left alone, and the picks would be collected and then quietly
+  // dropped. Not asking is better than asking and ignoring.
+  if (declaredPlan !== undefined) {
+    say(stepSkipped(4, `${declaredPlan} already names the metrics it grades on`, color));
+    return { metrics: [] };
+  }
+
+  say(stepHeader(4, color));
+
+  let available: AvailableMetric[] | undefined;
+  try {
+    const response = await client.metric.listDefinitions({ limit: 500 });
+    available = response.data.map((metric) => ({ metricId: metric.metricId, name: metric.name }));
+  } catch {
+    available = undefined;
+  }
+
+  const offered = metricOptions(available);
+  if (!offered.verified) {
+    say(note("Could not read this project's metrics, so these are Roark's usual ones.", color, 'yellow'));
+  }
+
+  const metrics = await prompter.multiSelect(
+    'Which metrics should grade the run?',
+    offered.choices,
+    offered.recommended,
+  );
+
+  let customMetric: CustomMetricSetup | undefined;
+  if (await prompter.confirm('Add a metric of your own?', false)) {
+    const name = await prompter.ask('Short name for it', {
+      default: 'my_metric',
+      validate: nameRules('slug'),
+    });
+    const question = await prompter.ask(
+      'The yes/no question Roark should judge, e.g. "did the agent confirm the booking date?"',
+    );
+    customMetric = { name, question };
+    metrics.push(name);
+  }
+
+  if (metrics.length === 0) {
+    metrics.push(FALLBACK_METRIC);
+    say(note(`A run needs at least one metric, so ${FALLBACK_METRIC} was kept.`, color, 'yellow'));
+  }
+  say(stepDone(4, metrics.join(', '), color));
+
+  return { metrics, ...(customMetric === undefined ? {} : { customMetric }) };
+};
+
+interface ApplyPhase {
+  client: Roark;
+  prompter: Prompter;
+  say: (text: string) => void;
+  binaryName: string;
+  color: boolean;
+  quiet: boolean;
+  options: Record<string, unknown>;
+  target: Target;
+}
+
+/**
+ * Preview the config, confirm it, apply it.
+ *
+ * Its own function for the same reason as `startRun`: it is a self-contained phase with one
+ * decision in it, and the steps around it are not - they thread one `Setup` through shared
+ * local state. `stopped` carries the one case the caller cannot infer, a user who said no,
+ * where the files are written and the right thing is to stop without running anything.
+ */
+const applyConfig = async (
+  phase: ApplyPhase,
+): Promise<{ stopped: true } | { stopped: false; applied: ConfigChange[] | undefined }> => {
+  const { client, prompter, say, binaryName, color, quiet, options, target } = phase;
+
+  // `prune: false`, always. What this writes is a subset of a real config, and a quickstart
+  // that deleted a resource someone already managed would be indefensible.
+  const bundle: ConfigBundle =
+    target.format === 'ts' ?
+      await loadConfigModule(join(target.dir, CONFIG_MODULE_FILE), { prune: false })
+    : await buildBundle(target.dir, { prune: false });
+
+  const preview = await client.config.diff(bundle as never);
+  const count = changeCount(preview.data.summary as unknown as Record<string, number>);
+
+  say('');
+  if (count === 0) {
+    say('Nothing to apply: the project already matches this config.');
+    return { stopped: false, applied: undefined };
+  }
+
+  say(formatChanges(preview.data as never));
+  say(note('Nothing is deleted: this applies without pruning.', color));
+
+  const go = options['yes'] === true || (await prompter.confirm(`Apply ${count} change(s)?`, true));
+  if (!go) {
+    say('');
+    say(
+      `Stopped before applying. The config is written; run \`${applyCommand(
+        binaryName,
+        target,
+      )}\` when ready.`,
+    );
+    if (!quiet) write(target.label);
+    return { stopped: true };
+  }
+
+  const response = await client.config.apply(bundle as never);
+  say(formatChanges(response.data as never));
+  return { stopped: false, applied: response.data.changes };
 };
 
 interface RunPhase {

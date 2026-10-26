@@ -42,7 +42,21 @@ const camelize = (name: string): string => {
   return /^[0-9]/.test(camel) ? `_${camel}` : camel;
 };
 
-const quote = (value: string): string => `'${value.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}'`;
+/**
+ * A single-quoted TypeScript string.
+ *
+ * Newlines are escaped, not just quotes and backslashes. Nothing the prompts can produce today
+ * holds one - readline hands back a line at a time - but a value that gained one from anywhere
+ * else would emit a literal broken across two lines, which is not valid TypeScript, and the
+ * failure would land on the user as a syntax error in a file they did not write.
+ */
+const quote = (value: string): string =>
+  `'${value
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/\n/g, '\\n')
+    .replace(/\r/g, '\\r')
+    .replace(/\t/g, '\\t')}'`;
 
 /**
  * How wide a line may get before the literal breaks across several.

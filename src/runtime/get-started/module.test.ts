@@ -79,6 +79,19 @@ describe('setupModule', () => {
     expect(render(setup)).toContain("prompt: 'You call because you\\'re owed a refund.'");
   });
 
+  it('escapes a newline rather than ending the string literal on it', () => {
+    // Nothing the prompts can produce holds a newline today, which is why this would sit here
+    // undetected: a literal broken across two lines is a syntax error in a file nobody wrote.
+    const setup = baseSetup();
+    setup.flow = { ...setup.flow, goal: 'You call about a refund.\nYou are not happy about it.' };
+
+    const source = render(setup);
+
+    expect(source).toContain("'You call about a refund.\\nYou are not happy about it.'");
+    // The declaration stays on one logical line per value, so the file still parses.
+    expect(source.split('\n').filter((line) => line.includes('You are not happy'))).toHaveLength(1);
+  });
+
   it('keeps short values on one line and breaks only what does not fit', () => {
     // Close to what a formatter would do, so running prettier over the file is not a rewrite of
     // every line somebody then has to read in a diff.

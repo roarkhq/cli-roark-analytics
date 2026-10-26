@@ -23,16 +23,31 @@ const declaredFlags = (): string[] => {
   return command.options.map((option) => option.long).filter((long): long is string => Boolean(long));
 };
 
-/** Every `--flag` a documentation section mentions. */
+/**
+ * Every `--flag` a documentation section mentions.
+ *
+ * Anchored on a space or a backtick so a double hyphen inside prose is not read as a flag, and
+ * ended on a word boundary so a trailing hyphen does not become part of the name.
+ */
 const mentionedFlags = (section: string): string[] => [
-  ...new Set([...section.matchAll(/--[a-z][a-z-]*/g)].map((match) => match[0])),
+  ...new Set([...section.matchAll(/(?<=^|[\s`])(--[a-z][a-z-]*[a-z])\b/gm)].map((match) => match[1]!)),
 ];
 
+/**
+ * The slice between two headings.
+ *
+ * Both ends are required. Running to the end of the file when the closing heading moved would
+ * drag in flags from unrelated sections and fail with "not a flag of get-started", which says
+ * nothing about what actually broke.
+ */
 const sectionOf = (markdown: string, heading: string, until: string): string => {
   const start = markdown.indexOf(heading);
   if (start < 0) throw new Error(`no "${heading}" section; the generator stopped emitting it`);
   const end = markdown.indexOf(until, start + heading.length);
-  return markdown.slice(start, end < 0 ? undefined : end);
+  if (end < 0) {
+    throw new Error(`"${heading}" is no longer followed by "${until}"; this slice needs updating`);
+  }
+  return markdown.slice(start, end);
 };
 
 describe('the shipped docs for get-started', () => {
@@ -52,10 +67,15 @@ describe('the shipped docs for get-started', () => {
     for (const flag of documented) expect(real).toContain(flag);
   });
 
-  it('documents the flag that makes it usable without a terminal', () => {
-    // The one flag a script or a CI job needs. Losing it from the docs is losing the only
-    // answer to "this prompts, so I cannot use it".
-    expect(read('README.md')).toContain('--scaffold-only');
+  it('documents the flags that change what the command does', () => {
+    // The other direction: a flag that exists but is never mentioned. Not every flag belongs in
+    // prose (the global ones do not), so this pins the three that change the outcome rather
+    // than asserting the whole set.
+    const readme = sectionOf(read('README.md'), '## Get started', '## Usage');
+
+    for (const flag of ['--scaffold-only', '--no-run', '--ts']) expect(readme).toContain(flag);
+    // `--scaffold-only` is the only answer to "it prompts, so I cannot use it from a script",
+    // so it has to survive in the agent-facing file too.
     expect(read('SKILL.md')).toContain('--scaffold-only');
   });
 });

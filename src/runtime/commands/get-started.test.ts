@@ -720,8 +720,37 @@ describe('roark get-started --ts', () => {
 
     await run({ argv: ['get-started', '--dir', dir, '--ts', '--scaffold-only'], interactive: false });
 
-    expect(said()).toContain('does not have');
+    expect(said()).toContain('cannot resolve');
     expect(readdirSync(dir)).toEqual(['roark.config.ts']);
+  });
+
+  it('writes the module inside --dir, and applies it by that path', async () => {
+    // Without --dir a config module goes to the working directory, where `config apply` finds
+    // it with no argument. Given one, the path has to be carried into every command printed.
+    const dir = tempDir();
+    installStubSdk(dir);
+
+    await run({
+      argv: ['get-started', '--dir', dir, '--ts', '--no-run'],
+      answers: HAPPY_PATH_ANSWERS,
+    });
+
+    expect(readdirSync(dir).sort()).toEqual(['node_modules', 'roark.config.ts']);
+    expect(said()).toContain(`config apply ${join(dir, 'roark.config.ts')}`);
+  });
+
+  it('skips the question and still warns when the SDK is too old for the helpers', async () => {
+    // The package is there, `lib/config` is not: an older SDK satisfies "installed" and then
+    // fails on the import, so the folder existing is not the thing worth checking.
+    const dir = tempDir();
+    mkdirSync(join(dir, 'node_modules', '@roarkanalytics', 'sdk'), { recursive: true });
+
+    await run({
+      argv: ['get-started', '--dir', dir, '--ts', '--scaffold-only'],
+      interactive: false,
+    });
+
+    expect(said()).toContain('cannot resolve');
   });
 
   it('refuses both formats at once rather than picking one', async () => {
