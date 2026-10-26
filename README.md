@@ -40,6 +40,23 @@ a stored or environment credential to it. Pass `--allow-project-base-url` (or se
 `ROARK_ALLOW_PROJECT_BASE_URL`) once you have read the file, or `--token` to send a
 different credential.
 
+## Get started
+
+```sh
+roark get-started
+```
+
+Seven steps from an empty project to a graded simulation: the agent under test, the caller
+that phones it, what the call is about, the metrics that grade it, the saved run, and then the
+run itself. Each step writes one YAML file under `./roark` and the directory is applied with
+`config apply`, so the setup is yours to commit, re-running it fills in whatever is missing,
+and nothing is ever pruned.
+
+```sh
+roark get-started --scaffold-only   # write the files with placeholders; no questions, no API calls
+roark get-started --no-run          # set it all up, start the run yourself later
+```
+
 ## Usage
 
 Commands read noun before verb, and the verb is one of `list`, `get`, `create`,
