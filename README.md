@@ -253,7 +253,7 @@ roark completion fish | source
 | `roark metric collection-job list`                                               | List metric collection jobs            |
 | `roark metric definition create --data '{ ... }'`                                | Create custom metric definition        |
 | `roark metric definition list`                                                   | List metric definitions                |
-| `roark metric definition update <id-or-slug>`                                    | Update a metric definition             |
+| `roark metric definition update <id-or-slug> --http-request.url <value>`         | Update a metric definition             |
 | `roark metric policy create --name <value> --modality <value> --metrics <value>` | Create a metric policy                 |
 | `roark metric policy delete <policy-id>`                                         | Delete a metric policy                 |
 | `roark metric policy get <policy-id>`                                            | Get metric policy by ID                |
@@ -264,6 +264,17 @@ roark completion fish | source
 | `roark metric variant get <id-or-slug> <variant-id>`                             | Get a metric variant                   |
 | `roark metric variant list <id-or-slug>`                                         | List a metric’s variants               |
 | `roark metric variant update <id-or-slug> <variant-id>`                          | Update a metric variant                |
+
+### phone-number
+
+| Command                                       | Description                    |
+| --------------------------------------------- | ------------------------------ |
+| `roark phone-number allowance get`            | Get the phone number allowance |
+| `roark phone-number available list`           | Search available phone numbers |
+| `roark phone-number create --e164 <value>`    | Buy a phone number             |
+| `roark phone-number delete <phone-number-id>` | Release a phone number         |
+| `roark phone-number list`                     | List phone numbers             |
+| `roark phone-number update <phone-number-id>` | Update a phone number          |
 
 ### project
 
