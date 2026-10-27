@@ -108,20 +108,20 @@ roark completion fish | source
 
 ### agent
 
-| Command                                                                              | Description                 |
-| ------------------------------------------------------------------------------------ | --------------------------- |
-| `roark agent build --name <value> --job-description <value>`                         | Build a Roark-hosted agent  |
-| `roark agent create --name <value>`                                                  | Create a new agent          |
-| `roark agent endpoint create --agent-id <value> --value <value> --direction <value>` | Create a new agent endpoint |
-| `roark agent endpoint get <endpoint-id>`                                             | Get agent endpoint by ID    |
-| `roark agent endpoint list`                                                          | List agent endpoints        |
-| `roark agent endpoint update <endpoint-id>`                                          | Update an agent endpoint    |
-| `roark agent get <agent-id>`                                                         | Get agent by ID             |
-| `roark agent list`                                                                   | List agents                 |
-| `roark agent prompt list <agent-id>`                                                 | List an agent's prompts     |
-| `roark agent prompt update <agent-id> --prompt <value>`                              | Set an agent's prompt       |
-| `roark agent prompt version list <agent-id> <prompt-id>`                             | List a prompt's versions    |
-| `roark agent update <agent-id>`                                                      | Update an agent             |
+| Command                                                                                                    | Description                 |
+| ---------------------------------------------------------------------------------------------------------- | --------------------------- |
+| `roark agent build --name <value> --job-description <value> --tts.provider <value> --tts.voice-id <value>` | Build a Roark-hosted agent  |
+| `roark agent create --name <value>`                                                                        | Create a new agent          |
+| `roark agent endpoint create --agent-id <value> --value <value> --direction <value>`                       | Create a new agent endpoint |
+| `roark agent endpoint get <endpoint-id>`                                                                   | Get agent endpoint by ID    |
+| `roark agent endpoint list`                                                                                | List agent endpoints        |
+| `roark agent endpoint update <endpoint-id>`                                                                | Update an agent endpoint    |
+| `roark agent get <agent-id>`                                                                               | Get agent by ID             |
+| `roark agent list`                                                                                         | List agents                 |
+| `roark agent prompt list <agent-id>`                                                                       | List an agent's prompts     |
+| `roark agent prompt update <agent-id> --prompt <value>`                                                    | Set an agent's prompt       |
+| `roark agent prompt version list <agent-id> <prompt-id>`                                                   | List a prompt's versions    |
+| `roark agent update <agent-id>`                                                                            | Update an agent             |
 
 ### agent-config
 

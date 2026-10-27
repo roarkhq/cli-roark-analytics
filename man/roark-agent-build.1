@@ -18,7 +18,16 @@ Name of the agent Required.
 One\-line description of what the agent should do. Roark authors the system prompt from this. Required.
 .TP
 \fB\-\-voice\fR \fI<value>\fR
-Optional voice label for the hosted agent Optional.
+Optional display name of the agent's voice. The authored prompt matches its delivery to it. Optional.
+.TP
+\fB\-\-tts\fR \fI<value>\fR
+Optional provider voice the hosted agent speaks with Optional.
+.TP
+\fB\-\-tts.provider\fR \fI<value>\fR
+Text\-to\-speech provider, for example ELEVENLABS. Not checked against a known list. Required.
+.TP
+\fB\-\-tts.voice\-id\fR \fI<value>\fR
+The provider's id for the voice Required.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -60,7 +69,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark agent build \-\-name <value> \-\-job\-description <value>
+roark agent build \-\-name <value> \-\-job\-description <value> \-\-tts.provider <value> \-\-tts.voice\-id <value>
 .fi
 .RE
 .SH "ENVIRONMENT"
