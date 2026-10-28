@@ -7,4 +7,4 @@
 //
 // Do not edit: an edit here is overwritten, and the published number is whatever
 // package.json says.
-export const version = '0.57.0'; // x-release-please-version
+export const version = '0.58.0'; // x-release-please-version
