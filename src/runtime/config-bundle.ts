@@ -15,6 +15,15 @@ import { parse as parseYaml } from 'yaml';
 
 import { UsageError } from './errors';
 
+/**
+ * A directory that exists but holds no resources.
+ *
+ * Its own class so a caller can tell "nothing here yet" from "this config is broken" without
+ * matching on the message text, which would break silently the day the wording changes.
+ * `get-started` treats it as a fresh start; everyone else still sees a UsageError and exit 2.
+ */
+export class EmptyConfigDirectoryError extends UsageError {}
+
 export interface ConfigBundle {
   resources: Array<Record<string, unknown>>;
   prune?: boolean;
@@ -100,7 +109,9 @@ export const buildBundle = async (dir: string, options: { prune?: boolean } = {}
     resources.push(resource);
   }
 
-  if (resources.length === 0) throw new UsageError(`no config resources (*.yaml) found under ${dir}`);
+  if (resources.length === 0) {
+    throw new EmptyConfigDirectoryError(`no config resources (*.yaml) found under ${dir}`);
+  }
 
   return { resources, ...(options.prune === undefined ? {} : { prune: options.prune }) };
 };

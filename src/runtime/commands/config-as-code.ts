@@ -24,33 +24,8 @@ import { UsageError } from '../errors';
 import { readData, readStdin, stdinIsPiped } from '../input';
 import { render, write, type OutputFormat } from '../output';
 import { buildBundle, type ConfigBundle } from '../config-bundle';
+import { changeCount, formatChanges } from '../config-changes';
 import { findDefaultConfigModule, isConfigModulePath, loadConfigModule } from '../config-module';
-
-const OP_MARK: Record<string, string> = { create: '+', update: '~', delete: '-', noop: ' ' };
-
-/** One-line-per-change summary for a terminal; `apply` results also carry a status. */
-const formatChanges = (data: {
-  changes: Array<Record<string, unknown>>;
-  summary: Record<string, number>;
-}): string => {
-  const lines = data.changes.map((change) => {
-    const mark = OP_MARK[String(change['op'])] ?? '?';
-    const status = change['status'] ? ` (${String(change['status'])})` : '';
-    const error = change['error'] ? `  ${String(change['error'])}` : '';
-    return `  ${mark} ${String(change['configKey'])}${status}${error}`;
-  });
-  const s = data.summary;
-  const tally = [
-    `${s['create'] ?? 0} to create`,
-    `${s['update'] ?? 0} to update`,
-    `${s['delete'] ?? 0} to delete`,
-    ...(s['failed'] === undefined ? [] : [`${s['failed']} failed`]),
-  ].join(', ');
-  return [...lines, '', tally].join('\n');
-};
-
-const changeCount = (summary: Record<string, number>): number =>
-  (summary['create'] ?? 0) + (summary['update'] ?? 0) + (summary['delete'] ?? 0);
 
 /**
  * Resolve the bundle from a `path`, `--data`/stdin, or an auto-detected config file:

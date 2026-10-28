@@ -12,6 +12,7 @@ import { registerApiCommand } from './commands/api';
 import { registerAuthCommands } from './commands/auth';
 import { registerConfigAsCodeCommands } from './commands/config-as-code';
 import { registerConfigCommands } from './commands/config';
+import { registerGetStartedCommand } from './commands/get-started';
 import { registerCompletionCommand } from './commands/completion';
 import { confirm } from './confirm';
 import {
@@ -396,6 +397,7 @@ export const createProgram = (options: ProgramOptions): Command => {
     addApiCommand(root, options, definition);
   }
 
+  registerGetStartedCommand(root, options.binaryName, clientFor, resolveOutput);
   registerAuthCommands(root, options.binaryName, clientFor);
   registerConfigAsCodeCommands(root, options.binaryName, clientFor, resolveOutput);
   registerConfigCommands(root, options.binaryName);
@@ -405,6 +407,9 @@ export const createProgram = (options: ProgramOptions): Command => {
   root.addHelpText(
     'after',
     [
+      '',
+      'New here?',
+      `  ${options.binaryName} get-started          an agent, a caller, a scenario, metrics, and a graded run`,
       '',
       'Environment:',
       '  ROARK_API_BEARER_TOKEN   bearer token used when --token is not given',

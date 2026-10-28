@@ -20,6 +20,16 @@ npm install -g @roarkanalytics/cli
 Set `ROARK_API_BEARER_TOKEN`, or run `roark auth login`. Never pass a token
 as a flag in a script: it lands in shell history and in the process table.
 
+## Get started
+
+`roark get-started` walks a person through an agent, a caller, a scenario, metrics, a
+saved run, and the run itself, writing one config-as-code YAML file per step under `./roark`
+and applying the directory. It asks questions, so only suggest it to a human at a terminal.
+For your own setup work, write the config and run `roark config apply`, or use
+`roark get-started --scaffold-only`, which prompts for nothing and calls no endpoint.
+Config is YAML under `./roark` by default, or a single `roark.config.ts` with `--ts` when the
+project has the SDK to import the typed `define*` helpers from.
+
 ## Shape of a command
 
 ```sh
