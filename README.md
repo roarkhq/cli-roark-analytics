@@ -112,6 +112,11 @@ roark completion fish | source
 | ---------------------------------------------------------------------------------------------------------- | --------------------------- |
 | `roark agent build --name <value> --job-description <value> --tts.provider <value> --tts.voice-id <value>` | Build a Roark-hosted agent  |
 | `roark agent create --name <value>`                                                                        | Create a new agent          |
+| `roark agent draft create <agent-id>`                                                                      | Start a draft               |
+| `roark agent draft delete <agent-id>`                                                                      | Discard the draft           |
+| `roark agent draft get <agent-id>`                                                                         | Get an agent's draft        |
+| `roark agent draft publish <agent-id> --expected-revision <value>`                                         | Publish the draft           |
+| `roark agent draft update <agent-id> --settings <value>`                                                   | Edit the draft              |
 | `roark agent endpoint create --agent-id <value> --value <value> --direction <value>`                       | Create a new agent endpoint |
 | `roark agent endpoint get <endpoint-id>`                                                                   | Get agent endpoint by ID    |
 | `roark agent endpoint list`                                                                                | List agent endpoints        |
@@ -122,6 +127,9 @@ roark completion fish | source
 | `roark agent prompt update <agent-id> --prompt <value>`                                                    | Set an agent's prompt       |
 | `roark agent prompt version list <agent-id> <prompt-id>`                                                   | List a prompt's versions    |
 | `roark agent update <agent-id>`                                                                            | Update an agent             |
+| `roark agent version get <agent-id> <version-id>`                                                          | Get an agent version        |
+| `roark agent version list <agent-id>`                                                                      | List an agent's versions    |
+| `roark agent version restore <agent-id> <version-id>`                                                      | Restore an agent version    |
 
 ### agent-config
 
