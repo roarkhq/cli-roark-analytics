@@ -6,19 +6,25 @@ roark\-phone\-number\-available\-list \- Search available phone numbers
 .B roark phone\-number available list
 [\fIoptions\fR]
 .SH "DESCRIPTION"
-Returns US numbers the carrier has for sale, narrowed by area code or by digits the number must contain. Buy one with POST /v1/phone\-number.
+Returns US or Canadian numbers the carrier has for sale, local or toll\-free, narrowed by area code or by digits the number must contain. When an area code has no numbers, nearby ones are returned flagged bestEffort; an empty list means nothing matched. Buy one with POST /v1/phone\-number, or let Roark pick with autoPick.
 .SH "API"
 GET /v1/phone\-number/available
 .SH "OPTIONS"
 .TP
+\fB\-\-country\fR \fI<value>\fR
+ISO 3166\-1 alpha\-2 country of the number: US or CA One of: US, CA. Optional.
+.TP
+\fB\-\-number\-type\fR \fI<value>\fR
+LOCAL for a number in an area code, TOLL_FREE for one from the shared US and Canada toll\-free pool One of: LOCAL, TOLL_FREE. Optional.
+.TP
 \fB\-\-area\-code\fR \fI<value>\fR
-Three\-digit US area code Optional.
+Three\-digit area code, or a toll\-free prefix such as 800. When it has no numbers, nearby ones are returned instead, flagged bestEffort. Optional.
 .TP
 \fB\-\-contains\fR \fI<value>\fR
 Digits or letters the number must contain (1 to 7, * matches any digit) Optional.
 .TP
 \fB\-\-limit\fR \fI<value>\fR
-Maximum number of results (default: 20, max: 50) Optional.
+Maximum number of results (default: 20, max: 100) Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
