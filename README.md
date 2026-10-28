@@ -271,7 +271,7 @@ roark completion fish | source
 | --------------------------------------------- | ------------------------------ |
 | `roark phone-number allowance get`            | Get the phone number allowance |
 | `roark phone-number available list`           | Search available phone numbers |
-| `roark phone-number create --e164 <value>`    | Buy a phone number             |
+| `roark phone-number create`                   | Buy a phone number             |
 | `roark phone-number delete <phone-number-id>` | Release a phone number         |
 | `roark phone-number list`                     | List phone numbers             |
 | `roark phone-number update <phone-number-id>` | Update a phone number          |

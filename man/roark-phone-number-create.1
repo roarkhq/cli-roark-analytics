@@ -6,13 +6,31 @@ roark\-phone\-number\-create \- Buy a phone number
 .B roark phone\-number create
 [\fIoptions\fR]
 .SH "DESCRIPTION"
-Buys a number from the carrier for this project. Free inside the plan allowance; past it, the first month of rent is charged now and monthly after that.
+Buys a number from the carrier for this project: the one named by e164, or one Roark picks to match autoPick (trying the next match if the carrier has just sold one). Free inside the plan allowance; past it, the first month of rent is charged now and monthly after that.
 .SH "API"
 POST /v1/phone\-number
 .SH "OPTIONS"
 .TP
 \fB\-\-e164\fR \fI<value>\fR
-The number to buy, in E.164 format, from a search result Required.
+The number to buy, in E.164 format, from a search result. Give this or autoPick. Optional.
+.TP
+\fB\-\-auto\-pick\fR \fI<value>\fR
+What the number Roark picks should look like. Roark buys the first matching number the carrier will sell, preferring the area code and falling back to a nearby one. Optional.
+.TP
+\fB\-\-auto\-pick.country\fR \fI<value>\fR
+ISO 3166\-1 alpha\-2 country of the number: US or CA One of: US, CA. Optional.
+.TP
+\fB\-\-auto\-pick.number\-type\fR \fI<value>\fR
+LOCAL for a number in an area code, TOLL_FREE for one from the shared US and Canada toll\-free pool One of: LOCAL, TOLL_FREE. Optional.
+.TP
+\fB\-\-auto\-pick.area\-code\fR \fI<value>\fR
+Three\-digit area code, or a toll\-free prefix such as 800. When it has no numbers, nearby ones are returned instead, flagged bestEffort. Optional.
+.TP
+\fB\-\-auto\-pick.contains\fR \fI<value>\fR
+Digits or letters the number must contain (1 to 7, * matches any digit) Optional.
+.TP
+\fB\-\-country\fR \fI<value>\fR
+The country of the number given by e164 (default: US). An auto\-picked number uses autoPick.country. One of: US, CA. Optional.
 .TP
 \fB\-\-name\fR \fI<value>\fR
 A label for the number Optional.
@@ -66,7 +84,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark phone\-number create \-\-e164 <value>
+roark phone\-number create
 .fi
 .RE
 .SH "ENVIRONMENT"
