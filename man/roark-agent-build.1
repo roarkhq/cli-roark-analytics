@@ -28,6 +28,27 @@ Text\-to\-speech provider, for example ELEVENLABS One of: CARTESIA, ELEVENLABS, 
 .TP
 \fB\-\-tts.voice\-id\fR \fI<value>\fR
 The provider's id for the voice Required.
+.TP
+\fB\-\-tts.model\fR \fI<value>\fR
+The provider's voice model, for example eleven_flash_v2_5. Its current one when omitted Optional.
+.TP
+\fB\-\-stt\fR \fI<value>\fR
+Optional transcriber the hosted agent hears with. Roark's default when omitted Optional.
+.TP
+\fB\-\-stt.provider\fR \fI<value>\fR
+Speech\-to\-text provider, for example DEEPGRAM One of: DEEPGRAM, OPENAI_WHISPER, SPEECHMATICS, ASSEMBLYAI, ELEVENLABS. Required.
+.TP
+\fB\-\-stt.model\fR \fI<value>\fR
+The provider's model id, for example nova\-3 Required.
+.TP
+\fB\-\-llm\fR \fI<value>\fR
+Optional text model the hosted agent thinks with. Roark's default when omitted Optional.
+.TP
+\fB\-\-llm.provider\fR \fI<value>\fR
+Text model provider, for example OPENAI One of: OPENAI, ANTHROPIC, GOOGLE, XAI, ULTRAVOX, AWS, ELEVENLABS. Required.
+.TP
+\fB\-\-llm.model\fR \fI<value>\fR
+The provider's model id, for example gpt\-4.1 Required.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -69,7 +90,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark agent build \-\-name <value> \-\-job\-description <value> \-\-tts.provider <value> \-\-tts.voice\-id <value>
+roark agent build \-\-name <value> \-\-job\-description <value> \-\-tts.provider <value> \-\-tts.voice\-id <value> \-\-stt.provider <value> \-\-stt.model <value> \-\-llm.provider <value> \-\-llm.model <value>
 .fi
 .RE
 .SH "ENVIRONMENT"
