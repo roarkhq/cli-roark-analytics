@@ -1,14 +1,14 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-AGENT\-VERSION\-RESTORE" "1" "" "roark-agent-version-restore" "Roark Analytics API Manual"
+.TH "ROARK\-AGENT\-VERSION\-ROLLBACK" "1" "" "roark-agent-version-rollback" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-agent\-version\-restore \- Restore an agent version
+roark\-agent\-version\-rollback \- Roll an agent back to a version
 .SH "SYNOPSIS"
-.B roark agent version restore
+.B roark agent version rollback
 \fIagent\-id\fR \fIversion\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Roll back: publishes a new version, numbered after the latest, with this version's settings and makes it live. History stays append\-only. An open draft started before this is kept but can no longer be published (409 `agent_draft_base_changed`); discard it or start a new one. Pass `expectedLiveVersionId` to be refused (409 `agent_live_version_changed`) if another version went live since you read it.
+Publishes a new version, numbered after the latest, with this version's settings and makes it live. History stays append\-only. An open draft started before this is kept but can no longer be published (409 `agent_draft_base_changed`); discard it or start a new one. Pass `expectedLiveVersionId` to be refused (409 `agent_live_version_changed`) if another version went live since you read it.
 .SH "API"
-POST /v1/agent/{agentId}/versions/{versionId}/restore
+POST /v1/agent/{agentId}/versions/{versionId}/rollback
 .SH "ARGUMENTS"
 .TP
 \fIagent\-id\fR
@@ -22,7 +22,7 @@ The version\-id.
 Optional.
 .TP
 \fB\-\-expected\-live\-version\-id\fR \fI<value>\fR
-The live version when you decided to restore. When sent, the restore is refused with 409 if another version went live since. Optional.
+The live version when you decided to roll back. When sent, the rollback is refused with 409 if another version went live since. Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -64,7 +64,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark agent version restore <agent\-id> <version\-id>
+roark agent version rollback <agent\-id> <version\-id>
 .fi
 .RE
 .SH "ENVIRONMENT"

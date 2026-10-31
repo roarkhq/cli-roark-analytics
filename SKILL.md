@@ -42,7 +42,7 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 
 ## Commands
 
-- `roark agent build --name <value> --job-description <value> --tts.provider <value> --tts.voice-id <value>` - Build a Roark-hosted agent
+- `roark agent build --name <value> --job-description <value> --tts.provider <value> --tts.voice-id <value> --stt.provider <value> --stt.model <value> --llm.provider <value> --llm.model <value>` - Build a Roark-hosted agent
 - `roark agent create --name <value>` - Create a new agent
 - `roark agent draft create <agent-id>` - Start a draft
 - `roark agent draft delete <agent-id>` - Discard the draft
@@ -61,7 +61,7 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark agent update <agent-id>` - Update an agent
 - `roark agent version get <agent-id> <version-id>` - Get an agent version
 - `roark agent version list <agent-id>` - List an agent's versions
-- `roark agent version restore <agent-id> <version-id>` - Restore an agent version
+- `roark agent version rollback <agent-id> <version-id>` - Roll an agent back to a version
 - `roark agent-config get <key>` - Get a managed config
 - `roark agent-config list` - List managed configs
 - `roark agent-config promote <key>` - Promote staging to production

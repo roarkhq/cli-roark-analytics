@@ -69,7 +69,7 @@
     "./man/roark-agent-update.1",
     "./man/roark-agent-version-get.1",
     "./man/roark-agent-version-list.1",
-    "./man/roark-agent-version-restore.1",
+    "./man/roark-agent-version-rollback.1",
     "./man/roark-agent-config-get.1",
     "./man/roark-agent-config-list.1",
     "./man/roark-agent-config-promote.1",
