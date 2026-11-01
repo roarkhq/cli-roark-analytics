@@ -8,7 +8,7 @@ roark\-agent\-draft\-update \- Edit the draft
 .SH "DESCRIPTION"
 Changes settings on the draft. Omitted settings stay as they are. Pass the revision you read as expectedRevision to fail with 409 if anyone edited the draft since, instead of applying on top of their edit.
 .SH "API"
-PATCH /v1/agent/{agentId}/draft
+PUT /v1/agent/{agentId}/draft
 .SH "ARGUMENTS"
 .TP
 \fIagent\-id\fR
@@ -19,7 +19,7 @@ The agent\-id.
 The draft's revision when you read it. When sent, the edit is refused if the draft changed since; when omitted, it applies on top of the latest edit. Optional.
 .TP
 \fB\-\-settings\fR \fI<value>\fR
-The settings to change. Omitted settings stay as they are; null clears one to the runtime default. subAgents replaces every speaker and must include `main`. Required.
+The settings to change. Omitted settings stay as they are; null clears one to the runtime default. subAgents replaces every speaker, model configs included, and must include `main`; in a model config, omitted fields use the runtime default. Required.
 .TP
 \fB\-\-settings.modalities\fR \fI<value>\fR
 One of: call, chat. Repeatable. Optional.
@@ -35,42 +35,6 @@ Optional.
 .TP
 \fB\-\-settings.first\-message\-audio\-url\fR \fI<value>\fR
 Optional.
-.TP
-\fB\-\-settings.llm\-provider\fR \fI<value>\fR
-One of: OPENAI, ANTHROPIC, GOOGLE, XAI, ULTRAVOX, AWS, ELEVENLABS. Optional.
-.TP
-\fB\-\-settings.llm\-model\fR \fI<value>\fR
-Optional.
-.TP
-\fB\-\-settings.llm\-temperature\fR \fI<value>\fR
-Optional.
-.TP
-\fB\-\-settings.llm\-max\-tokens\fR \fI<value>\fR
-Optional.
-.TP
-\fB\-\-settings.llm\-backend\-model\fR \fI<value>\fR
-Optional.
-.TP
-\fB\-\-settings.llm\-voice\fR \fI<value>\fR
-Optional.
-.TP
-\fB\-\-settings.stt\-provider\fR \fI<value>\fR
-One of: DEEPGRAM, OPENAI_WHISPER, SPEECHMATICS, ASSEMBLYAI, ELEVENLABS. Optional.
-.TP
-\fB\-\-settings.stt\-model\fR \fI<value>\fR
-Optional.
-.TP
-\fB\-\-settings.stt\-keyterms\fR \fI<value>\fR
-Repeatable. Optional.
-.TP
-\fB\-\-settings.stt\-smart\-format\fR
-Optional.
-.TP
-\fB\-\-settings.stt\-endpointing\-ms\fR \fI<value>\fR
-Optional.
-.TP
-\fB\-\-settings.stt\-turn\-detection\fR \fI<value>\fR
-One of: pipeline, provider. Optional.
 .TP
 \fB\-\-settings.interruption\-mode\fR \fI<value>\fR
 One of: ALLOW, BLOCK. Optional.
