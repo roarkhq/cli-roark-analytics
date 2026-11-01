@@ -19,15 +19,16 @@ regeneration, and until then the codegen review's "Reproducible from the spec" g
 - `src/completions.ts`: the whole file.
 - `man/roark.1` and every `man/roark-*.1`, **except** `man/roark-config-diff.1` and
   `man/roark-config-apply.1`. `man/` is an owned directory: any other file you add there that the
-  generator does not emit is deleted on the next regeneration.
+  generator does not emit is deleted on the next regeneration. A new hand-written command's man page
+  survives only once the command is listed under `targets.cli.hand_maintained_commands` in `sdk.yml`.
 - `README.md` and `SKILL.md`: whole files.
 - `package.json`: the `man` array only (spliced; the rest of the file is hand-written).
 - `package.json` `dependencies["@roarkanalytics/sdk"]` and `pnpm-lock.yaml`: raised by the SDK floor sync
   in codegen's `open-pr` when the table needs a newer SDK. Do not lower the range by hand.
 
-Verified against `src/generate-cli.ts`, `src/targets.ts` and `src/sdk-floor-sync.ts` in app-agent-codegen:
-`generate-cli` emits exactly 161 files (the five above plus 156 man pages), and `apply --target cli
---dry-run` against this repository touches only those paths.
+The source of truth is `src/generate-cli.ts`, `src/targets.ts` and `src/sdk-floor-sync.ts` in
+app-agent-codegen; if this list and those files disagree, those files win. (Checked on 2026-11-01 at
+codegen `ba1690e` by running `generate-cli` and `apply --target cli --dry-run` against this repository.)
 
 ### How to change generated output
 
@@ -64,6 +65,9 @@ Formatting is enforced by `.prettierrc.json`: single quotes, `printWidth` 110, t
 and `pnpm lint` fails without them. Follow the config, not the house no-semicolon default.
 
 ## Code structure (hand-written files)
+
+These rules apply to every line you write, including in files that already break them: do not copy an
+existing deviation into new code. Do not refactor unrelated existing code just to conform.
 
 - **Arrow functions only**: `const foo = () => {}`, never `function foo() {}`. No classes; group related
   functions in a module (or a namespace object). The existing `Error` subclasses in
