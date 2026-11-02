@@ -127,6 +127,14 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark http-request-definition get <definition-id>` - Get HTTP request definition by ID
 - `roark http-request-definition list` - List HTTP request definitions
 - `roark http-request-definition update <definition-id>` - Update HTTP request definition
+- `roark live-report create --name <value> --notifications.email <value> --notifications.slack <value>` - Create a live report
+- `roark live-report delete <report-id>` - Delete a live report
+- `roark live-report document get <report-id> <document-id>` - Get a report document
+- `roark live-report document list <report-id>` - List report documents
+- `roark live-report get <report-id>` - Get a live report
+- `roark live-report list` - List live reports
+- `roark live-report run <report-id>` - Generate a live report document
+- `roark live-report update <report-id> --notifications.email <value> --notifications.slack <value>` - Update a live report
 - `roark metric collection-job cancel <job-id>` - Cancel a metric collection job
 - `roark metric collection-job create` - Create and run a metric collection job
 - `roark metric collection-job get <job-id>` - Get metric collection job by ID

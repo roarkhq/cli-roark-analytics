@@ -1,0 +1,100 @@
+.\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
+.TH "ROARK\-LIVE\-REPORT\-RUN" "1" "" "roark-live-report-run" "Roark Analytics API Manual"
+.SH "NAME"
+roark\-live\-report\-run \- Generate a live report document
+.SH "SYNOPSIS"
+.B roark live\-report run
+\fIreport\-id\fR [\fIoptions\fR]
+.SH "DESCRIPTION"
+Writes the report now, for its latest closed period or a custom window (`periodStart` + `periodEnd`, at most 92 days, ended). Returns 202 with the document in PENDING; poll GET /v1/live\-report/{reportId}/document/{documentId} until `status` is READY or FAILED (typically a few minutes). An identical request already in flight is returned as\-is. A generated document is not emailed.
+.SH "API"
+POST /v1/live\-report/{reportId}/generate
+.SH "ARGUMENTS"
+.TP
+\fIreport\-id\fR
+The live report ID
+.SH "OPTIONS"
+.TP
+\fB\-\-period\-start\fR \fI<value>\fR
+ISO 8601 start of a custom window. Omit both for the latest closed period. Optional.
+.TP
+\fB\-\-period\-end\fR \fI<value>\fR
+ISO 8601 end (exclusive) of a custom window. Requires periodStart. Optional.
+.SH "GLOBAL OPTIONS"
+.TP
+\fB\-\-data\fR \fI<json>\fR
+Request body as JSON, or @file to read one (@\- for stdin).
+.TP
+\fB\-y\fR, \fB\-\-yes\fR
+Skip confirmation prompts.
+.TP
+\fB\-\-no\-input\fR
+Never prompt; fail instead.
+.TP
+\fB\-\-base\-url\fR \fI<url>\fR
+API base URL.
+.TP
+\fB\-\-token\fR \fI<token>\fR
+Bearer token. Prefer ROARK_API_BEARER_TOKEN or the stored credential.
+.TP
+\fB\-\-timeout\fR \fI<ms>\fR
+Request timeout in milliseconds.
+.TP
+\fB\-\-max\-retries\fR \fI<count>\fR
+Retries for retryable failures.
+.TP
+\fB\-\-format\fR \fI<format>\fR
+Output format: auto, json, jsonl, plain.
+.TP
+\fB\-\-json\fR
+Shorthand for \-\-format json.
+.TP
+\fB\-\-no\-color\fR
+Disable colour.
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Suppress non\-essential output.
+.TP
+\fB\-\-allow\-project\-base\-url\fR
+Send the stored credential to a base URL set by a project .roark.json. Refused by default.
+.SH "EXAMPLES"
+.PP
+.RS 4
+.nf
+roark live\-report run <report\-id>
+.fi
+.RE
+.SH "ENVIRONMENT"
+.TP
+\fBROARK_API_BEARER_TOKEN\fR
+Bearer token used when \-\-token is not given.
+.TP
+\fBROARK_BASE_URL\fR
+API base URL.
+.TP
+\fBROARK_ALLOW_PROJECT_BASE_URL\fR
+Trusts a base URL set by a project .roark.json, like \-\-allow\-project\-base\-url.
+.TP
+\fBNO_COLOR\fR
+Disables colour when set to any value.
+.SH "EXIT STATUS"
+.TP
+\fB0\fR
+The command succeeded.
+.TP
+\fB1\fR
+The API rejected the request.
+.TP
+\fB2\fR
+The command line was wrong.
+.TP
+\fB3\fR
+No credential, or the credential was refused.
+.TP
+\fB4\fR
+The addressed resource does not exist.
+.TP
+\fB5\fR
+The request never completed: connection, timeout, or abort.
+.SH "SEE ALSO"
+.BR roark (1)
