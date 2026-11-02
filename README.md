@@ -251,6 +251,19 @@ roark completion fish | source
 | `roark http-request-definition list`                                 | List HTTP request definitions     |
 | `roark http-request-definition update <definition-id>`               | Update HTTP request definition    |
 
+### live-report
+
+| Command                                                                                               | Description                     |
+| ----------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `roark live-report create --name <value> --notifications.email <value> --notifications.slack <value>` | Create a live report            |
+| `roark live-report delete <report-id>`                                                                | Delete a live report            |
+| `roark live-report document get <report-id> <document-id>`                                            | Get a report document           |
+| `roark live-report document list <report-id>`                                                         | List report documents           |
+| `roark live-report get <report-id>`                                                                   | Get a live report               |
+| `roark live-report list`                                                                              | List live reports               |
+| `roark live-report run <report-id>`                                                                   | Generate a live report document |
+| `roark live-report update <report-id> --notifications.email <value> --notifications.slack <value>`    | Update a live report            |
+
 ### metric
 
 | Command                                                                          | Description                            |
