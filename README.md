@@ -173,6 +173,17 @@ roark completion fish | source
 | `roark benchmark target history list <target-key> --suite <value>`      | List a target’s published generations |
 | `roark benchmark target score-sample list <target-key> --suite <value>` | List score samples for a target       |
 
+### calendar-connection
+
+| Command                                                                                 | Description                  |
+| --------------------------------------------------------------------------------------- | ---------------------------- |
+| `roark calendar-connection check <connection-id>`                                       | Check a calendar connection  |
+| `roark calendar-connection create --provider <value> --label <value> --api-key <value>` | Connect a calendar account   |
+| `roark calendar-connection delete <connection-id>`                                      | Delete a calendar connection |
+| `roark calendar-connection get <connection-id>`                                         | Get a calendar connection    |
+| `roark calendar-connection list`                                                        | List calendar connections    |
+| `roark calendar-connection update <connection-id>`                                      | Update a calendar connection |
+
 ### call
 
 | Command                                                                                                                                                 | Description                       |

@@ -84,6 +84,12 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark benchmark target get <target-key> --suite <value>` - Get a benchmark target
 - `roark benchmark target history list <target-key> --suite <value>` - List a target’s published generations
 - `roark benchmark target score-sample list <target-key> --suite <value>` - List score samples for a target
+- `roark calendar-connection check <connection-id>` - Check a calendar connection
+- `roark calendar-connection create --provider <value> --label <value> --api-key <value>` - Connect a calendar account
+- `roark calendar-connection delete <connection-id>` - Delete a calendar connection
+- `roark calendar-connection get <connection-id>` - Get a calendar connection
+- `roark calendar-connection list` - List calendar connections
+- `roark calendar-connection update <connection-id>` - Update a calendar connection
 - `roark call batch delete --call-ids <value>` - Delete calls in batch
 - `roark call cost get <call-id>` - Get call cost
 - `roark call create --recording-url <value> --started-at <value> --interface-type <value> --call-direction <value> --customer.phone-number-e164 <value>` - Create a call
