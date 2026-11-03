@@ -350,6 +350,16 @@ roark completion fish | source
 | `roark simulation tool-fixture list`                                                                  | List tool fixtures                  |
 | `roark simulation tool-fixture update <fixture-id>`                                                   | Update a tool fixture               |
 
+### tool
+
+| Command                                                                                      | Description   |
+| -------------------------------------------------------------------------------------------- | ------------- |
+| `roark tool create --name <value> --description <value> --runtime.request <value>`           | Create a tool |
+| `roark tool delete <tool-id>`                                                                | Delete a tool |
+| `roark tool get <tool-id>`                                                                   | Get a tool    |
+| `roark tool list`                                                                            | List tools    |
+| `roark tool update <tool-id> --name <value> --description <value> --runtime.request <value>` | Update a tool |
+
 ### usage
 
 | Command                                       | Description      |
