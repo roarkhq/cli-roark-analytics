@@ -175,14 +175,16 @@ roark completion fish | source
 
 ### calendar-connection
 
-| Command                                                                                 | Description                  |
-| --------------------------------------------------------------------------------------- | ---------------------------- |
-| `roark calendar-connection check <connection-id>`                                       | Check a calendar connection  |
-| `roark calendar-connection create --provider <value> --label <value> --api-key <value>` | Connect a calendar account   |
-| `roark calendar-connection delete <connection-id>`                                      | Delete a calendar connection |
-| `roark calendar-connection get <connection-id>`                                         | Get a calendar connection    |
-| `roark calendar-connection list`                                                        | List calendar connections    |
-| `roark calendar-connection update <connection-id>`                                      | Update a calendar connection |
+| Command                                                                                 | Description                           |
+| --------------------------------------------------------------------------------------- | ------------------------------------- |
+| `roark calendar-connection check <connection-id>`                                       | Check a calendar connection           |
+| `roark calendar-connection create --provider <value> --label <value> --api-key <value>` | Connect a calendar account            |
+| `roark calendar-connection delete <connection-id>`                                      | Delete a calendar connection          |
+| `roark calendar-connection get <connection-id>`                                         | Get a calendar connection             |
+| `roark calendar-connection list`                                                        | List calendar connections             |
+| `roark calendar-connection target get <connection-id> <target-id>`                      | Read one bookable target              |
+| `roark calendar-connection target list <connection-id>`                                 | List what can be booked on a calendar |
+| `roark calendar-connection update <connection-id>`                                      | Update a calendar connection          |
 
 ### call
 
