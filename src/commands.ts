@@ -5431,6 +5431,16 @@ export const COMMANDS: readonly CliCommand[] = [
         repeatable: false,
       },
       {
+        name: 'grades-short-calls',
+        path: ['gradesShortCalls'],
+        location: 'body',
+        required: false,
+        description:
+          'Score this metric on a simulated call with fewer than 4 transcript lines. Such calls skip every other metric. Default false.',
+        valueKind: 'boolean',
+        repeatable: false,
+      },
+      {
         name: 'classification-options',
         path: ['classificationOptions'],
         location: 'body',
@@ -6057,6 +6067,16 @@ export const COMMANDS: readonly CliCommand[] = [
         description:
           'What a `false` value means. Given to the judge as its polarity rule, so keep it accurate.',
         valueKind: 'string',
+        repeatable: false,
+      },
+      {
+        name: 'grades-short-calls',
+        path: ['gradesShortCalls'],
+        location: 'body',
+        required: false,
+        description:
+          'Score this metric on a simulated call with fewer than 4 transcript lines. Such calls skip every other metric. Default false.',
+        valueKind: 'boolean',
         repeatable: false,
       },
       {
