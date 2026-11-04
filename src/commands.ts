@@ -2150,7 +2150,7 @@ export const COMMANDS: readonly CliCommand[] = [
     httpPath: '/v1/calendar-connection/{connectionId}',
     summary: 'Delete a calendar connection',
     description:
-      'Disconnects the calendar and destroys the stored credential. A credential the customer deleted should stop existing, so this is not an archive. Appointments already recorded against the connection are kept, so a booking stays explainable after the calendar is disconnected.',
+      'Disconnects the calendar and destroys the stored credential. A credential the customer deleted should stop existing, so this is not an archive. Appointments already recorded against the connection are kept, so a booking stays explainable after the calendar is disconnected. Refused with a 409 while a calendar tool is still bound to the connection, naming the tools: point them at another calendar, or delete them, first. A dangling binding would otherwise be found by whoever next tried to ship the agent, who is not the person who disconnected the calendar.',
     positionals: [
       {
         name: 'connection-id',
