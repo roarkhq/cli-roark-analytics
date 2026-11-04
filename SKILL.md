@@ -89,6 +89,8 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark calendar-connection delete <connection-id>` - Delete a calendar connection
 - `roark calendar-connection get <connection-id>` - Get a calendar connection
 - `roark calendar-connection list` - List calendar connections
+- `roark calendar-connection target get <connection-id> <target-id>` - Read one bookable target
+- `roark calendar-connection target list <connection-id>` - List what can be booked on a calendar
 - `roark calendar-connection update <connection-id>` - Update a calendar connection
 - `roark call batch delete --call-ids <value>` - Delete calls in batch
 - `roark call cost get <call-id>` - Get call cost

@@ -97,6 +97,8 @@
     "./man/roark-calendar-connection-delete.1",
     "./man/roark-calendar-connection-get.1",
     "./man/roark-calendar-connection-list.1",
+    "./man/roark-calendar-connection-target-get.1",
+    "./man/roark-calendar-connection-target-list.1",
     "./man/roark-calendar-connection-update.1",
     "./man/roark-call-batch-delete.1",
     "./man/roark-call-cost-get.1",
