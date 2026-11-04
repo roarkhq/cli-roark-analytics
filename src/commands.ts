@@ -2150,7 +2150,7 @@ export const COMMANDS: readonly CliCommand[] = [
     httpPath: '/v1/calendar-connection/{connectionId}',
     summary: 'Delete a calendar connection',
     description:
-      'Deletes the connection and its stored credential outright. A credential the customer deleted should stop existing, so this is not an archive.',
+      'Disconnects the calendar and destroys the stored credential. A credential the customer deleted should stop existing, so this is not an archive. Appointments already recorded against the connection are kept, so a booking stays explainable after the calendar is disconnected.',
     positionals: [
       {
         name: 'connection-id',

@@ -6,7 +6,7 @@ roark\-calendar\-connection\-delete \- Delete a calendar connection
 .B roark calendar\-connection delete
 \fIconnection\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Deletes the connection and its stored credential outright. A credential the customer deleted should stop existing, so this is not an archive.
+Disconnects the calendar and destroys the stored credential. A credential the customer deleted should stop existing, so this is not an archive. Appointments already recorded against the connection are kept, so a booking stays explainable after the calendar is disconnected.
 .SH "API"
 DELETE /v1/calendar\-connection/{connectionId}
 .SH "ARGUMENTS"
