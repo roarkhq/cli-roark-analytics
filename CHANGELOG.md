@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.68.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.67.1...v0.68.0) (2026-11-05)
+
+
+### Features
+
+* **cli:** `roark get-started`, a guided first simulation ([#143](https://github.com/roarkhq/cli-roark-analytics/issues/143)) ([a3290dd](https://github.com/roarkhq/cli-roark-analytics/commit/a3290dd1e3611ac22c6d4faac85f43223fb84e3b))
+
 ## [0.67.1](https://github.com/roarkhq/cli-roark-analytics/compare/v0.67.0...v0.67.1) (2026-11-05)
 
 
