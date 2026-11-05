@@ -175,6 +175,7 @@
     "./man/roark-phone-number-list.1",
     "./man/roark-phone-number-update.1",
     "./man/roark-project-list.1",
+    "./man/roark-simulation-audio-clip-list.1",
     "./man/roark-simulation-environment-create.1",
     "./man/roark-simulation-environment-delete.1",
     "./man/roark-simulation-environment-get.1",

@@ -342,6 +342,7 @@ roark completion fish | source
 
 | Command                                                                                               | Description                         |
 | ----------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| `roark simulation audio-clip list`                                                                    | List audio clips                    |
 | `roark simulation environment create --name <value> --background-noise <value>`                       | Create an environment               |
 | `roark simulation environment delete <environment-id>`                                                | Delete an environment               |
 | `roark simulation environment get <environment-id>`                                                   | Get environment by ID               |

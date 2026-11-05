@@ -178,6 +178,7 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark phone-number list` - List phone numbers
 - `roark phone-number update <phone-number-id>` - Update a phone number
 - `roark project list` - List projects available to this credential
+- `roark simulation audio-clip list` - List audio clips
 - `roark simulation environment create --name <value> --background-noise <value>` - Create an environment
 - `roark simulation environment delete <environment-id>` - Delete an environment
 - `roark simulation environment get <environment-id>` - Get environment by ID
