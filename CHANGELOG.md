@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.67.1](https://github.com/roarkhq/cli-roark-analytics/compare/v0.67.0...v0.67.1) (2026-11-05)
+
+
+### Bug Fixes
+
+* **deps:** raise the SDK floor to 7.0.0, which carries the commands the table names ([#175](https://github.com/roarkhq/cli-roark-analytics/issues/175)) ([578caad](https://github.com/roarkhq/cli-roark-analytics/commit/578caad631aea114ee9029288d1f224e8ba59726))
+
 ## [0.67.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.66.0...v0.67.0) (2026-11-04)
 
 
