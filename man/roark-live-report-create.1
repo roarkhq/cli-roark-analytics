@@ -1,0 +1,135 @@
+.\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
+.TH "ROARK\-LIVE\-REPORT\-CREATE" "1" "" "roark-live-report-create" "Roark Analytics API Manual"
+.SH "NAME"
+roark\-live\-report\-create \- Create a live report
+.SH "SYNOPSIS"
+.B roark live\-report create
+[\fIoptions\fR]
+.SH "DESCRIPTION"
+Saves a report on the project's live calls. Simulations are never included. Targets are analytics measures held to a bar: a threshold metric is read as its pass rate (`value` is a percentage, 0\-100, held AT_LEAST by default); a numeric metric as its average (held AT_MOST by default). Every target is read for the period and the period before it, so the report says whether each was met and how it moved. Scheduled reports are written `deliveryHour` hours into the day after each period ends in `timezone` (a week runs Monday to Sunday), then emailed and posted per `notifications`. With `generateNow` (the default) the report for the latest closed period is written right away and not sent.
+.SH "API"
+POST /v1/live\-report
+.SH "OPTIONS"
+.TP
+\fB\-\-name\fR \fI<value>\fR
+Required.
+.TP
+\fB\-\-description\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-agent\-id\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-filters\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-targets\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-dashboard\-id\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-cadence\fR \fI<value>\fR
+One of: DAILY, WEEKLY, MONTHLY. Optional.
+.TP
+\fB\-\-timezone\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-delivery\-hour\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-status\fR \fI<value>\fR
+One of: ACTIVE, PAUSED. Optional.
+.TP
+\fB\-\-notifications\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-notifications.email\fR \fI<value>\fR
+Required.
+.TP
+\fB\-\-notifications.slack\fR \fI<value>\fR
+Required.
+.TP
+\fB\-\-include\-transcript\-excerpts\fR
+Optional.
+.TP
+\fB\-\-generate\-now\fR
+Write the report for the latest closed period right away. Default true. Optional.
+.SH "GLOBAL OPTIONS"
+.TP
+\fB\-\-data\fR \fI<json>\fR
+Request body as JSON, or @file to read one (@\- for stdin).
+.TP
+\fB\-y\fR, \fB\-\-yes\fR
+Skip confirmation prompts.
+.TP
+\fB\-\-no\-input\fR
+Never prompt; fail instead.
+.TP
+\fB\-\-base\-url\fR \fI<url>\fR
+API base URL.
+.TP
+\fB\-\-token\fR \fI<token>\fR
+Bearer token. Prefer ROARK_API_BEARER_TOKEN or the stored credential.
+.TP
+\fB\-\-timeout\fR \fI<ms>\fR
+Request timeout in milliseconds.
+.TP
+\fB\-\-max\-retries\fR \fI<count>\fR
+Retries for retryable failures.
+.TP
+\fB\-\-format\fR \fI<format>\fR
+Output format: auto, json, jsonl, plain.
+.TP
+\fB\-\-json\fR
+Shorthand for \-\-format json.
+.TP
+\fB\-\-no\-color\fR
+Disable colour.
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Suppress non\-essential output.
+.TP
+\fB\-\-allow\-project\-base\-url\fR
+Send the stored credential to a base URL set by a project .roark.json. Refused by default.
+.SH "EXAMPLES"
+.PP
+.RS 4
+.nf
+roark live\-report create \-\-name <value> \-\-notifications.email <value> \-\-notifications.slack <value>
+.fi
+.RE
+.SH "ENVIRONMENT"
+.TP
+\fBROARK_API_BEARER_TOKEN\fR
+Bearer token used when \-\-token is not given.
+.TP
+\fBROARK_BASE_URL\fR
+API base URL.
+.TP
+\fBROARK_ALLOW_PROJECT_BASE_URL\fR
+Trusts a base URL set by a project .roark.json, like \-\-allow\-project\-base\-url.
+.TP
+\fBNO_COLOR\fR
+Disables colour when set to any value.
+.SH "EXIT STATUS"
+.TP
+\fB0\fR
+The command succeeded.
+.TP
+\fB1\fR
+The API rejected the request.
+.TP
+\fB2\fR
+The command line was wrong.
+.TP
+\fB3\fR
+No credential, or the credential was refused.
+.TP
+\fB4\fR
+The addressed resource does not exist.
+.TP
+\fB5\fR
+The request never completed: connection, timeout, or abort.
+.SH "SEE ALSO"
+.BR roark (1)

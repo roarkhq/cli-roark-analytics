@@ -1,5 +1,86 @@
 # Changelog
 
+## [0.67.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.66.0...v0.67.0) (2026-11-04)
+
+
+### Features
+
+* **cli:** cli update ([#173](https://github.com/roarkhq/cli-roark-analytics/issues/173)) ([76c5a17](https://github.com/roarkhq/cli-roark-analytics/commit/76c5a17ac138e771d2257fea4b124126f3fec00a))
+
+## [0.66.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.65.0...v0.66.0) (2026-11-04)
+
+
+### Features
+
+* **cli:** cli update ([#171](https://github.com/roarkhq/cli-roark-analytics/issues/171)) ([0762894](https://github.com/roarkhq/cli-roark-analytics/commit/07628948e3269dae57e035adaf9c7449bee97e50))
+
+## [0.65.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.64.0...v0.65.0) (2026-11-04)
+
+
+### Features
+
+* **cli:** cli update ([#169](https://github.com/roarkhq/cli-roark-analytics/issues/169)) ([6ecf752](https://github.com/roarkhq/cli-roark-analytics/commit/6ecf7525faa8b668afc89aaf79afdfcfa05f9871))
+
+## [0.64.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.63.0...v0.64.0) (2026-11-04)
+
+
+### Features
+
+* **cli:** cli update ([#167](https://github.com/roarkhq/cli-roark-analytics/issues/167)) ([7a8b74d](https://github.com/roarkhq/cli-roark-analytics/commit/7a8b74d833f3336d39bbc3c7f95c3c5ddce8194b))
+
+## [0.63.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.62.0...v0.63.0) (2026-11-03)
+
+
+### Features
+
+* **cli:** cli update ([#165](https://github.com/roarkhq/cli-roark-analytics/issues/165)) ([9c22e93](https://github.com/roarkhq/cli-roark-analytics/commit/9c22e93d9dcbf70fb9c4fcf7dce278d7416a74e5))
+
+## [0.62.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.61.1...v0.62.0) (2026-11-03)
+
+
+### Features
+
+* **cli:** cli update ([#163](https://github.com/roarkhq/cli-roark-analytics/issues/163)) ([ae3edd0](https://github.com/roarkhq/cli-roark-analytics/commit/ae3edd04d621d9a81272d0ba91fe19e04cbe9754))
+
+## [0.61.1](https://github.com/roarkhq/cli-roark-analytics/compare/v0.61.0...v0.61.1) (2026-11-03)
+
+
+### Bug Fixes
+
+* **deps:** raise the @roarkanalytics/sdk floor to 6.2.0 ([#161](https://github.com/roarkhq/cli-roark-analytics/issues/161)) ([05a3503](https://github.com/roarkhq/cli-roark-analytics/commit/05a3503247b23cb48cc26dc0831ed1c4d13e08c3))
+
+## [0.61.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.60.0...v0.61.0) (2026-11-02)
+
+
+### Features
+
+* **cli:** cli update ([#159](https://github.com/roarkhq/cli-roark-analytics/issues/159)) ([5b4357a](https://github.com/roarkhq/cli-roark-analytics/commit/5b4357a1e5b0f76c2a735de57808d7a0be976ec8))
+
+## [0.60.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.59.1...v0.60.0) (2026-11-01)
+
+
+### ⚠ BREAKING CHANGES
+
+* **cli:** removes or renames commands. Scripts using the old names will fail.
+
+### Features
+
+* **cli:** cli update ([#156](https://github.com/roarkhq/cli-roark-analytics/issues/156)) ([37fcaa8](https://github.com/roarkhq/cli-roark-analytics/commit/37fcaa877503f12639c7125d55881b47ccab5927))
+
+## [0.59.1](https://github.com/roarkhq/cli-roark-analytics/compare/v0.59.0...v0.59.1) (2026-10-28)
+
+
+### Bug Fixes
+
+* **deps:** raise the @roarkanalytics/sdk floor to 5.22.0 ([#154](https://github.com/roarkhq/cli-roark-analytics/issues/154)) ([d5698ef](https://github.com/roarkhq/cli-roark-analytics/commit/d5698ef174ff81447bfc8e3bec026dcd4bb66449))
+
+## [0.59.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.58.0...v0.59.0) (2026-10-28)
+
+
+### Features
+
+* **cli:** cli update ([#152](https://github.com/roarkhq/cli-roark-analytics/issues/152)) ([650a36e](https://github.com/roarkhq/cli-roark-analytics/commit/650a36ea66ad12ed13a9d54a792e397c62921336))
+
 ## [0.58.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.57.0...v0.58.0) (2026-10-28)
 
 

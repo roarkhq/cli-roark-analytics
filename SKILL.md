@@ -22,9 +22,10 @@ as a flag in a script: it lands in shell history and in the process table.
 
 ## Get started
 
-`roark get-started` walks a person through an agent, a caller, a scenario, metrics, a
-saved run, and the run itself, writing one config-as-code YAML file per step under `./roark`
-and applying the directory. It asks questions, so only suggest it to a human at a terminal.
+`roark get-started` walks a person through the project, an agent, a caller, a scenario,
+metrics, a saved run, and the run itself, writing one config-as-code YAML file per step
+under `./roark` and applying the directory. It asks questions, so only suggest it to a
+human at a terminal.
 For your own setup work, write the config and run `roark config apply`, or use
 `roark get-started --scaffold-only`, which prompts for nothing and calls no endpoint.
 Config is YAML under `./roark` by default, or a single `roark.config.ts` with `--ts` when the
@@ -52,8 +53,13 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 
 ## Commands
 
-- `roark agent build --name <value> --job-description <value> --tts.provider <value> --tts.voice-id <value>` - Build a Roark-hosted agent
+- `roark agent build --name <value> --job-description <value> --tts.provider <value> --tts.voice-id <value> --stt.provider <value> --stt.model <value> --llm.provider <value> --llm.model <value>` - Build a Roark-hosted agent
 - `roark agent create --name <value>` - Create a new agent
+- `roark agent draft create <agent-id>` - Start a draft
+- `roark agent draft delete <agent-id>` - Discard the draft
+- `roark agent draft get <agent-id>` - Get an agent's draft
+- `roark agent draft publish <agent-id> --expected-revision <value>` - Publish the draft
+- `roark agent draft update <agent-id> --settings <value>` - Edit the draft
 - `roark agent endpoint create --agent-id <value> --value <value> --direction <value>` - Create a new agent endpoint
 - `roark agent endpoint get <endpoint-id>` - Get agent endpoint by ID
 - `roark agent endpoint list` - List agent endpoints
@@ -64,6 +70,9 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark agent prompt update <agent-id> --prompt <value>` - Set an agent's prompt
 - `roark agent prompt version list <agent-id> <prompt-id>` - List a prompt's versions
 - `roark agent update <agent-id>` - Update an agent
+- `roark agent version get <agent-id> <version-id>` - Get an agent version
+- `roark agent version list <agent-id>` - List an agent's versions
+- `roark agent version rollback <agent-id> <version-id>` - Roll an agent back to a version
 - `roark agent-config get <key>` - Get a managed config
 - `roark agent-config list` - List managed configs
 - `roark agent-config promote <key>` - Promote staging to production
@@ -86,6 +95,14 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark benchmark target get <target-key> --suite <value>` - Get a benchmark target
 - `roark benchmark target history list <target-key> --suite <value>` - List a target’s published generations
 - `roark benchmark target score-sample list <target-key> --suite <value>` - List score samples for a target
+- `roark calendar-connection check <connection-id>` - Check a calendar connection
+- `roark calendar-connection create --provider <value> --label <value> --api-key <value>` - Connect a calendar account
+- `roark calendar-connection delete <connection-id>` - Delete a calendar connection
+- `roark calendar-connection get <connection-id>` - Get a calendar connection
+- `roark calendar-connection list` - List calendar connections
+- `roark calendar-connection target get <connection-id> <target-id>` - Read one bookable target
+- `roark calendar-connection target list <connection-id>` - List what can be booked on a calendar
+- `roark calendar-connection update <connection-id>` - Update a calendar connection
 - `roark call batch delete --call-ids <value>` - Delete calls in batch
 - `roark call cost get <call-id>` - Get call cost
 - `roark call create --recording-url <value> --started-at <value> --interface-type <value> --call-direction <value> --customer.phone-number-e164 <value>` - Create a call
@@ -129,6 +146,14 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark http-request-definition get <definition-id>` - Get HTTP request definition by ID
 - `roark http-request-definition list` - List HTTP request definitions
 - `roark http-request-definition update <definition-id>` - Update HTTP request definition
+- `roark live-report create --name <value> --notifications.email <value> --notifications.slack <value>` - Create a live report
+- `roark live-report delete <report-id>` - Delete a live report
+- `roark live-report document get <report-id> <document-id>` - Get a report document
+- `roark live-report document list <report-id>` - List report documents
+- `roark live-report get <report-id>` - Get a live report
+- `roark live-report list` - List live reports
+- `roark live-report run <report-id>` - Generate a live report document
+- `roark live-report update <report-id> --notifications.email <value> --notifications.slack <value>` - Update a live report
 - `roark metric collection-job cancel <job-id>` - Cancel a metric collection job
 - `roark metric collection-job create` - Create and run a metric collection job
 - `roark metric collection-job get <job-id>` - Get metric collection job by ID
@@ -195,6 +220,11 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark simulation tool-fixture delete <fixture-id>` - Delete a tool fixture
 - `roark simulation tool-fixture list` - List tool fixtures
 - `roark simulation tool-fixture update <fixture-id>` - Update a tool fixture
+- `roark tool create --name <value> --description <value> --runtime.request <value>` - Create a tool
+- `roark tool delete <tool-id>` - Delete a tool
+- `roark tool get <tool-id>` - Get a tool
+- `roark tool list` - List tools
+- `roark tool update <tool-id> --name <value> --description <value> --runtime.request <value>` - Update a tool
 - `roark usage get --from <value> --to <value>` - Get usage & cost
 - `roark webhook create --url <value> --events <value>` - Create webhook
 - `roark webhook delete <webhook-id>` - Delete webhook

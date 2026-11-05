@@ -130,20 +130,28 @@ roark completion fish | source
 
 ### agent
 
-| Command                                                                                                    | Description                 |
-| ---------------------------------------------------------------------------------------------------------- | --------------------------- |
-| `roark agent build --name <value> --job-description <value> --tts.provider <value> --tts.voice-id <value>` | Build a Roark-hosted agent  |
-| `roark agent create --name <value>`                                                                        | Create a new agent          |
-| `roark agent endpoint create --agent-id <value> --value <value> --direction <value>`                       | Create a new agent endpoint |
-| `roark agent endpoint get <endpoint-id>`                                                                   | Get agent endpoint by ID    |
-| `roark agent endpoint list`                                                                                | List agent endpoints        |
-| `roark agent endpoint update <endpoint-id>`                                                                | Update an agent endpoint    |
-| `roark agent get <agent-id>`                                                                               | Get agent by ID             |
-| `roark agent list`                                                                                         | List agents                 |
-| `roark agent prompt list <agent-id>`                                                                       | List an agent's prompts     |
-| `roark agent prompt update <agent-id> --prompt <value>`                                                    | Set an agent's prompt       |
-| `roark agent prompt version list <agent-id> <prompt-id>`                                                   | List a prompt's versions    |
-| `roark agent update <agent-id>`                                                                            | Update an agent             |
+| Command                                                                                                                                                                                          | Description                     |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------- |
+| `roark agent build --name <value> --job-description <value> --tts.provider <value> --tts.voice-id <value> --stt.provider <value> --stt.model <value> --llm.provider <value> --llm.model <value>` | Build a Roark-hosted agent      |
+| `roark agent create --name <value>`                                                                                                                                                              | Create a new agent              |
+| `roark agent draft create <agent-id>`                                                                                                                                                            | Start a draft                   |
+| `roark agent draft delete <agent-id>`                                                                                                                                                            | Discard the draft               |
+| `roark agent draft get <agent-id>`                                                                                                                                                               | Get an agent's draft            |
+| `roark agent draft publish <agent-id> --expected-revision <value>`                                                                                                                               | Publish the draft               |
+| `roark agent draft update <agent-id> --settings <value>`                                                                                                                                         | Edit the draft                  |
+| `roark agent endpoint create --agent-id <value> --value <value> --direction <value>`                                                                                                             | Create a new agent endpoint     |
+| `roark agent endpoint get <endpoint-id>`                                                                                                                                                         | Get agent endpoint by ID        |
+| `roark agent endpoint list`                                                                                                                                                                      | List agent endpoints            |
+| `roark agent endpoint update <endpoint-id>`                                                                                                                                                      | Update an agent endpoint        |
+| `roark agent get <agent-id>`                                                                                                                                                                     | Get agent by ID                 |
+| `roark agent list`                                                                                                                                                                               | List agents                     |
+| `roark agent prompt list <agent-id>`                                                                                                                                                             | List an agent's prompts         |
+| `roark agent prompt update <agent-id> --prompt <value>`                                                                                                                                          | Set an agent's prompt           |
+| `roark agent prompt version list <agent-id> <prompt-id>`                                                                                                                                         | List a prompt's versions        |
+| `roark agent update <agent-id>`                                                                                                                                                                  | Update an agent                 |
+| `roark agent version get <agent-id> <version-id>`                                                                                                                                                | Get an agent version            |
+| `roark agent version list <agent-id>`                                                                                                                                                            | List an agent's versions        |
+| `roark agent version rollback <agent-id> <version-id>`                                                                                                                                           | Roll an agent back to a version |
 
 ### agent-config
 
@@ -186,6 +194,19 @@ roark completion fish | source
 | `roark benchmark target get <target-key> --suite <value>`               | Get a benchmark target                |
 | `roark benchmark target history list <target-key> --suite <value>`      | List a target’s published generations |
 | `roark benchmark target score-sample list <target-key> --suite <value>` | List score samples for a target       |
+
+### calendar-connection
+
+| Command                                                                                 | Description                           |
+| --------------------------------------------------------------------------------------- | ------------------------------------- |
+| `roark calendar-connection check <connection-id>`                                       | Check a calendar connection           |
+| `roark calendar-connection create --provider <value> --label <value> --api-key <value>` | Connect a calendar account            |
+| `roark calendar-connection delete <connection-id>`                                      | Delete a calendar connection          |
+| `roark calendar-connection get <connection-id>`                                         | Get a calendar connection             |
+| `roark calendar-connection list`                                                        | List calendar connections             |
+| `roark calendar-connection target get <connection-id> <target-id>`                      | Read one bookable target              |
+| `roark calendar-connection target list <connection-id>`                                 | List what can be booked on a calendar |
+| `roark calendar-connection update <connection-id>`                                      | Update a calendar connection          |
 
 ### call
 
@@ -264,6 +285,19 @@ roark completion fish | source
 | `roark http-request-definition get <definition-id>`                  | Get HTTP request definition by ID |
 | `roark http-request-definition list`                                 | List HTTP request definitions     |
 | `roark http-request-definition update <definition-id>`               | Update HTTP request definition    |
+
+### live-report
+
+| Command                                                                                               | Description                     |
+| ----------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `roark live-report create --name <value> --notifications.email <value> --notifications.slack <value>` | Create a live report            |
+| `roark live-report delete <report-id>`                                                                | Delete a live report            |
+| `roark live-report document get <report-id> <document-id>`                                            | Get a report document           |
+| `roark live-report document list <report-id>`                                                         | List report documents           |
+| `roark live-report get <report-id>`                                                                   | Get a live report               |
+| `roark live-report list`                                                                              | List live reports               |
+| `roark live-report run <report-id>`                                                                   | Generate a live report document |
+| `roark live-report update <report-id> --notifications.email <value> --notifications.slack <value>`    | Update a live report            |
 
 ### metric
 
@@ -350,6 +384,16 @@ roark completion fish | source
 | `roark simulation tool-fixture delete <fixture-id>`                                                   | Delete a tool fixture               |
 | `roark simulation tool-fixture list`                                                                  | List tool fixtures                  |
 | `roark simulation tool-fixture update <fixture-id>`                                                   | Update a tool fixture               |
+
+### tool
+
+| Command                                                                                      | Description   |
+| -------------------------------------------------------------------------------------------- | ------------- |
+| `roark tool create --name <value> --description <value> --runtime.request <value>`           | Create a tool |
+| `roark tool delete <tool-id>`                                                                | Delete a tool |
+| `roark tool get <tool-id>`                                                                   | Get a tool    |
+| `roark tool list`                                                                            | List tools    |
+| `roark tool update <tool-id> --name <value> --description <value> --runtime.request <value>` | Update a tool |
 
 ### usage
 
