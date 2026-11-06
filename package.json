@@ -200,6 +200,7 @@
     "./man/roark-simulation-plan-job-cancel.1",
     "./man/roark-simulation-plan-job-cost-get.1",
     "./man/roark-simulation-plan-job-debrief-create.1",
+    "./man/roark-simulation-plan-job-delete.1",
     "./man/roark-simulation-plan-job-get.1",
     "./man/roark-simulation-plan-job-list.1",
     "./man/roark-simulation-plan-job-result-get.1",
