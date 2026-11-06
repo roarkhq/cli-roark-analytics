@@ -597,6 +597,80 @@ describe('roark get-started, run again', () => {
     expect(said()).toContain('does not list frontdesk');
   });
 
+  it("ignores an adopted agent's endpoint that has no number, and dials the one that has", async () => {
+    // A null value is an outbound phone endpoint with no fixed calling number. It is a real
+    // endpoint, so the list is not empty, but there is nothing to dial and nothing to label a
+    // choice with - and only one line here can be called, so no picker should appear at all.
+    const dir = tempDir();
+
+    await run({
+      argv: ['get-started', '--dir', dir],
+      overrides: {
+        agents: [{ id: 'agent_1', name: 'frontdesk' }],
+        endpoints: [
+          { value: null, direction: 'OUTGOING' },
+          { value: '+15559998888', direction: 'INCOMING' },
+        ],
+      },
+      answers: [
+        '1', // the existing agent
+        'curious-caller', // persona name
+        '', // language
+        '', // accent
+        '', // voice
+        'You call to rebook a cancelled cleaning.', // the scenario
+        '', // scenario name
+        '', // expectation: skipped
+        '', // metrics
+        '', // no metric of my own
+        '', // plan name
+        '', // apply
+        '', // start the run
+      ],
+    });
+
+    expect(said()).not.toContain('Which of its lines');
+    const plan = parse(readFileSync(join(dir, 'simulation-plans/first-run.yaml'), 'utf8')) as Record<
+      string,
+      unknown
+    >;
+    expect(plan['agentEndpoints']).toEqual([
+      { agent: 'frontdesk', value: '+15559998888', direction: 'INCOMING' },
+    ]);
+  });
+
+  it('stops before the plan when every line the adopted agent has lacks a number', async () => {
+    // The list is not empty, so "it has no endpoint" would be a lie. What it has none of is a
+    // number, which is the part a run needs.
+    const dir = tempDir();
+
+    const recorded = await run({
+      argv: ['get-started', '--dir', dir],
+      overrides: {
+        agents: [{ id: 'agent_1', name: 'frontdesk' }],
+        endpoints: [{ value: null, direction: 'OUTGOING' }],
+      },
+      answers: [
+        '1', // the existing agent
+        'curious-caller',
+        '',
+        '',
+        '',
+        'You call about a booking.',
+        '',
+        '',
+        '',
+        '',
+        '', // apply
+      ],
+    });
+
+    expect(said()).toContain('no number to call yet');
+    expect(said()).toContain('again to finish');
+    expect(recorded.calls).not.toContain('simulation.run');
+    expect(readdirSync(dir)).not.toContain('simulation-plans');
+  });
+
   it("stops before the plan when an adopted agent's lines cannot be read", async () => {
     // Distinct from an agent with no endpoint: treating a failed read as "no line" would skip
     // the plan and the run over a blip, with nothing said about why.

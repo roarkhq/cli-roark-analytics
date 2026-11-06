@@ -50,11 +50,21 @@ interface EndpointChoice {
   direction: EndpointDirection;
 }
 
-/** The agent's lines, or undefined when they could not be read: that is not the same as none. */
+/**
+ * The agent's dialable lines, or undefined when they could not be read: that is not the same as
+ * none.
+ *
+ * An endpoint whose value is null is left out. That is an outbound phone endpoint with no fixed
+ * calling number - a real endpoint, but not a line a run can dial - and both things this step
+ * does with the list need the number: the plan names it, and the picker labels the choice with
+ * it. Offering a blank row would put an endpoint in front of you that nothing can call.
+ */
 const listEndpoints = async (client: Roark, agentId: string): Promise<EndpointChoice[] | undefined> => {
   try {
     const response = await client.agentEndpoint.list({ agentId, limit: ENDPOINT_PAGE });
-    return response.data.map((endpoint) => ({ value: endpoint.value, direction: endpoint.direction }));
+    return response.data.flatMap((endpoint) =>
+      endpoint.value === null ? [] : [{ value: endpoint.value, direction: endpoint.direction }],
+    );
   } catch {
     return undefined;
   }
@@ -125,7 +135,10 @@ export const chooseAgent = async (
       if (endpoints.length === 0) {
         say(
           note(
-            `That agent has no endpoint yet, so there is no line to call. Add one, then run \`${binaryName} get-started\` again to finish.`,
+            // Not "it has no endpoint": it may have one whose value is null, which is an endpoint
+            // without a number to call. Either way the way on is the same, and naming the number
+            // rather than the endpoint is true in both.
+            `That agent has no number to call yet, so there is no line to dial. Add an endpoint with one, then run \`${binaryName} get-started\` again to finish.`,
             color,
             'yellow',
           ),
