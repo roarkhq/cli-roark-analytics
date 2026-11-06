@@ -3314,6 +3314,14 @@ export const COMMANDS: readonly CliCommand[] = [
         repeatable: false,
       },
       {
+        name: 'opening-line',
+        path: ['openingLine'],
+        location: 'body',
+        required: false,
+        valueKind: 'string',
+        repeatable: false,
+      },
+      {
         name: 'preceded-by-customer-flow-id',
         path: ['precededByCustomerFlowId'],
         location: 'body',
@@ -3459,6 +3467,14 @@ export const COMMANDS: readonly CliCommand[] = [
       {
         name: 'prompt',
         path: ['prompt'],
+        location: 'body',
+        required: false,
+        valueKind: 'string',
+        repeatable: false,
+      },
+      {
+        name: 'opening-line',
+        path: ['openingLine'],
         location: 'body',
         required: false,
         valueKind: 'string',
@@ -3619,6 +3635,14 @@ export const COMMANDS: readonly CliCommand[] = [
       {
         name: 'prompt',
         path: ['prompt'],
+        location: 'body',
+        required: false,
+        valueKind: 'string',
+        repeatable: false,
+      },
+      {
+        name: 'opening-line',
+        path: ['openingLine'],
         location: 'body',
         required: false,
         valueKind: 'string',
