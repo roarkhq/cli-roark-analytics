@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.70.1](https://github.com/roarkhq/cli-roark-analytics/compare/v0.70.0...v0.70.1) (2026-11-06)
+
+
+### Bug Fixes
+
+* **get-started:** skip an endpoint that has no number to call ([#183](https://github.com/roarkhq/cli-roark-analytics/issues/183)) ([8909dd9](https://github.com/roarkhq/cli-roark-analytics/commit/8909dd9cb40e0f17eb7e1c874c358bb131e5aa71))
+
 ## [0.70.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.69.0...v0.70.0) (2026-11-06)
 
 
