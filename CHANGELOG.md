@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.70.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.69.0...v0.70.0) (2026-11-06)
+
+
+### Features
+
+* **cli:** cli update ([#180](https://github.com/roarkhq/cli-roark-analytics/issues/180)) ([8356e22](https://github.com/roarkhq/cli-roark-analytics/commit/8356e22af4e006715ecff14a171db5ba9d15091e))
+
 ## [0.69.0](https://github.com/roarkhq/cli-roark-analytics/compare/v0.68.0...v0.69.0) (2026-11-05)
 
 
