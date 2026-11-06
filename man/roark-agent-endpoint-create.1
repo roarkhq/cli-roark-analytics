@@ -15,7 +15,7 @@ POST /v1/agent/endpoint
 Agent ID to associate this endpoint with Required.
 .TP
 \fB\-\-value\fR \fI<value>\fR
-Phone number in E.164 format (e.g., +12345678900) Required.
+Phone number in E.164 format (e.g., +12345678900). Optional when direction is OUTGOING, for an agent that calls from numbers you do not know up front. Optional.
 .TP
 \fB\-\-environment\fR \fI<value>\fR
 Environment name (default: production) Optional.
@@ -69,7 +69,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark agent endpoint create \-\-agent\-id <value> \-\-value <value> \-\-direction <value>
+roark agent endpoint create \-\-agent\-id <value> \-\-direction <value>
 .fi
 .RE
 .SH "ENVIRONMENT"

@@ -647,8 +647,9 @@ export const COMMANDS: readonly CliCommand[] = [
         name: 'value',
         path: ['value'],
         location: 'body',
-        required: true,
-        description: 'Phone number in E.164 format (e.g., +12345678900)',
+        required: false,
+        description:
+          'Phone number in E.164 format (e.g., +12345678900). Optional when direction is OUTGOING, for an agent that calls from numbers you do not know up front.',
         valueKind: 'string',
         repeatable: false,
       },
