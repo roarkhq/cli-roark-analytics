@@ -203,6 +203,7 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark simulation plan job cancel <job-id>` - Cancel a simulation plan job
 - `roark simulation plan job cost get <job-id>` - Get simulation run cost
 - `roark simulation plan job debrief create <job-id>` - Generate simulation run debrief
+- `roark simulation plan job delete <job-id>` - Delete a simulation plan job
 - `roark simulation plan job get <job-id>` - Get simulation plan job
 - `roark simulation plan job list` - List simulation plan jobs
 - `roark simulation plan job result get <job-id>` - Get simulation run results

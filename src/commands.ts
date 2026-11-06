@@ -7967,6 +7967,30 @@ export const COMMANDS: readonly CliCommand[] = [
     requiresAuth: true,
   },
   {
+    commandPath: ['simulation', 'plan', 'job', 'delete'],
+    clientProperty: 'simulationRunPlanJob',
+    methodName: 'delete',
+    httpMethod: 'delete',
+    httpPath: '/v1/simulation/plan/job/{jobId}',
+    summary: 'Delete a simulation plan job',
+    description:
+      'Removes a finished run from the run history (a soft delete). The run stops appearing in run lists, counts and plan run histories, and reading it by ID returns 404. A run that is still in progress is refused with 409: cancel it first.',
+    positionals: [
+      {
+        name: 'job-id',
+        paramKey: 'jobId',
+        description: 'Simulation run plan job ID',
+      },
+    ],
+    flags: [],
+    hasParams: false,
+    paramsAllOptional: true,
+    bodyOpaque: false,
+    bodyVariants: [],
+    acceptsBody: false,
+    requiresAuth: true,
+  },
+  {
     commandPath: ['simulation', 'plan', 'job', 'get'],
     clientProperty: 'simulationRunPlanJob',
     methodName: 'getByID',
