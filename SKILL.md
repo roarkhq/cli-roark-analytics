@@ -131,6 +131,14 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark customer-flow happy-path update <flow-id>` - Update a flow's happy path
 - `roark customer-flow list` - List customer flows
 - `roark customer-flow update <flow-id> --off-script-policy.reaction <value> --off-script-policy.max-attempts <value> --off-script-policy.then <value>` - Update a customer flow
+- `roark customer-profile attribute delete <customer-profile-id> <key>` - Clear a customer profile field
+- `roark customer-profile attribute unlock <customer-profile-id> <key>` - Unlock a customer profile field
+- `roark customer-profile attribute update <customer-profile-id> <key> --value <value>` - Set a customer profile field
+- `roark customer-profile conversation list <customer-profile-id>` - List a customer's conversations
+- `roark customer-profile delete <customer-profile-id>` - Erase a customer profile
+- `roark customer-profile get <customer-profile-id>` - Get a customer profile
+- `roark customer-profile list` - List customer profiles
+- `roark customer-profile notes update <customer-profile-id> --notes <value>` - Update the notes on a customer profile
 - `roark dashboard create --name <value>` - Create a dashboard
 - `roark dashboard data get <dashboard-id>` - Get dashboard data
 - `roark dashboard delete <dashboard-id>` - Delete a dashboard
