@@ -256,6 +256,19 @@ roark completion fish | source
 | `roark customer-flow list`                                                                                                                            | List customer flows                    |
 | `roark customer-flow update <flow-id> --off-script-policy.reaction <value> --off-script-policy.max-attempts <value> --off-script-policy.then <value>` | Update a customer flow                 |
 
+### customer-profile
+
+| Command                                                                               | Description                            |
+| ------------------------------------------------------------------------------------- | -------------------------------------- |
+| `roark customer-profile attribute delete <customer-profile-id> <key>`                 | Clear a customer profile field         |
+| `roark customer-profile attribute unlock <customer-profile-id> <key>`                 | Unlock a customer profile field        |
+| `roark customer-profile attribute update <customer-profile-id> <key> --value <value>` | Set a customer profile field           |
+| `roark customer-profile conversation list <customer-profile-id>`                      | List a customer's conversations        |
+| `roark customer-profile delete <customer-profile-id>`                                 | Erase a customer profile               |
+| `roark customer-profile get <customer-profile-id>`                                    | Get a customer profile                 |
+| `roark customer-profile list`                                                         | List customer profiles                 |
+| `roark customer-profile notes update <customer-profile-id> --notes <value>`           | Update the notes on a customer profile |
+
 ### dashboard
 
 | Command                                                                                      | Description        |

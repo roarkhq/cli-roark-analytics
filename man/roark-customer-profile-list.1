@@ -1,0 +1,123 @@
+.\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
+.TH "ROARK\-CUSTOMER\-PROFILE\-LIST" "1" "" "roark-customer-profile-list" "Roark Analytics API Manual"
+.SH "NAME"
+roark\-customer\-profile\-list \- List customer profiles
+.SH "SYNOPSIS"
+.B roark customer\-profile list
+[\fIoptions\fR]
+.SH "DESCRIPTION"
+Returns the people who have talked to your agents in this project. Customers we hold nothing about beyond their identifier are left out unless includeNoData is true.
+.SH "API"
+GET /v1/customer\-profile
+.SH "OPTIONS"
+.TP
+\fB\-\-limit\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-page\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-search\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-agent\-id\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-modality\fR \fI<value>\fR
+One of: call, chat. Optional.
+.TP
+\fB\-\-include\-no\-data\fR \fI<value>\fR
+Include customers we hold nothing about beyond their identifier. Defaults to false. One of: true, false. Optional.
+.TP
+\fB\-\-sort\-by\fR \fI<value>\fR
+A column, or field.<KEY> (for example field.COMPANY) to sort by a field's value. Customers without a value sort last. One of: lastSeenAt, firstSeenAt, conversationCount, voiceCount, chatCount, talkTimeMs, displayName, field.FULL_NAME, field.PREFERRED_NAME, field.ACCOUNT_ID, field.COMPANY, field.JOB_TITLE, field.EMAIL, field.ALTERNATE_PHONE, field.AGE, field.GENDER, field.LANGUAGE, field.LOCATION, field.TIMEZONE, field.BEST_TIME_TO_REACH, field.PREFERRED_CHANNEL. Optional.
+.TP
+\fB\-\-sort\-direction\fR \fI<value>\fR
+One of: asc, desc. Optional.
+.TP
+\fB\-\-field\-key\fR \fI<value>\fR
+Filter by this field. Use with fieldOperator and, unless checking presence, fieldValue. One of: FULL_NAME, PREFERRED_NAME, ACCOUNT_ID, COMPANY, JOB_TITLE, EMAIL, ALTERNATE_PHONE, AGE, GENDER, LANGUAGE, LOCATION, TIMEZONE, BEST_TIME_TO_REACH, PREFERRED_CHANNEL. Optional.
+.TP
+\fB\-\-field\-operator\fR \fI<value>\fR
+How fieldValue is compared, ignoring case. NOT_EQUALS includes customers without the field. One of: EQUALS, NOT_EQUALS, CONTAINS, STARTS_WITH, IS_SET, IS_NOT_SET. Optional.
+.TP
+\fB\-\-field\-value\fR \fI<value>\fR
+Optional.
+.SH "GLOBAL OPTIONS"
+.TP
+\fB\-\-data\fR \fI<json>\fR
+Request body as JSON, or @file to read one (@\- for stdin).
+.TP
+\fB\-y\fR, \fB\-\-yes\fR
+Skip confirmation prompts.
+.TP
+\fB\-\-no\-input\fR
+Never prompt; fail instead.
+.TP
+\fB\-\-base\-url\fR \fI<url>\fR
+API base URL.
+.TP
+\fB\-\-token\fR \fI<token>\fR
+Bearer token. Prefer ROARK_API_BEARER_TOKEN or the stored credential.
+.TP
+\fB\-\-timeout\fR \fI<ms>\fR
+Request timeout in milliseconds.
+.TP
+\fB\-\-max\-retries\fR \fI<count>\fR
+Retries for retryable failures.
+.TP
+\fB\-\-format\fR \fI<format>\fR
+Output format: auto, json, jsonl, plain.
+.TP
+\fB\-\-json\fR
+Shorthand for \-\-format json.
+.TP
+\fB\-\-no\-color\fR
+Disable colour.
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Suppress non\-essential output.
+.TP
+\fB\-\-allow\-project\-base\-url\fR
+Send the stored credential to a base URL set by a project .roark.json. Refused by default.
+.SH "EXAMPLES"
+.PP
+.RS 4
+.nf
+roark customer\-profile list
+.fi
+.RE
+.SH "ENVIRONMENT"
+.TP
+\fBROARK_API_BEARER_TOKEN\fR
+Bearer token used when \-\-token is not given.
+.TP
+\fBROARK_BASE_URL\fR
+API base URL.
+.TP
+\fBROARK_ALLOW_PROJECT_BASE_URL\fR
+Trusts a base URL set by a project .roark.json, like \-\-allow\-project\-base\-url.
+.TP
+\fBNO_COLOR\fR
+Disables colour when set to any value.
+.SH "EXIT STATUS"
+.TP
+\fB0\fR
+The command succeeded.
+.TP
+\fB1\fR
+The API rejected the request.
+.TP
+\fB2\fR
+The command line was wrong.
+.TP
+\fB3\fR
+No credential, or the credential was refused.
+.TP
+\fB4\fR
+The addressed resource does not exist.
+.TP
+\fB5\fR
+The request never completed: connection, timeout, or abort.
+.SH "SEE ALSO"
+.BR roark (1)
