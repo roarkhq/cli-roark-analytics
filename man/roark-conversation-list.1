@@ -1,21 +1,30 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-CUSTOMER\-PROFILE\-ATTRIBUTE\-UNLOCK" "1" "" "roark-customer-profile-attribute-unlock" "Roark Analytics API Manual"
+.TH "ROARK\-CONVERSATION\-LIST" "1" "" "roark-conversation-list" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-customer\-profile\-attribute\-unlock \- Unlock a customer profile field
+roark\-conversation\-list \- List conversations
 .SH "SYNOPSIS"
-.B roark customer\-profile attribute unlock
-\fIcustomer\-profile\-id\fR \fIkey\fR [\fIoptions\fR]
+.B roark conversation list
+[\fIoptions\fR]
 .SH "DESCRIPTION"
-Lets newer conversations change this field again. The current value stays until one does.
+Calls and chats in the project as one list, most recent start first. A conversation is listed once it is recorded: a call when it connects, a chat when it ends. Listing calls needs `call:read`, chats `chat:read`, and both kinds both.
 .SH "API"
-POST /v1/customer\-profile/{customerProfileId}/attributes/{key}/unlock
-.SH "ARGUMENTS"
+GET /v1/conversation
+.SH "OPTIONS"
 .TP
-\fIcustomer\-profile\-id\fR
-The customer\-profile\-id.
+\fB\-\-modality\fR \fI<value>\fR
+Only `voice`, or only `chat`. Both by default. One of: voice, chat, call. Optional.
 .TP
-\fIkey\fR
-The key.
+\fB\-\-started\-from\fR \fI<value>\fR
+Only conversations that started at or after this time. Optional.
+.TP
+\fB\-\-started\-to\fR \fI<value>\fR
+Only conversations that started at or before this time. Optional.
+.TP
+\fB\-\-limit\fR \fI<value>\fR
+How many to return (default 20, max 100). Optional.
+.TP
+\fB\-\-after\fR \fI<value>\fR
+The `nextCursor` of the previous page. Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -57,7 +66,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark customer\-profile attribute unlock <customer\-profile\-id> <key>
+roark conversation list
 .fi
 .RE
 .SH "ENVIRONMENT"

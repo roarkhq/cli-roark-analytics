@@ -11,9 +11,6 @@ Creates a new agent endpoint for the authenticated project.
 POST /v1/agent/endpoint
 .SH "OPTIONS"
 .TP
-\fB\-\-agent\-id\fR \fI<value>\fR
-Agent ID to associate this endpoint with Required.
-.TP
 \fB\-\-value\fR \fI<value>\fR
 Phone number in E.164 format (e.g., +12345678900). Optional when direction is OUTGOING, for an agent that calls from numbers you do not know up front. Optional.
 .TP
@@ -28,6 +25,9 @@ Outbound dial type: NONE or HTTP_REQUEST (default: NONE) One of: NONE, HTTP_REQU
 .TP
 \fB\-\-outbound\-dial\-http\-request\-definition\-id\fR \fI<value>\fR
 ID of the HTTP request definition for outbound dialing (required when outboundDialType is HTTP_REQUEST) Optional.
+.TP
+\fB\-\-agent\-id\fR \fI<value>\fR
+Agent ID to associate this endpoint with Required.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -69,7 +69,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark agent endpoint create \-\-agent\-id <value> \-\-direction <value>
+roark agent endpoint create \-\-direction <value> \-\-agent\-id <value>
 .fi
 .RE
 .SH "ENVIRONMENT"

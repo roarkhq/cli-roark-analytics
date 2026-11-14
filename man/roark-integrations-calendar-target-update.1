@@ -1,0 +1,124 @@
+.\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
+.TH "ROARK\-INTEGRATIONS\-CALENDAR\-TARGET\-UPDATE" "1" "" "roark-integrations-calendar-target-update" "Roark Analytics API Manual"
+.SH "NAME"
+roark\-integrations\-calendar\-target\-update \- Update a bookable target
+.SH "SYNOPSIS"
+.B roark integrations calendar target update
+\fIconnection\-id\fR \fItarget\-id\fR [\fIoptions\fR]
+.SH "DESCRIPTION"
+Changes what agents ALREADY PUBLISHED against this target book, with no new tool version, the same thing editing a Cal.com event type on cal.com does. `hours` replaces the whole week when present, because a rota is described as a week and a partial update of one window has no meaning anybody would expect. The calendar cannot be changed: it is the target’s identity for the booking ledger, so moving it would orphan every appointment made on the old one.
+.SH "API"
+PUT /v1/integrations/calendar/{connectionId}/targets/{targetId}
+.SH "ARGUMENTS"
+.TP
+\fIconnection\-id\fR
+Calendar connection ID
+.TP
+\fItarget\-id\fR
+Bookable target ID
+.SH "OPTIONS"
+.TP
+\fB\-\-name\fR \fI<value>\fR
+Unique within the connection, and how a config file refers to this target. Letters, digits, spaces, _ or \-. Optional.
+.TP
+\fB\-\-duration\-minutes\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-buffer\-before\-minutes\fR \fI<value>\fR
+Dead time before an appointment, counted as busy when a slot is offered. Defaults to 0. Optional.
+.TP
+\fB\-\-buffer\-after\-minutes\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-min\-notice\-minutes\fR \fI<value>\fR
+How soon from now an appointment may be made. Defaults to 120. Optional.
+.TP
+\fB\-\-horizon\-days\fR \fI<value>\fR
+How far ahead appointments may be made. Defaults to 30. Optional.
+.TP
+\fB\-\-slot\-interval\-minutes\fR \fI<value>\fR
+The grid slots are offered on. Defaults to the duration, which gives back\-to\-back appointments. Optional.
+.TP
+\fB\-\-all\-day\-events\-block\fR
+Whether an all\-day event closes the day. Defaults to true, because a calendar marks all\-day events free unless their creator says otherwise and a public holiday entered as one would otherwise be bookable. Optional.
+.TP
+\fB\-\-hours\fR \fI<value>\fR
+The windows of the week appointments are offered in. Omit to adopt Monday to Friday, 09:00 to 17:00. A target with no windows offers nothing at all, which reads to a caller as a permanently full diary. Optional.
+.SH "GLOBAL OPTIONS"
+.TP
+\fB\-\-data\fR \fI<json>\fR
+Request body as JSON, or @file to read one (@\- for stdin).
+.TP
+\fB\-y\fR, \fB\-\-yes\fR
+Skip confirmation prompts.
+.TP
+\fB\-\-no\-input\fR
+Never prompt; fail instead.
+.TP
+\fB\-\-base\-url\fR \fI<url>\fR
+API base URL.
+.TP
+\fB\-\-token\fR \fI<token>\fR
+Bearer token. Prefer ROARK_API_BEARER_TOKEN or the stored credential.
+.TP
+\fB\-\-timeout\fR \fI<ms>\fR
+Request timeout in milliseconds.
+.TP
+\fB\-\-max\-retries\fR \fI<count>\fR
+Retries for retryable failures.
+.TP
+\fB\-\-format\fR \fI<format>\fR
+Output format: auto, json, jsonl, plain.
+.TP
+\fB\-\-json\fR
+Shorthand for \-\-format json.
+.TP
+\fB\-\-no\-color\fR
+Disable colour.
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Suppress non\-essential output.
+.TP
+\fB\-\-allow\-project\-base\-url\fR
+Send the stored credential to a base URL set by a project .roark.json. Refused by default.
+.SH "EXAMPLES"
+.PP
+.RS 4
+.nf
+roark integrations calendar target update <connection\-id> <target\-id>
+.fi
+.RE
+.SH "ENVIRONMENT"
+.TP
+\fBROARK_API_BEARER_TOKEN\fR
+Bearer token used when \-\-token is not given.
+.TP
+\fBROARK_BASE_URL\fR
+API base URL.
+.TP
+\fBROARK_ALLOW_PROJECT_BASE_URL\fR
+Trusts a base URL set by a project .roark.json, like \-\-allow\-project\-base\-url.
+.TP
+\fBNO_COLOR\fR
+Disables colour when set to any value.
+.SH "EXIT STATUS"
+.TP
+\fB0\fR
+The command succeeded.
+.TP
+\fB1\fR
+The API rejected the request.
+.TP
+\fB2\fR
+The command line was wrong.
+.TP
+\fB3\fR
+No credential, or the credential was refused.
+.TP
+\fB4\fR
+The addressed resource does not exist.
+.TP
+\fB5\fR
+The request never completed: connection, timeout, or abort.
+.SH "SEE ALSO"
+.BR roark (1)

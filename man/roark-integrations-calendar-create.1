@@ -1,0 +1,102 @@
+.\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
+.TH "ROARK\-INTEGRATIONS\-CALENDAR\-CREATE" "1" "" "roark-integrations-calendar-create" "Roark Analytics API Manual"
+.SH "NAME"
+roark\-integrations\-calendar\-create \- Connect a calendar account
+.SH "SYNOPSIS"
+.B roark integrations calendar create
+[\fIoptions\fR]
+.SH "DESCRIPTION"
+Verifies the credential against the provider and, only if it works, stores it encrypted. A credential the provider rejects is a 400 and no connection is created: a connection that has never worked would next be exercised by an inbound call at 2am, with nobody there to fix it.
+.SH "API"
+POST /v1/integrations/calendar
+.SH "OPTIONS"
+.TP
+\fB\-\-provider\fR \fI<value>\fR
+Who holds the calendar. CAL_COM is connected with an API key; GOOGLE is connected by consent, through `POST /v1/integrations/calendar/google/authorize\-url`. CALENDLY is described by `capabilities` but not yet connectable. One of: CAL_COM, GOOGLE, CALENDLY. Required.
+.TP
+\fB\-\-label\fR \fI<value>\fR
+Customer\-facing name for this account, unique within the project. Required. Required.
+.TP
+\fB\-\-api\-key\fR \fI<value>\fR
+The provider account’s API key. For CAL_COM, a Cal.com API key (starts with `cal_`). It is verified against the provider before anything is stored, so an invalid key is a 400 and no connection is created. Stored encrypted and never returned. Required.
+.TP
+\fB\-\-timezone\fR \fI<value>\fR
+The named IANA timezone to offer slots in, for example `America/Los_Angeles`. Omit to adopt the provider account’s own timezone. A fixed offset such as `\-08:00` is rejected: it does not observe DST. Optional.
+.SH "GLOBAL OPTIONS"
+.TP
+\fB\-\-data\fR \fI<json>\fR
+Request body as JSON, or @file to read one (@\- for stdin).
+.TP
+\fB\-y\fR, \fB\-\-yes\fR
+Skip confirmation prompts.
+.TP
+\fB\-\-no\-input\fR
+Never prompt; fail instead.
+.TP
+\fB\-\-base\-url\fR \fI<url>\fR
+API base URL.
+.TP
+\fB\-\-token\fR \fI<token>\fR
+Bearer token. Prefer ROARK_API_BEARER_TOKEN or the stored credential.
+.TP
+\fB\-\-timeout\fR \fI<ms>\fR
+Request timeout in milliseconds.
+.TP
+\fB\-\-max\-retries\fR \fI<count>\fR
+Retries for retryable failures.
+.TP
+\fB\-\-format\fR \fI<format>\fR
+Output format: auto, json, jsonl, plain.
+.TP
+\fB\-\-json\fR
+Shorthand for \-\-format json.
+.TP
+\fB\-\-no\-color\fR
+Disable colour.
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Suppress non\-essential output.
+.TP
+\fB\-\-allow\-project\-base\-url\fR
+Send the stored credential to a base URL set by a project .roark.json. Refused by default.
+.SH "EXAMPLES"
+.PP
+.RS 4
+.nf
+roark integrations calendar create \-\-provider <value> \-\-label <value> \-\-api\-key <value>
+.fi
+.RE
+.SH "ENVIRONMENT"
+.TP
+\fBROARK_API_BEARER_TOKEN\fR
+Bearer token used when \-\-token is not given.
+.TP
+\fBROARK_BASE_URL\fR
+API base URL.
+.TP
+\fBROARK_ALLOW_PROJECT_BASE_URL\fR
+Trusts a base URL set by a project .roark.json, like \-\-allow\-project\-base\-url.
+.TP
+\fBNO_COLOR\fR
+Disables colour when set to any value.
+.SH "EXIT STATUS"
+.TP
+\fB0\fR
+The command succeeded.
+.TP
+\fB1\fR
+The API rejected the request.
+.TP
+\fB2\fR
+The command line was wrong.
+.TP
+\fB3\fR
+No credential, or the credential was refused.
+.TP
+\fB4\fR
+The addressed resource does not exist.
+.TP
+\fB5\fR
+The request never completed: connection, timeout, or abort.
+.SH "SEE ALSO"
+.BR roark (1)

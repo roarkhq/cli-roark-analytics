@@ -1,28 +1,18 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-CALENDAR\-CONNECTION\-UPDATE" "1" "" "roark-calendar-connection-update" "Roark Analytics API Manual"
+.TH "ROARK\-INTEGRATIONS\-CALENDAR\-GET" "1" "" "roark-integrations-calendar-get" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-calendar\-connection\-update \- Update a calendar connection
+roark\-integrations\-calendar\-get \- Get a calendar connection
 .SH "SYNOPSIS"
-.B roark calendar\-connection update
+.B roark integrations calendar get
 \fIconnection\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Renames a connection, changes the timezone slots are offered in, or rotates the credential. A rotated credential is verified first, and a verified credential returns the connection to ACTIVE.
+Returns one calendar connection. The stored credential is never included.
 .SH "API"
-PATCH /v1/calendar\-connection/{connectionId}
+GET /v1/integrations/calendar/{connectionId}
 .SH "ARGUMENTS"
 .TP
 \fIconnection\-id\fR
 Calendar connection ID
-.SH "OPTIONS"
-.TP
-\fB\-\-label\fR \fI<value>\fR
-Rename the connection. Optional.
-.TP
-\fB\-\-timezone\fR \fI<value>\fR
-Change the named IANA timezone slots are offered in. Optional.
-.TP
-\fB\-\-api\-key\fR \fI<value>\fR
-Rotate the credential. The new key is verified before it is stored, and a verified key returns the connection to ACTIVE, which is how a connection recovers from INVALID_CREDENTIALS. Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -64,7 +54,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark calendar\-connection update <connection\-id>
+roark integrations calendar get <connection\-id>
 .fi
 .RE
 .SH "ENVIRONMENT"

@@ -1,21 +1,18 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-CUSTOMER\-PROFILE\-ATTRIBUTE\-DELETE" "1" "" "roark-customer-profile-attribute-delete" "Roark Analytics API Manual"
+.TH "ROARK\-INTEGRATIONS\-CALENDAR\-CALENDAR\-LIST" "1" "" "roark-integrations-calendar-calendar-list" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-customer\-profile\-attribute\-delete \- Clear a customer profile field
+roark\-integrations\-calendar\-calendar\-list \- List the calendars a bookable target can be created on
 .SH "SYNOPSIS"
-.B roark customer\-profile attribute delete
-\fIcustomer\-profile\-id\fR \fIkey\fR [\fIoptions\fR]
+.B roark integrations calendar calendar list
+\fIconnection\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Removes the value and any lock, so a later conversation can fill it again.
+Only for a connection whose `capabilities.roarkOwnsBookingPolicy` is true: on a scheduling system the bookable things already exist and `GET /targets` returns them. Calendars the account can only read are left out rather than listed and refused: one would answer availability perfectly well and then fail the booking, mid\-call, with a caller on the line.
 .SH "API"
-DELETE /v1/customer\-profile/{customerProfileId}/attributes/{key}
+GET /v1/integrations/calendar/{connectionId}/calendars
 .SH "ARGUMENTS"
 .TP
-\fIcustomer\-profile\-id\fR
-The customer\-profile\-id.
-.TP
-\fIkey\fR
-The key.
+\fIconnection\-id\fR
+Calendar connection ID
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -57,7 +54,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark customer\-profile attribute delete <customer\-profile\-id> <key>
+roark integrations calendar calendar list <connection\-id>
 .fi
 .RE
 .SH "ENVIRONMENT"

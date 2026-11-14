@@ -1,25 +1,18 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-CUSTOMER\-PROFILE\-ATTRIBUTE\-UPDATE" "1" "" "roark-customer-profile-attribute-update" "Roark Analytics API Manual"
+.TH "ROARK\-INTEGRATIONS\-CALENDAR\-TARGET\-LIST" "1" "" "roark-integrations-calendar-target-list" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-customer\-profile\-attribute\-update \- Set a customer profile field
+roark\-integrations\-calendar\-target\-list \- List what can be booked on a calendar
 .SH "SYNOPSIS"
-.B roark customer\-profile attribute update
-\fIcustomer\-profile\-id\fR \fIkey\fR [\fIoptions\fR]
+.B roark integrations calendar target list
+\fIconnection\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Sets the value and locks the field, so newer conversations cannot change it.
+What an agent can be pointed at on this connection: Cal.com event types today, Google calendars when that lands. Read live from the provider, so an event type added since you connected is here without reconnecting. Each entry carries a `target` ready to put on a calendar tool, so nothing has to assemble one by hand.
 .SH "API"
-PUT /v1/customer\-profile/{customerProfileId}/attributes/{key}
+GET /v1/integrations/calendar/{connectionId}/targets
 .SH "ARGUMENTS"
 .TP
-\fIcustomer\-profile\-id\fR
-The customer\-profile\-id.
-.TP
-\fIkey\fR
-The key.
-.SH "OPTIONS"
-.TP
-\fB\-\-value\fR \fI<value>\fR
-The new value. Setting a field locks it, so newer conversations cannot change it. Required.
+\fIconnection\-id\fR
+Calendar connection ID
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -61,7 +54,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark customer\-profile attribute update <customer\-profile\-id> <key> \-\-value <value>
+roark integrations calendar target list <connection\-id>
 .fi
 .RE
 .SH "ENVIRONMENT"

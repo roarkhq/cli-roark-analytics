@@ -1,22 +1,18 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-CUSTOMER\-PROFILE\-NOTES\-UPDATE" "1" "" "roark-customer-profile-notes-update" "Roark Analytics API Manual"
+.TH "ROARK\-INTEGRATIONS\-CALENDAR\-DELETE" "1" "" "roark-integrations-calendar-delete" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-customer\-profile\-notes\-update \- Update the notes on a customer profile
+roark\-integrations\-calendar\-delete \- Delete a calendar connection
 .SH "SYNOPSIS"
-.B roark customer\-profile notes update
-\fIcustomer\-profile\-id\fR [\fIoptions\fR]
+.B roark integrations calendar delete
+\fIconnection\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Replaces your team's shared notes. Null or empty clears them. The last save wins.
+Disconnects the calendar and destroys the stored credential. A credential the customer deleted should stop existing, so this is not an archive. Appointments already recorded against the connection are kept, so a booking stays explainable after the calendar is disconnected. Refused with a 409 while a calendar tool is still bound to the connection, naming the tools: point them at another calendar, or delete them, first. A dangling binding would otherwise be found by whoever next tried to ship the agent, who is not the person who disconnected the calendar.
 .SH "API"
-PUT /v1/customer\-profile/{customerProfileId}/notes
+DELETE /v1/integrations/calendar/{connectionId}
 .SH "ARGUMENTS"
 .TP
-\fIcustomer\-profile\-id\fR
-The customer\-profile\-id.
-.SH "OPTIONS"
-.TP
-\fB\-\-notes\fR \fI<value>\fR
-Replaces the existing notes. Null or empty clears them. Required.
+\fIconnection\-id\fR
+Calendar connection ID
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -58,7 +54,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark customer\-profile notes update <customer\-profile\-id> \-\-notes <value>
+roark integrations calendar delete <connection\-id>
 .fi
 .RE
 .SH "ENVIRONMENT"

@@ -1,18 +1,25 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-CALENDAR\-CONNECTION\-CHECK" "1" "" "roark-calendar-connection-check" "Roark Analytics API Manual"
+.TH "ROARK\-CUSTOMER\-CONVERSATION\-LIST" "1" "" "roark-customer-conversation-list" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-calendar\-connection\-check \- Check a calendar connection
+roark\-customer\-conversation\-list \- List a customer's conversations
 .SH "SYNOPSIS"
-.B roark calendar\-connection check
-\fIconnection\-id\fR [\fIoptions\fR]
+.B roark customer conversation list
+\fIcustomer\-profile\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Re\-verifies the stored credential against the provider and records the result on the connection. A credential the provider rejects sets `status` to INVALID_CREDENTIALS. A provider outage is a 500 and leaves the status untouched: being unable to reach the provider is not evidence that the customer’s credential is bad.
+Calls and chats with this customer, newest first.
 .SH "API"
-POST /v1/calendar\-connection/{connectionId}/check
+GET /v1/customer/{customerProfileId}/conversations
 .SH "ARGUMENTS"
 .TP
-\fIconnection\-id\fR
-Calendar connection ID
+\fIcustomer\-profile\-id\fR
+The customer\-profile\-id.
+.SH "OPTIONS"
+.TP
+\fB\-\-limit\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-page\fR \fI<value>\fR
+Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -54,7 +61,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark calendar\-connection check <connection\-id>
+roark customer conversation list <customer\-profile\-id>
 .fi
 .RE
 .SH "ENVIRONMENT"
