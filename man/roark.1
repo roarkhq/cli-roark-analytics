@@ -63,6 +63,9 @@ Print a shell completion script.
 \fBroark agent build\fR
 Build a Roark\-hosted agent See roark\-agent\-build(1).
 .TP
+\fBroark agent conversation create\fR
+Start a conversation with an agent See roark\-agent\-conversation\-create(1).
+.TP
 \fBroark agent create\fR
 Create a new agent See roark\-agent\-create(1).
 .TP
@@ -107,6 +110,24 @@ Set an agent's prompt See roark\-agent\-prompt\-update(1).
 .TP
 \fBroark agent prompt version list\fR
 List a prompt's versions See roark\-agent\-prompt\-version\-list(1).
+.TP
+\fBroark agent setup answer\fR
+Answer a setup's question See roark\-agent\-setup\-answer(1).
+.TP
+\fBroark agent setup cancel\fR
+Cancel a running setup See roark\-agent\-setup\-cancel(1).
+.TP
+\fBroark agent setup create\fR
+Set up an agent See roark\-agent\-setup\-create(1).
+.TP
+\fBroark agent setup get\fR
+Get a setup by ID See roark\-agent\-setup\-get(1).
+.TP
+\fBroark agent setup guidance send\fR
+Guide a running setup See roark\-agent\-setup\-guidance\-send(1).
+.TP
+\fBroark agent setup latest get\fR
+Get an agent's setup See roark\-agent\-setup\-latest\-get(1).
 .TP
 \fBroark agent update\fR
 Update an agent See roark\-agent\-update(1).
@@ -186,30 +207,6 @@ List a target’s published generations See roark\-benchmark\-target\-history\-l
 \fBroark benchmark target score\-sample list\fR
 List score samples for a target See roark\-benchmark\-target\-score\-sample\-list(1).
 .TP
-\fBroark calendar\-connection check\fR
-Check a calendar connection See roark\-calendar\-connection\-check(1).
-.TP
-\fBroark calendar\-connection create\fR
-Connect a calendar account See roark\-calendar\-connection\-create(1).
-.TP
-\fBroark calendar\-connection delete\fR
-Delete a calendar connection See roark\-calendar\-connection\-delete(1).
-.TP
-\fBroark calendar\-connection get\fR
-Get a calendar connection See roark\-calendar\-connection\-get(1).
-.TP
-\fBroark calendar\-connection list\fR
-List calendar connections See roark\-calendar\-connection\-list(1).
-.TP
-\fBroark calendar\-connection target get\fR
-Read one bookable target See roark\-calendar\-connection\-target\-get(1).
-.TP
-\fBroark calendar\-connection target list\fR
-List what can be booked on a calendar See roark\-calendar\-connection\-target\-list(1).
-.TP
-\fBroark calendar\-connection update\fR
-Update a calendar connection See roark\-calendar\-connection\-update(1).
-.TP
 \fBroark call batch delete\fR
 Delete calls in batch See roark\-call\-batch\-delete(1).
 .TP
@@ -249,6 +246,12 @@ Reconcile the project to a config directory (or bundle). Previews and confirms f
 \fBroark config diff\fR
 Preview the changes a config directory (or bundle) would make. No writes. See roark\-config\-diff(1).
 .TP
+\fBroark conversation get\fR
+Get a conversation See roark\-conversation\-get(1).
+.TP
+\fBroark conversation list\fR
+List conversations See roark\-conversation\-list(1).
+.TP
 \fBroark credential create\fR
 Create a personal credential See roark\-credential\-create(1).
 .TP
@@ -257,6 +260,42 @@ List your personal credentials See roark\-credential\-list(1).
 .TP
 \fBroark credential revoke\fR
 Revoke one of your personal credentials See roark\-credential\-revoke(1).
+.TP
+\fBroark customer attribute delete\fR
+Clear a field on a customer See roark\-customer\-attribute\-delete(1).
+.TP
+\fBroark customer attribute unlock\fR
+Unlock a field on a customer See roark\-customer\-attribute\-unlock(1).
+.TP
+\fBroark customer attribute update\fR
+Set a field on a customer See roark\-customer\-attribute\-update(1).
+.TP
+\fBroark customer conversation list\fR
+List a customer's conversations See roark\-customer\-conversation\-list(1).
+.TP
+\fBroark customer delete\fR
+Erase a customer See roark\-customer\-delete(1).
+.TP
+\fBroark customer field create\fR
+Create a customer field See roark\-customer\-field\-create(1).
+.TP
+\fBroark customer field delete\fR
+Delete a customer field See roark\-customer\-field\-delete(1).
+.TP
+\fBroark customer field list\fR
+List customer fields See roark\-customer\-field\-list(1).
+.TP
+\fBroark customer field update\fR
+Update a customer field See roark\-customer\-field\-update(1).
+.TP
+\fBroark customer get\fR
+Get a customer See roark\-customer\-get(1).
+.TP
+\fBroark customer list\fR
+List customers See roark\-customer\-list(1).
+.TP
+\fBroark customer notes update\fR
+Update the notes on a customer See roark\-customer\-notes\-update(1).
 .TP
 \fBroark customer\-flow create\fR
 Create a customer flow See roark\-customer\-flow\-create(1).
@@ -293,30 +332,6 @@ List customer flows See roark\-customer\-flow\-list(1).
 .TP
 \fBroark customer\-flow update\fR
 Update a customer flow See roark\-customer\-flow\-update(1).
-.TP
-\fBroark customer\-profile attribute delete\fR
-Clear a customer profile field See roark\-customer\-profile\-attribute\-delete(1).
-.TP
-\fBroark customer\-profile attribute unlock\fR
-Unlock a customer profile field See roark\-customer\-profile\-attribute\-unlock(1).
-.TP
-\fBroark customer\-profile attribute update\fR
-Set a customer profile field See roark\-customer\-profile\-attribute\-update(1).
-.TP
-\fBroark customer\-profile conversation list\fR
-List a customer's conversations See roark\-customer\-profile\-conversation\-list(1).
-.TP
-\fBroark customer\-profile delete\fR
-Erase a customer profile See roark\-customer\-profile\-delete(1).
-.TP
-\fBroark customer\-profile get\fR
-Get a customer profile See roark\-customer\-profile\-get(1).
-.TP
-\fBroark customer\-profile list\fR
-List customer profiles See roark\-customer\-profile\-list(1).
-.TP
-\fBroark customer\-profile notes update\fR
-Update the notes on a customer profile See roark\-customer\-profile\-notes\-update(1).
 .TP
 \fBroark dashboard create\fR
 Create a dashboard See roark\-dashboard\-create(1).
@@ -362,6 +377,66 @@ List HTTP request definitions See roark\-http\-request\-definition\-list(1).
 .TP
 \fBroark http\-request\-definition update\fR
 Update HTTP request definition See roark\-http\-request\-definition\-update(1).
+.TP
+\fBroark integrations calendar calendar list\fR
+List the calendars a bookable target can be created on See roark\-integrations\-calendar\-calendar\-list(1).
+.TP
+\fBroark integrations calendar check\fR
+Check a calendar connection See roark\-integrations\-calendar\-check(1).
+.TP
+\fBroark integrations calendar create\fR
+Connect a calendar account See roark\-integrations\-calendar\-create(1).
+.TP
+\fBroark integrations calendar delete\fR
+Delete a calendar connection See roark\-integrations\-calendar\-delete(1).
+.TP
+\fBroark integrations calendar get\fR
+Get a calendar connection See roark\-integrations\-calendar\-get(1).
+.TP
+\fBroark integrations calendar google\-oauth start\fR
+Start connecting a Google Calendar See roark\-integrations\-calendar\-google\-oauth\-start(1).
+.TP
+\fBroark integrations calendar list\fR
+List calendar connections See roark\-integrations\-calendar\-list(1).
+.TP
+\fBroark integrations calendar target create\fR
+Create a bookable target See roark\-integrations\-calendar\-target\-create(1).
+.TP
+\fBroark integrations calendar target delete\fR
+Delete a bookable target See roark\-integrations\-calendar\-target\-delete(1).
+.TP
+\fBroark integrations calendar target get\fR
+Read one bookable target See roark\-integrations\-calendar\-target\-get(1).
+.TP
+\fBroark integrations calendar target list\fR
+List what can be booked on a calendar See roark\-integrations\-calendar\-target\-list(1).
+.TP
+\fBroark integrations calendar target update\fR
+Update a bookable target See roark\-integrations\-calendar\-target\-update(1).
+.TP
+\fBroark integrations calendar update\fR
+Update a calendar connection See roark\-integrations\-calendar\-update(1).
+.TP
+\fBroark integrations mcp\-server create\fR
+Connect an MCP server See roark\-integrations\-mcp\-server\-create(1).
+.TP
+\fBroark integrations mcp\-server delete\fR
+Disconnect an MCP server See roark\-integrations\-mcp\-server\-delete(1).
+.TP
+\fBroark integrations mcp\-server discover\fR
+Discover an MCP server See roark\-integrations\-mcp\-server\-discover(1).
+.TP
+\fBroark integrations mcp\-server get\fR
+Get an MCP server See roark\-integrations\-mcp\-server\-get(1).
+.TP
+\fBroark integrations mcp\-server list\fR
+List MCP servers See roark\-integrations\-mcp\-server\-list(1).
+.TP
+\fBroark integrations mcp\-server refresh\fR
+Refresh an MCP server See roark\-integrations\-mcp\-server\-refresh(1).
+.TP
+\fBroark integrations mcp\-server update\fR
+Update an MCP server See roark\-integrations\-mcp\-server\-update(1).
 .TP
 \fBroark live\-report create\fR
 Create a live report See roark\-live\-report\-create(1).

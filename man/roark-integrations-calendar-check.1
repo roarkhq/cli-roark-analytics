@@ -1,14 +1,14 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-CALENDAR\-CONNECTION\-GET" "1" "" "roark-calendar-connection-get" "Roark Analytics API Manual"
+.TH "ROARK\-INTEGRATIONS\-CALENDAR\-CHECK" "1" "" "roark-integrations-calendar-check" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-calendar\-connection\-get \- Get a calendar connection
+roark\-integrations\-calendar\-check \- Check a calendar connection
 .SH "SYNOPSIS"
-.B roark calendar\-connection get
+.B roark integrations calendar check
 \fIconnection\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Returns one calendar connection. The stored credential is never included.
+Re\-verifies the stored credential against the provider and records the result on the connection. A credential the provider rejects sets `status` to INVALID_CREDENTIALS. A provider outage is a 500 and leaves the status untouched: being unable to reach the provider is not evidence that the customer’s credential is bad.
 .SH "API"
-GET /v1/calendar\-connection/{connectionId}
+POST /v1/integrations/calendar/{connectionId}/check
 .SH "ARGUMENTS"
 .TP
 \fIconnection\-id\fR
@@ -54,7 +54,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark calendar\-connection get <connection\-id>
+roark integrations calendar check <connection\-id>
 .fi
 .RE
 .SH "ENVIRONMENT"

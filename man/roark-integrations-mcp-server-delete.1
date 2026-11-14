@@ -1,18 +1,18 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-CUSTOMER\-PROFILE\-GET" "1" "" "roark-customer-profile-get" "Roark Analytics API Manual"
+.TH "ROARK\-INTEGRATIONS\-MCP\-SERVER\-DELETE" "1" "" "roark-integrations-mcp-server-delete" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-customer\-profile\-get \- Get a customer profile
+roark\-integrations\-mcp\-server\-delete \- Disconnect an MCP server
 .SH "SYNOPSIS"
-.B roark customer\-profile get
-\fIcustomer\-profile\-id\fR [\fIoptions\fR]
+.B roark integrations mcp\-server delete
+\fIserver\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Get a customer profile
+Deletes the server and its stored credential. A server a tool still uses returns 409, naming the tools.
 .SH "API"
-GET /v1/customer\-profile/{customerProfileId}
+DELETE /v1/integrations/mcp\-server/{serverId}
 .SH "ARGUMENTS"
 .TP
-\fIcustomer\-profile\-id\fR
-The customer\-profile\-id.
+\fIserver\-id\fR
+The server\-id.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -54,7 +54,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark customer\-profile get <customer\-profile\-id>
+roark integrations mcp\-server delete <server\-id>
 .fi
 .RE
 .SH "ENVIRONMENT"

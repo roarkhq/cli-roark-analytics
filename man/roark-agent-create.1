@@ -18,7 +18,49 @@ Name of the agent Required.
 Description of the agent Optional.
 .TP
 \fB\-\-custom\-id\fR \fI<value>\fR
-Custom identifier for the agent Optional.
+Custom identifier for the agent. Must be unique in the project. Optional.
+.TP
+\fB\-\-industry\fR \fI<value>\fR
+The industry the agent serves. Picks the default capabilities and industry checks setup adds. One of: HEALTHCARE, FINANCIAL_SERVICES, INSURANCE, DEBT_COLLECTION, RETAIL, TRAVEL_AND_HOSPITALITY, TELECOMMUNICATIONS, TECHNOLOGY, PUBLIC_SECTOR, UTILITIES, LOGISTICS, AUTOMOTIVE, HOME_SERVICES, RESTAURANTS, EDUCATION, OTHER. Optional.
+.TP
+\fB\-\-prompt\fR \fI<value>\fR
+The agent's system prompt. Setup reads it to decide what to test. Optional.
+.TP
+\fB\-\-endpoint\fR \fI<value>\fR
+The phone number or connection Roark calls to test the agent Optional.
+.TP
+\fB\-\-endpoint.value\fR \fI<value>\fR
+Phone number in E.164 format (e.g., +12345678900). Optional when direction is OUTGOING, for an agent that calls from numbers you do not know up front. Optional.
+.TP
+\fB\-\-endpoint.environment\fR \fI<value>\fR
+Environment name (default: production) Optional.
+.TP
+\fB\-\-endpoint.direction\fR \fI<value>\fR
+Call direction: INCOMING, OUTGOING, or INCOMING_AND_OUTGOING One of: INCOMING, OUTGOING, INCOMING_AND_OUTGOING. Required.
+.TP
+\fB\-\-endpoint.outbound\-dial\-type\fR \fI<value>\fR
+Outbound dial type: NONE or HTTP_REQUEST (default: NONE) One of: NONE, HTTP_REQUEST. Optional.
+.TP
+\fB\-\-endpoint.outbound\-dial\-http\-request\-definition\-id\fR \fI<value>\fR
+ID of the HTTP request definition for outbound dialing (required when outboundDialType is HTTP_REQUEST) Optional.
+.TP
+\fB\-\-website\-url\fR \fI<value>\fR
+A page Roark reads to learn about the business. Optional.
+.TP
+\fB\-\-testing\-instructions\fR \fI<value>\fR
+What you want tested, in your own words. Each scenario you describe becomes a flow. Optional.
+.TP
+\fB\-\-auto\-setup\fR \fI<value>\fR
+Controls the flows, metrics and run plan Roark generates for the agent Optional.
+.TP
+\fB\-\-auto\-setup.enabled\fR
+Set to false to skip setup. When omitted, setup runs if you pass a prompt, endpoint, website or testing instructions. Optional.
+.TP
+\fB\-\-auto\-setup.explore\fR \fI<value>\fR
+Exploration settings Optional.
+.TP
+\fB\-\-auto\-setup.capabilities\fR \fI<value>\fR
+The capabilities to test. Omit to let Roark work them out from the agent. One of: APPOINTMENT_BOOKING, FAQ, IDENTITY_VERIFICATION, ACCOUNT_MANAGEMENT, BILLING_AND_PAYMENTS, ORDER_MANAGEMENT, TROUBLESHOOTING, CALL_ROUTING, LEAD_QUALIFICATION, COLLECTIONS, OUTBOUND_CALLING. Repeatable. Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -60,7 +102,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark agent create \-\-name <value>
+roark agent create \-\-name <value> \-\-endpoint.direction <value>
 .fi
 .RE
 .SH "ENVIRONMENT"

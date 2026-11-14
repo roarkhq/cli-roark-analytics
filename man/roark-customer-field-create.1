@@ -1,18 +1,30 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-CALENDAR\-CONNECTION\-LIST" "1" "" "roark-calendar-connection-list" "Roark Analytics API Manual"
+.TH "ROARK\-CUSTOMER\-FIELD\-CREATE" "1" "" "roark-customer-field-create" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-calendar\-connection\-list \- List calendar connections
+roark\-customer\-field\-create \- Create a customer field
 .SH "SYNOPSIS"
-.B roark calendar\-connection list
+.B roark customer field create
 [\fIoptions\fR]
 .SH "DESCRIPTION"
-Returns every calendar connection in the authenticated project, by label. A project has a handful of these, so the list is not paginated: `pagination.hasMore` is always false.
+Adds a field of your project's own. With extract on, conversations fill it from what customers say, guided by its description.
 .SH "API"
-GET /v1/calendar\-connection
+POST /v1/customer/fields
 .SH "OPTIONS"
 .TP
-\fB\-\-provider\fR \fI<value>\fR
-Who holds the calendar. CAL_COM is the only provider that can be connected today; GOOGLE and CALENDLY are described by `capabilities` but not yet connectable. One of: CAL_COM, GOOGLE, CALENDLY. Optional.
+\fB\-\-key\fR \fI<value>\fR
+Starts with a letter; letters, numbers and underscores only. Fixed once created. Required.
+.TP
+\fB\-\-label\fR \fI<value>\fR
+Required.
+.TP
+\fB\-\-description\fR \fI<value>\fR
+What the agent listens for in a conversation. Required when extract is true. Optional.
+.TP
+\fB\-\-value\-type\fR \fI<value>\fR
+One of: TEXT, NUMBER, BOOLEAN, DATE, PHONE_NUMBER, EMAIL, CURRENCY. Required.
+.TP
+\fB\-\-extract\fR
+Whether conversations fill this field Required.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -54,7 +66,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark calendar\-connection list
+roark customer field create \-\-key <value> \-\-label <value> \-\-value\-type <value> \-\-extract <value>
 .fi
 .RE
 .SH "ENVIRONMENT"

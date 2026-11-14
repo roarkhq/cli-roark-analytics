@@ -6,7 +6,7 @@ roark\-tool\-create \- Create a tool
 .B roark tool create
 [\fIoptions\fR]
 .SH "DESCRIPTION"
-Creates a tool and declares its first version. A tool only recorded from calls under the same name is adopted; one already declared returns 409. Give it a `runtime` for a hosted agent to call your endpoint. Header values are returned on read, so keep secrets out of them.
+Creates a tool and declares its first version. A tool only recorded from calls under the same name is adopted; one already declared returns 409. Give it a `runtime` for a hosted agent to call your endpoint, a `calendar` for it to book on a calendar connected to the project, or `mcp` for it to call a tool on an MCP server connected to the project. Header values are returned on read, so keep secrets out of them.
 .SH "API"
 POST /v1/tool
 .SH "OPTIONS"
@@ -42,6 +42,36 @@ Optional.
 Repeatable. Optional.
 .TP
 \fB\-\-runtime.messages\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-calendar\fR \fI<value>\fR
+Makes this a calendar tool, which Roark runs against a connected calendar: it takes no runtime and no inputs. Omit or null for any other tool; on update, omitting it makes the tool an ordinary one. Optional.
+.TP
+\fB\-\-calendar.calendar\-connection\-id\fR \fI<value>\fR
+Required.
+.TP
+\fB\-\-calendar.operation\fR \fI<value>\fR
+One of: CHECK_AVAILABILITY, BOOK, LOOKUP_BOOKING, RESCHEDULE, CANCEL, LIST_BOOKINGS. Required.
+.TP
+\fB\-\-calendar.appointment\-types\fR \fI<value>\fR
+Required.
+.TP
+\fB\-\-calendar.simulate\fR
+Optional.
+.TP
+\fB\-\-calendar.messages\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-mcp\fR \fI<value>\fR
+Makes this a tool on one of the project's MCP servers: it takes no runtime, no inputs and no calendar, and the description replaces the server's own. On update, omitting it makes the tool an ordinary one. Optional.
+.TP
+\fB\-\-mcp.mcp\-server\-id\fR \fI<value>\fR
+Required.
+.TP
+\fB\-\-mcp.tool\fR \fI<value>\fR
+The tool as the server names it Required.
+.TP
+\fB\-\-mcp.messages\fR \fI<value>\fR
 Optional.
 .SH "GLOBAL OPTIONS"
 .TP
@@ -84,7 +114,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark tool create \-\-name <value> \-\-description <value> \-\-runtime.request <value>
+roark tool create \-\-name <value> \-\-description <value> \-\-runtime.request <value> \-\-calendar.calendar\-connection\-id <value> \-\-calendar.operation <value> \-\-calendar.appointment\-types <value> \-\-mcp.mcp\-server\-id <value> \-\-mcp.tool <value>
 .fi
 .RE
 .SH "ENVIRONMENT"

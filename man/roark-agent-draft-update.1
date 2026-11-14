@@ -22,7 +22,7 @@ The draft's revision when you read it. When sent, the edit is refused if the dra
 The settings to change. Omitted settings stay as they are; null clears one to the runtime default. subAgents replaces every speaker, model configs included, and must include `main`; in a model config, omitted fields use the runtime default. Required.
 .TP
 \fB\-\-settings.modalities\fR \fI<value>\fR
-One of: call, chat. Repeatable. Optional.
+One of: voice, chat, call. Repeatable. Optional.
 .TP
 \fB\-\-settings.language\fR \fI<value>\fR
 Optional.
@@ -43,6 +43,9 @@ One of: ALLOW, BLOCK. Optional.
 Optional.
 .TP
 \fB\-\-settings.vad\-stop\-secs\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-settings.vad\-max\-silence\-secs\fR \fI<value>\fR
 Optional.
 .TP
 \fB\-\-settings.call\-max\-duration\-seconds\fR \fI<value>\fR

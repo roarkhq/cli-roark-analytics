@@ -1,18 +1,24 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-CALENDAR\-CONNECTION\-TARGET\-LIST" "1" "" "roark-calendar-connection-target-list" "Roark Analytics API Manual"
+.TH "ROARK\-INTEGRATIONS\-CALENDAR\-GOOGLE\-OAUTH\-START" "1" "" "roark-integrations-calendar-google-oauth-start" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-calendar\-connection\-target\-list \- List what can be booked on a calendar
+roark\-integrations\-calendar\-google\-oauth\-start \- Start connecting a Google Calendar
 .SH "SYNOPSIS"
-.B roark calendar\-connection target list
-\fIconnection\-id\fR [\fIoptions\fR]
+.B roark integrations calendar google\-oauth start
+[\fIoptions\fR]
 .SH "DESCRIPTION"
-What an agent can be pointed at on this connection: Cal.com event types today, Google calendars when that lands. Read live from the provider, so an event type added since you connected is here without reconnecting. Each entry carries a `target` ready to put on a calendar tool, so nothing has to assemble one by hand.
+Returns a URL to open in a browser. Google has no credential a request body can carry, so connecting one is two steps: ask for this URL, let the customer consent, and Roark finishes the rest server\-side (it exchanges the code, verifies that both calendar permissions were granted, reads the account’s own timezone when none was given, and stores the connection). Nothing is created until the customer consents, and a link that is not used expires. Read the result with `GET /v1/integrations/calendar?provider=GOOGLE`.
 .SH "API"
-GET /v1/calendar\-connection/{connectionId}/targets
-.SH "ARGUMENTS"
+POST /v1/integrations/calendar/google/authorize\-url
+.SH "OPTIONS"
 .TP
-\fIconnection\-id\fR
-Calendar connection ID
+\fB\-\-label\fR \fI<value>\fR
+Customer\-facing name for the connection, unique within the project. Decided now because the consent screen has nowhere to carry it. Required.
+.TP
+\fB\-\-timezone\fR \fI<value>\fR
+The named IANA timezone to offer slots in, for example `America/Los_Angeles`. Omit to adopt the Google account’s own. A fixed offset such as `\-08:00` is rejected: it does not observe DST. Optional.
+.TP
+\fB\-\-login\-hint\fR \fI<value>\fR
+The Google account to preselect on the consent screen. A hint only: it is ignored if the user is signed into another account, and nothing is authorized by it. Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -54,7 +60,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark calendar\-connection target list <connection\-id>
+roark integrations calendar google\-oauth start \-\-label <value>
 .fi
 .RE
 .SH "ENVIRONMENT"
