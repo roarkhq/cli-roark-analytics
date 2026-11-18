@@ -1,0 +1,102 @@
+.\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
+.TH "ROARK\-CONNECTIONS\-CALENDAR\-GOOGLE\-OAUTH\-START" "1" "" "roark-connections-calendar-google-oauth-start" "Roark Analytics API Manual"
+.SH "NAME"
+roark\-connections\-calendar\-google\-oauth\-start \- Start connecting a Google Calendar
+.SH "SYNOPSIS"
+.B roark connections calendar google\-oauth start
+[\fIoptions\fR]
+.SH "DESCRIPTION"
+Returns a URL to open in a browser. Google has no credential a request body can carry, so connecting one is two steps: ask for this URL, let the customer consent, and Roark finishes the rest server\-side (it exchanges the code, verifies that both calendar permissions were granted, reads the account’s own timezone when none was given, and stores the connection). Nothing is created until the customer consents, and a link that is not used expires. Read the result with `GET /v1/connections/calendar?provider=GOOGLE`.
+.SH "API"
+POST /v1/connections/calendar/google/authorize\-url
+.SH "OPTIONS"
+.TP
+\fB\-\-calendar\-connection\-id\fR \fI<value>\fR
+Reconnect an existing connection instead of creating one: the consent screen replaces that connection’s credential in place, so every tool bound to it keeps working. Use this when a connection reports `INVALID_CREDENTIALS`. The connection’s existing name and timezone are kept, so `label` is ignored when this is set. Optional.
+.TP
+\fB\-\-label\fR \fI<value>\fR
+Customer\-facing name for the connection, unique within the project. Required unless `calendarConnectionId` is set, and decided now because the consent screen has nowhere to carry it. Optional.
+.TP
+\fB\-\-timezone\fR \fI<value>\fR
+The named IANA timezone to offer slots in, for example `America/Los_Angeles`. Omit to adopt the Google account’s own. A fixed offset such as `\-08:00` is rejected: it does not observe DST. Optional.
+.TP
+\fB\-\-login\-hint\fR \fI<value>\fR
+The Google account to preselect on the consent screen. A hint only: it is ignored if the user is signed into another account, and nothing is authorized by it. Optional.
+.SH "GLOBAL OPTIONS"
+.TP
+\fB\-\-data\fR \fI<json>\fR
+Request body as JSON, or @file to read one (@\- for stdin).
+.TP
+\fB\-y\fR, \fB\-\-yes\fR
+Skip confirmation prompts.
+.TP
+\fB\-\-no\-input\fR
+Never prompt; fail instead.
+.TP
+\fB\-\-base\-url\fR \fI<url>\fR
+API base URL.
+.TP
+\fB\-\-token\fR \fI<token>\fR
+Bearer token. Prefer ROARK_API_BEARER_TOKEN or the stored credential.
+.TP
+\fB\-\-timeout\fR \fI<ms>\fR
+Request timeout in milliseconds.
+.TP
+\fB\-\-max\-retries\fR \fI<count>\fR
+Retries for retryable failures.
+.TP
+\fB\-\-format\fR \fI<format>\fR
+Output format: auto, json, jsonl, plain.
+.TP
+\fB\-\-json\fR
+Shorthand for \-\-format json.
+.TP
+\fB\-\-no\-color\fR
+Disable colour.
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Suppress non\-essential output.
+.TP
+\fB\-\-allow\-project\-base\-url\fR
+Send the stored credential to a base URL set by a project .roark.json. Refused by default.
+.SH "EXAMPLES"
+.PP
+.RS 4
+.nf
+roark connections calendar google\-oauth start
+.fi
+.RE
+.SH "ENVIRONMENT"
+.TP
+\fBROARK_API_BEARER_TOKEN\fR
+Bearer token used when \-\-token is not given.
+.TP
+\fBROARK_BASE_URL\fR
+API base URL.
+.TP
+\fBROARK_ALLOW_PROJECT_BASE_URL\fR
+Trusts a base URL set by a project .roark.json, like \-\-allow\-project\-base\-url.
+.TP
+\fBNO_COLOR\fR
+Disables colour when set to any value.
+.SH "EXIT STATUS"
+.TP
+\fB0\fR
+The command succeeded.
+.TP
+\fB1\fR
+The API rejected the request.
+.TP
+\fB2\fR
+The command line was wrong.
+.TP
+\fB3\fR
+No credential, or the credential was refused.
+.TP
+\fB4\fR
+The addressed resource does not exist.
+.TP
+\fB5\fR
+The request never completed: connection, timeout, or abort.
+.SH "SEE ALSO"
+.BR roark (1)

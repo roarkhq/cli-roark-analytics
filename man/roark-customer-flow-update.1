@@ -6,7 +6,7 @@ roark\-customer\-flow\-update \- Update a customer flow
 .B roark customer\-flow update
 \fIflow\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Updates a flow's title, description, branching mode, linked agents or flow\-level expectations. The step graph is replaced through PUT /graph.
+Updates a flow's title, description, branching mode, linked agents, flow\-level expectations or folder. The step graph is replaced through PUT /graph.
 .SH "API"
 PUT /v1/customer\-flow/{flowId}
 .SH "ARGUMENTS"
@@ -50,6 +50,9 @@ Replaces the linked agents. Omit to leave them unchanged. An improv flow must ke
 .TP
 \fB\-\-agent\-expectations\fR \fI<value>\fR
 Replaces the flow\-level expectations. Omit to leave them unchanged. Optional.
+.TP
+\fB\-\-folder\-id\fR \fI<value>\fR
+Moves the flow into this folder. Null takes it out of its folder; omit to leave it where it is. Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR

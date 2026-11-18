@@ -63,8 +63,11 @@ Print a shell completion script.
 \fBroark agent build\fR
 Build a Roark\-hosted agent See roark\-agent\-build(1).
 .TP
+\fBroark agent conversation create\fR
+Start a conversation with an agent See roark\-agent\-conversation\-create(1).
+.TP
 \fBroark agent create\fR
-Create a new agent See roark\-agent\-create(1).
+Create an agent See roark\-agent\-create(1).
 .TP
 \fBroark agent draft create\fR
 Start a draft See roark\-agent\-draft\-create(1).
@@ -82,10 +85,10 @@ Publish the draft See roark\-agent\-draft\-publish(1).
 Edit the draft See roark\-agent\-draft\-update(1).
 .TP
 \fBroark agent endpoint create\fR
-Create a new agent endpoint See roark\-agent\-endpoint\-create(1).
+Create an agent endpoint See roark\-agent\-endpoint\-create(1).
 .TP
 \fBroark agent endpoint get\fR
-Get agent endpoint by ID See roark\-agent\-endpoint\-get(1).
+Get an agent endpoint See roark\-agent\-endpoint\-get(1).
 .TP
 \fBroark agent endpoint list\fR
 List agent endpoints See roark\-agent\-endpoint\-list(1).
@@ -94,7 +97,7 @@ List agent endpoints See roark\-agent\-endpoint\-list(1).
 Update an agent endpoint See roark\-agent\-endpoint\-update(1).
 .TP
 \fBroark agent get\fR
-Get agent by ID See roark\-agent\-get(1).
+Get an agent See roark\-agent\-get(1).
 .TP
 \fBroark agent list\fR
 List agents See roark\-agent\-list(1).
@@ -148,25 +151,25 @@ Get the analytics schema See roark\-analytics\-schema\-get(1).
 Answer Roark's question See roark\-autoimprove\-job\-answer(1).
 .TP
 \fBroark autoimprove job cancel\fR
-Cancel a job See roark\-autoimprove\-job\-cancel(1).
+Cancel an Autoimprove job See roark\-autoimprove\-job\-cancel(1).
 .TP
 \fBroark autoimprove job create\fR
 Start an Autoimprove job See roark\-autoimprove\-job\-create(1).
 .TP
 \fBroark autoimprove job dismiss\fR
-Dismiss a verified job See roark\-autoimprove\-job\-dismiss(1).
+Dismiss an Autoimprove job See roark\-autoimprove\-job\-dismiss(1).
 .TP
 \fBroark autoimprove job get\fR
 Get an Autoimprove job See roark\-autoimprove\-job\-get(1).
 .TP
 \fBroark autoimprove job guidance send\fR
-Send guidance to a running job See roark\-autoimprove\-job\-guidance\-send(1).
+Guide a running Autoimprove job See roark\-autoimprove\-job\-guidance\-send(1).
 .TP
 \fBroark autoimprove job list\fR
 List Autoimprove jobs See roark\-autoimprove\-job\-list(1).
 .TP
 \fBroark autoimprove job promote\fR
-Promote a verified job to production See roark\-autoimprove\-job\-promote(1).
+Promote an Autoimprove job to production See roark\-autoimprove\-job\-promote(1).
 .TP
 \fBroark benchmark leaderboard get\fR
 Get the benchmark leaderboard See roark\-benchmark\-leaderboard\-get(1).
@@ -181,34 +184,10 @@ List benchmark suites See roark\-benchmark\-suite\-list(1).
 Get a benchmark target See roark\-benchmark\-target\-get(1).
 .TP
 \fBroark benchmark target history list\fR
-List a target’s published generations See roark\-benchmark\-target\-history\-list(1).
+List a benchmark target's published generations See roark\-benchmark\-target\-history\-list(1).
 .TP
 \fBroark benchmark target score\-sample list\fR
 List score samples for a target See roark\-benchmark\-target\-score\-sample\-list(1).
-.TP
-\fBroark calendar\-connection check\fR
-Check a calendar connection See roark\-calendar\-connection\-check(1).
-.TP
-\fBroark calendar\-connection create\fR
-Connect a calendar account See roark\-calendar\-connection\-create(1).
-.TP
-\fBroark calendar\-connection delete\fR
-Delete a calendar connection See roark\-calendar\-connection\-delete(1).
-.TP
-\fBroark calendar\-connection get\fR
-Get a calendar connection See roark\-calendar\-connection\-get(1).
-.TP
-\fBroark calendar\-connection list\fR
-List calendar connections See roark\-calendar\-connection\-list(1).
-.TP
-\fBroark calendar\-connection target get\fR
-Read one bookable target See roark\-calendar\-connection\-target\-get(1).
-.TP
-\fBroark calendar\-connection target list\fR
-List what can be booked on a calendar See roark\-calendar\-connection\-target\-list(1).
-.TP
-\fBroark calendar\-connection update\fR
-Update a calendar connection See roark\-calendar\-connection\-update(1).
 .TP
 \fBroark call batch delete\fR
 Delete calls in batch See roark\-call\-batch\-delete(1).
@@ -223,7 +202,7 @@ Create a call See roark\-call\-create(1).
 Delete a call See roark\-call\-delete(1).
 .TP
 \fBroark call get\fR
-Get a call by ID See roark\-call\-get(1).
+Get a call See roark\-call\-get(1).
 .TP
 \fBroark call list\fR
 List calls See roark\-call\-list(1).
@@ -249,14 +228,146 @@ Reconcile the project to a config directory (or bundle). Previews and confirms f
 \fBroark config diff\fR
 Preview the changes a config directory (or bundle) would make. No writes. See roark\-config\-diff(1).
 .TP
+\fBroark connections agent backfill cancel\fR
+Cancel a backfill See roark\-connections\-agent\-backfill\-cancel(1).
+.TP
+\fBroark connections agent backfill create\fR
+Import past calls See roark\-connections\-agent\-backfill\-create(1).
+.TP
+\fBroark connections agent backfill list\fR
+List backfills See roark\-connections\-agent\-backfill\-list(1).
+.TP
+\fBroark connections agent create\fR
+Connect an agent See roark\-connections\-agent\-create(1).
+.TP
+\fBroark connections agent delete\fR
+Disconnect an agent connection See roark\-connections\-agent\-delete(1).
+.TP
+\fBroark connections agent discover\fR
+Discover agents with a platform API key See roark\-connections\-agent\-discover(1).
+.TP
+\fBroark connections agent get\fR
+Get an agent connection See roark\-connections\-agent\-get(1).
+.TP
+\fBroark connections agent list\fR
+List agent connections See roark\-connections\-agent\-list(1).
+.TP
+\fBroark connections agent provider list\fR
+List agent connection providers See roark\-connections\-agent\-provider\-list(1).
+.TP
+\fBroark connections agent update\fR
+Update an agent connection See roark\-connections\-agent\-update(1).
+.TP
+\fBroark connections calendar calendar list\fR
+List calendars for bookable targets See roark\-connections\-calendar\-calendar\-list(1).
+.TP
+\fBroark connections calendar calendly\-oauth start\fR
+Start connecting a Calendly account See roark\-connections\-calendar\-calendly\-oauth\-start(1).
+.TP
+\fBroark connections calendar check\fR
+Check a calendar connection See roark\-connections\-calendar\-check(1).
+.TP
+\fBroark connections calendar create\fR
+Connect a calendar account See roark\-connections\-calendar\-create(1).
+.TP
+\fBroark connections calendar delete\fR
+Delete a calendar connection See roark\-connections\-calendar\-delete(1).
+.TP
+\fBroark connections calendar get\fR
+Get a calendar connection See roark\-connections\-calendar\-get(1).
+.TP
+\fBroark connections calendar google\-oauth start\fR
+Start connecting a Google Calendar See roark\-connections\-calendar\-google\-oauth\-start(1).
+.TP
+\fBroark connections calendar list\fR
+List calendar connections See roark\-connections\-calendar\-list(1).
+.TP
+\fBroark connections calendar target create\fR
+Create a bookable target See roark\-connections\-calendar\-target\-create(1).
+.TP
+\fBroark connections calendar target delete\fR
+Delete a bookable target See roark\-connections\-calendar\-target\-delete(1).
+.TP
+\fBroark connections calendar target get\fR
+Get a bookable target See roark\-connections\-calendar\-target\-get(1).
+.TP
+\fBroark connections calendar target list\fR
+List bookable targets See roark\-connections\-calendar\-target\-list(1).
+.TP
+\fBroark connections calendar target update\fR
+Update a bookable target See roark\-connections\-calendar\-target\-update(1).
+.TP
+\fBroark connections calendar update\fR
+Update a calendar connection See roark\-connections\-calendar\-update(1).
+.TP
+\fBroark connections mcp\-server create\fR
+Connect an MCP server See roark\-connections\-mcp\-server\-create(1).
+.TP
+\fBroark connections mcp\-server delete\fR
+Disconnect an MCP server See roark\-connections\-mcp\-server\-delete(1).
+.TP
+\fBroark connections mcp\-server discover\fR
+Discover an MCP server See roark\-connections\-mcp\-server\-discover(1).
+.TP
+\fBroark connections mcp\-server get\fR
+Get an MCP server See roark\-connections\-mcp\-server\-get(1).
+.TP
+\fBroark connections mcp\-server list\fR
+List MCP servers See roark\-connections\-mcp\-server\-list(1).
+.TP
+\fBroark connections mcp\-server refresh\fR
+Refresh an MCP server See roark\-connections\-mcp\-server\-refresh(1).
+.TP
+\fBroark connections mcp\-server update\fR
+Update an MCP server See roark\-connections\-mcp\-server\-update(1).
+.TP
+\fBroark conversation get\fR
+Get a conversation See roark\-conversation\-get(1).
+.TP
 \fBroark credential create\fR
-Create a personal credential See roark\-credential\-create(1).
+Create a personal API key See roark\-credential\-create(1).
 .TP
 \fBroark credential list\fR
-List your personal credentials See roark\-credential\-list(1).
+List personal API keys See roark\-credential\-list(1).
 .TP
 \fBroark credential revoke\fR
-Revoke one of your personal credentials See roark\-credential\-revoke(1).
+Revoke a personal API key See roark\-credential\-revoke(1).
+.TP
+\fBroark customer attribute delete\fR
+Clear a field on a customer See roark\-customer\-attribute\-delete(1).
+.TP
+\fBroark customer attribute unlock\fR
+Unlock a field on a customer See roark\-customer\-attribute\-unlock(1).
+.TP
+\fBroark customer attribute update\fR
+Set a field on a customer See roark\-customer\-attribute\-update(1).
+.TP
+\fBroark customer conversation list\fR
+List a customer's conversations See roark\-customer\-conversation\-list(1).
+.TP
+\fBroark customer delete\fR
+Erase a customer See roark\-customer\-delete(1).
+.TP
+\fBroark customer field create\fR
+Create a customer field See roark\-customer\-field\-create(1).
+.TP
+\fBroark customer field delete\fR
+Delete a customer field See roark\-customer\-field\-delete(1).
+.TP
+\fBroark customer field list\fR
+List customer fields See roark\-customer\-field\-list(1).
+.TP
+\fBroark customer field update\fR
+Update a customer field See roark\-customer\-field\-update(1).
+.TP
+\fBroark customer get\fR
+Get a customer See roark\-customer\-get(1).
+.TP
+\fBroark customer list\fR
+List customers See roark\-customer\-list(1).
+.TP
+\fBroark customer notes update\fR
+Update the notes on a customer See roark\-customer\-notes\-update(1).
 .TP
 \fBroark customer\-flow create\fR
 Create a customer flow See roark\-customer\-flow\-create(1).
@@ -279,8 +390,17 @@ Promote an edge case to the happy path See roark\-customer\-flow\-edge\-case\-pr
 \fBroark customer\-flow edge\-case update\fR
 Update an edge case See roark\-customer\-flow\-edge\-case\-update(1).
 .TP
+\fBroark customer\-flow folder create\fR
+Create a customer flow folder See roark\-customer\-flow\-folder\-create(1).
+.TP
+\fBroark customer\-flow folder delete\fR
+Delete a customer flow folder See roark\-customer\-flow\-folder\-delete(1).
+.TP
+\fBroark customer\-flow folder list\fR
+List customer flow folders See roark\-customer\-flow\-folder\-list(1).
+.TP
 \fBroark customer\-flow get\fR
-Get customer flow by ID See roark\-customer\-flow\-get(1).
+Get a customer flow See roark\-customer\-flow\-get(1).
 .TP
 \fBroark customer\-flow graph replace\fR
 Replace a scripted flow's steps See roark\-customer\-flow\-graph\-replace(1).
@@ -293,30 +413,6 @@ List customer flows See roark\-customer\-flow\-list(1).
 .TP
 \fBroark customer\-flow update\fR
 Update a customer flow See roark\-customer\-flow\-update(1).
-.TP
-\fBroark customer\-profile attribute delete\fR
-Clear a customer profile field See roark\-customer\-profile\-attribute\-delete(1).
-.TP
-\fBroark customer\-profile attribute unlock\fR
-Unlock a customer profile field See roark\-customer\-profile\-attribute\-unlock(1).
-.TP
-\fBroark customer\-profile attribute update\fR
-Set a customer profile field See roark\-customer\-profile\-attribute\-update(1).
-.TP
-\fBroark customer\-profile conversation list\fR
-List a customer's conversations See roark\-customer\-profile\-conversation\-list(1).
-.TP
-\fBroark customer\-profile delete\fR
-Erase a customer profile See roark\-customer\-profile\-delete(1).
-.TP
-\fBroark customer\-profile get\fR
-Get a customer profile See roark\-customer\-profile\-get(1).
-.TP
-\fBroark customer\-profile list\fR
-List customer profiles See roark\-customer\-profile\-list(1).
-.TP
-\fBroark customer\-profile notes update\fR
-Update the notes on a customer profile See roark\-customer\-profile\-notes\-update(1).
 .TP
 \fBroark dashboard create\fR
 Create a dashboard See roark\-dashboard\-create(1).
@@ -352,16 +448,16 @@ Get widget data See roark\-dashboard\-widget\-data\-get(1).
 Get API health status See roark\-health(1).
 .TP
 \fBroark http\-request\-definition create\fR
-Create HTTP request definition See roark\-http\-request\-definition\-create(1).
+Create an HTTP request definition See roark\-http\-request\-definition\-create(1).
 .TP
 \fBroark http\-request\-definition get\fR
-Get HTTP request definition by ID See roark\-http\-request\-definition\-get(1).
+Get an HTTP request definition See roark\-http\-request\-definition\-get(1).
 .TP
 \fBroark http\-request\-definition list\fR
 List HTTP request definitions See roark\-http\-request\-definition\-list(1).
 .TP
 \fBroark http\-request\-definition update\fR
-Update HTTP request definition See roark\-http\-request\-definition\-update(1).
+Update an HTTP request definition See roark\-http\-request\-definition\-update(1).
 .TP
 \fBroark live\-report create\fR
 Create a live report See roark\-live\-report\-create(1).
@@ -394,13 +490,13 @@ Cancel a metric collection job See roark\-metric\-collection\-job\-cancel(1).
 Create and run a metric collection job See roark\-metric\-collection\-job\-create(1).
 .TP
 \fBroark metric collection\-job get\fR
-Get metric collection job by ID See roark\-metric\-collection\-job\-get(1).
+Get a metric collection job See roark\-metric\-collection\-job\-get(1).
 .TP
 \fBroark metric collection\-job list\fR
 List metric collection jobs See roark\-metric\-collection\-job\-list(1).
 .TP
 \fBroark metric definition create\fR
-Create custom metric definition See roark\-metric\-definition\-create(1).
+Create a metric definition See roark\-metric\-definition\-create(1).
 .TP
 \fBroark metric definition list\fR
 List metric definitions See roark\-metric\-definition\-list(1).
@@ -415,7 +511,7 @@ Create a metric policy See roark\-metric\-policy\-create(1).
 Delete a metric policy See roark\-metric\-policy\-delete(1).
 .TP
 \fBroark metric policy get\fR
-Get metric policy by ID See roark\-metric\-policy\-get(1).
+Get a metric policy See roark\-metric\-policy\-get(1).
 .TP
 \fBroark metric policy list\fR
 List metric policies See roark\-metric\-policy\-list(1).
@@ -433,7 +529,7 @@ Delete a metric variant See roark\-metric\-variant\-delete(1).
 Get a metric variant See roark\-metric\-variant\-get(1).
 .TP
 \fBroark metric variant list\fR
-List a metric’s variants See roark\-metric\-variant\-list(1).
+List a metric's variants See roark\-metric\-variant\-list(1).
 .TP
 \fBroark metric variant update\fR
 Update a metric variant See roark\-metric\-variant\-update(1).
@@ -457,7 +553,7 @@ List phone numbers See roark\-phone\-number\-list(1).
 Update a phone number See roark\-phone\-number\-update(1).
 .TP
 \fBroark project list\fR
-List projects available to this credential See roark\-project\-list(1).
+List accessible projects See roark\-project\-list(1).
 .TP
 \fBroark simulation audio\-clip list\fR
 List audio clips See roark\-simulation\-audio\-clip\-list(1).
@@ -469,7 +565,7 @@ Create an environment See roark\-simulation\-environment\-create(1).
 Delete an environment See roark\-simulation\-environment\-delete(1).
 .TP
 \fBroark simulation environment get\fR
-Get environment by ID See roark\-simulation\-environment\-get(1).
+Get an environment See roark\-simulation\-environment\-get(1).
 .TP
 \fBroark simulation environment list\fR
 List environments See roark\-simulation\-environment\-list(1).
@@ -478,37 +574,37 @@ List environments See roark\-simulation\-environment\-list(1).
 Update an environment See roark\-simulation\-environment\-update(1).
 .TP
 \fBroark simulation group create\fR
-Create a simulation group See roark\-simulation\-group\-create(1).
+Create a plan group See roark\-simulation\-group\-create(1).
 .TP
 \fBroark simulation group delete\fR
-Delete a simulation group See roark\-simulation\-group\-delete(1).
+Delete a plan group See roark\-simulation\-group\-delete(1).
 .TP
 \fBroark simulation group get\fR
-Get a simulation group See roark\-simulation\-group\-get(1).
+Get a plan group See roark\-simulation\-group\-get(1).
 .TP
 \fBroark simulation group list\fR
-List simulation groups See roark\-simulation\-group\-list(1).
+List plan groups See roark\-simulation\-group\-list(1).
 .TP
 \fBroark simulation group run\fR
-Run a simulation group See roark\-simulation\-group\-run(1).
+Run a plan group See roark\-simulation\-group\-run(1).
 .TP
 \fBroark simulation group update\fR
-Update a simulation group See roark\-simulation\-group\-update(1).
+Update a plan group See roark\-simulation\-group\-update(1).
 .TP
 \fBroark simulation job get\fR
-Get simulation by ID See roark\-simulation\-job\-get(1).
+Get a simulated call See roark\-simulation\-job\-get(1).
 .TP
 \fBroark simulation job lookup\fR
-Lookup by phone number See roark\-simulation\-job\-lookup(1).
+Find a simulated call by phone number See roark\-simulation\-job\-lookup(1).
 .TP
 \fBroark simulation job tool\-mock list\fR
 List mocked tool invocations See roark\-simulation\-job\-tool\-mock\-list(1).
 .TP
 \fBroark simulation persona create\fR
-Create a new persona See roark\-simulation\-persona\-create(1).
+Create a persona See roark\-simulation\-persona\-create(1).
 .TP
 \fBroark simulation persona get\fR
-Get persona by ID See roark\-simulation\-persona\-get(1).
+Get a persona See roark\-simulation\-persona\-get(1).
 .TP
 \fBroark simulation persona list\fR
 List personas See roark\-simulation\-persona\-list(1).
@@ -523,28 +619,28 @@ Create a run plan See roark\-simulation\-plan\-create(1).
 Delete a run plan See roark\-simulation\-plan\-delete(1).
 .TP
 \fBroark simulation plan get\fR
-Get run plan by ID See roark\-simulation\-plan\-get(1).
+Get a run plan See roark\-simulation\-plan\-get(1).
 .TP
 \fBroark simulation plan job cancel\fR
-Cancel a simulation plan job See roark\-simulation\-plan\-job\-cancel(1).
+Cancel a simulation run See roark\-simulation\-plan\-job\-cancel(1).
 .TP
 \fBroark simulation plan job cost get\fR
-Get simulation run cost See roark\-simulation\-plan\-job\-cost\-get(1).
+Get a simulation run's cost See roark\-simulation\-plan\-job\-cost\-get(1).
 .TP
 \fBroark simulation plan job debrief create\fR
-Generate simulation run debrief See roark\-simulation\-plan\-job\-debrief\-create(1).
+Generate a simulation run debrief See roark\-simulation\-plan\-job\-debrief\-create(1).
 .TP
 \fBroark simulation plan job delete\fR
-Delete a simulation plan job See roark\-simulation\-plan\-job\-delete(1).
+Delete a simulation run See roark\-simulation\-plan\-job\-delete(1).
 .TP
 \fBroark simulation plan job get\fR
-Get simulation plan job See roark\-simulation\-plan\-job\-get(1).
+Get a simulation run See roark\-simulation\-plan\-job\-get(1).
 .TP
 \fBroark simulation plan job list\fR
-List simulation plan jobs See roark\-simulation\-plan\-job\-list(1).
+List simulation runs See roark\-simulation\-plan\-job\-list(1).
 .TP
 \fBroark simulation plan job result get\fR
-Get simulation run results See roark\-simulation\-plan\-job\-result\-get(1).
+Get a simulation run's results See roark\-simulation\-plan\-job\-result\-get(1).
 .TP
 \fBroark simulation plan job start\fR
 Run a simulation plan See roark\-simulation\-plan\-job\-start(1).
@@ -554,6 +650,24 @@ List run plans See roark\-simulation\-plan\-list(1).
 .TP
 \fBroark simulation plan update\fR
 Update a run plan See roark\-simulation\-plan\-update(1).
+.TP
+\fBroark simulation resource generate\fR
+Generate simulation resources See roark\-simulation\-resource\-generate(1).
+.TP
+\fBroark simulation resource\-generation answer\fR
+Answer a simulation resource generation's question See roark\-simulation\-resource\-generation\-answer(1).
+.TP
+\fBroark simulation resource\-generation cancel\fR
+Cancel a running simulation resource generation See roark\-simulation\-resource\-generation\-cancel(1).
+.TP
+\fBroark simulation resource\-generation get\fR
+Get a simulation resource generation See roark\-simulation\-resource\-generation\-get(1).
+.TP
+\fBroark simulation resource\-generation guidance send\fR
+Guide a running simulation resource generation See roark\-simulation\-resource\-generation\-guidance\-send(1).
+.TP
+\fBroark simulation resource\-generation list\fR
+List simulation resource generations See roark\-simulation\-resource\-generation\-list(1).
 .TP
 \fBroark simulation run\fR
 Run a simulation See roark\-simulation\-run(1).
@@ -607,22 +721,22 @@ List tools See roark\-tool\-list(1).
 Update a tool See roark\-tool\-update(1).
 .TP
 \fBroark usage get\fR
-Get usage & cost See roark\-usage\-get(1).
+Get usage and cost See roark\-usage\-get(1).
 .TP
 \fBroark webhook create\fR
-Create webhook See roark\-webhook\-create(1).
+Create a webhook See roark\-webhook\-create(1).
 .TP
 \fBroark webhook delete\fR
-Delete webhook See roark\-webhook\-delete(1).
+Delete a webhook See roark\-webhook\-delete(1).
 .TP
 \fBroark webhook get\fR
-Get webhook by ID See roark\-webhook\-get(1).
+Get a webhook See roark\-webhook\-get(1).
 .TP
 \fBroark webhook list\fR
 List webhooks See roark\-webhook\-list(1).
 .TP
 \fBroark whoami\fR
-Describe the current credential See roark\-whoami(1).
+Get the current credential See roark\-whoami(1).
 .SH "CONFIGURATION"
 Settings are resolved highest precedence first: command line flag, environment variable, project .roark.json found by walking up from the working directory, then the user config file. The stored credential is written with mode 0600.
 .SH "ENVIRONMENT"

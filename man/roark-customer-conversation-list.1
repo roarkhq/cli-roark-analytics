@@ -1,21 +1,25 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-CUSTOMER\-PROFILE\-ATTRIBUTE\-UNLOCK" "1" "" "roark-customer-profile-attribute-unlock" "Roark Analytics API Manual"
+.TH "ROARK\-CUSTOMER\-CONVERSATION\-LIST" "1" "" "roark-customer-conversation-list" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-customer\-profile\-attribute\-unlock \- Unlock a customer profile field
+roark\-customer\-conversation\-list \- List a customer's conversations
 .SH "SYNOPSIS"
-.B roark customer\-profile attribute unlock
-\fIcustomer\-profile\-id\fR \fIkey\fR [\fIoptions\fR]
+.B roark customer conversation list
+\fIcustomer\-profile\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Lets newer conversations change this field again. The current value stays until one does.
+Calls and chats with this customer, newest first.
 .SH "API"
-POST /v1/customer\-profile/{customerProfileId}/attributes/{key}/unlock
+GET /v1/customer/{customerProfileId}/conversations
 .SH "ARGUMENTS"
 .TP
 \fIcustomer\-profile\-id\fR
 The customer\-profile\-id.
+.SH "OPTIONS"
 .TP
-\fIkey\fR
-The key.
+\fB\-\-limit\fR \fI<value>\fR
+Optional.
+.TP
+\fB\-\-page\fR \fI<value>\fR
+Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -57,7 +61,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark customer\-profile attribute unlock <customer\-profile\-id> <key>
+roark customer conversation list <customer\-profile\-id>
 .fi
 .RE
 .SH "ENVIRONMENT"

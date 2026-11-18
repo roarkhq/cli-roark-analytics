@@ -1,0 +1,106 @@
+.\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
+.TH "ROARK\-AGENT\-CONVERSATION\-CREATE" "1" "" "roark-agent-conversation-create" "Roark Analytics API Manual"
+.SH "NAME"
+roark\-agent\-conversation\-create \- Start a conversation with an agent
+.SH "SYNOPSIS"
+.B roark agent conversation create
+\fIagent\-id\fR [\fIoptions\fR]
+.SH "DESCRIPTION"
+Starts a voice conversation (`modality: voice`) or chat (`modality: chat`) with this Roark\-hosted agent and returns its id right away. `channel: web` is a conversation in a browser on your site. Call this endpoint from your server, never the browser: it needs your API key. Give the page only `web.clientToken`; the web SDK spends it to join from one of `allowedOrigins` before `web.clientTokenExpiresAt`. Read it back with `GET /v1/conversation/{conversationId}` straight away: `PENDING` until the browser joins, `IN_PROGRESS`, then `ENDED`. One nobody joins ends without ever starting and is never billed. Starting a voice conversation needs `call:create`, a chat `chat:create`, and the agent a published version that takes that kind.
+.SH "API"
+POST /v1/agent/{agentId}/conversations
+.SH "ARGUMENTS"
+.TP
+\fIagent\-id\fR
+The agent\-id.
+.SH "OPTIONS"
+.TP
+\fB\-\-modality\fR \fI<value>\fR
+`voice` or `chat`. The agent must have that modality turned on. One of: voice, chat, call. Required.
+.TP
+\fB\-\-channel\fR \fI<value>\fR
+How it is reached. `web`: in a browser on one of `allowedOrigins`, joined with the web SDK. One of: web. Required.
+.TP
+\fB\-\-allowed\-origins\fR \fI<value>\fR
+The origins your page may join from, exactly as the browser sends them: https only (http on localhost for development), no paths or wildcards. Repeatable. Required.
+.TP
+\fB\-\-client\-token\-ttl\-seconds\fR \fI<value>\fR
+How long the browser has to join, in seconds. Default 120. Optional.
+.SH "GLOBAL OPTIONS"
+.TP
+\fB\-\-data\fR \fI<json>\fR
+Request body as JSON, or @file to read one (@\- for stdin).
+.TP
+\fB\-y\fR, \fB\-\-yes\fR
+Skip confirmation prompts.
+.TP
+\fB\-\-no\-input\fR
+Never prompt; fail instead.
+.TP
+\fB\-\-base\-url\fR \fI<url>\fR
+API base URL.
+.TP
+\fB\-\-token\fR \fI<token>\fR
+Bearer token. Prefer ROARK_API_BEARER_TOKEN or the stored credential.
+.TP
+\fB\-\-timeout\fR \fI<ms>\fR
+Request timeout in milliseconds.
+.TP
+\fB\-\-max\-retries\fR \fI<count>\fR
+Retries for retryable failures.
+.TP
+\fB\-\-format\fR \fI<format>\fR
+Output format: auto, json, jsonl, plain.
+.TP
+\fB\-\-json\fR
+Shorthand for \-\-format json.
+.TP
+\fB\-\-no\-color\fR
+Disable colour.
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Suppress non\-essential output.
+.TP
+\fB\-\-allow\-project\-base\-url\fR
+Send the stored credential to a base URL set by a project .roark.json. Refused by default.
+.SH "EXAMPLES"
+.PP
+.RS 4
+.nf
+roark agent conversation create <agent\-id> \-\-modality <value> \-\-channel <value> \-\-allowed\-origins <value>
+.fi
+.RE
+.SH "ENVIRONMENT"
+.TP
+\fBROARK_API_BEARER_TOKEN\fR
+Bearer token used when \-\-token is not given.
+.TP
+\fBROARK_BASE_URL\fR
+API base URL.
+.TP
+\fBROARK_ALLOW_PROJECT_BASE_URL\fR
+Trusts a base URL set by a project .roark.json, like \-\-allow\-project\-base\-url.
+.TP
+\fBNO_COLOR\fR
+Disables colour when set to any value.
+.SH "EXIT STATUS"
+.TP
+\fB0\fR
+The command succeeded.
+.TP
+\fB1\fR
+The API rejected the request.
+.TP
+\fB2\fR
+The command line was wrong.
+.TP
+\fB3\fR
+No credential, or the credential was refused.
+.TP
+\fB4\fR
+The addressed resource does not exist.
+.TP
+\fB5\fR
+The request never completed: connection, timeout, or abort.
+.SH "SEE ALSO"
+.BR roark (1)

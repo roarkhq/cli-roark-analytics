@@ -1,18 +1,14 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-CUSTOMER\-PROFILE\-DELETE" "1" "" "roark-customer-profile-delete" "Roark Analytics API Manual"
+.TH "ROARK\-CUSTOMER\-FLOW\-FOLDER\-LIST" "1" "" "roark-customer-flow-folder-list" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-customer\-profile\-delete \- Erase a customer profile
+roark\-customer\-flow\-folder\-list \- List customer flow folders
 .SH "SYNOPSIS"
-.B roark customer\-profile delete
-\fIcustomer\-profile\-id\fR [\fIoptions\fR]
+.B roark customer\-flow folder list
+[\fIoptions\fR]
 .SH "DESCRIPTION"
-Permanently removes the profile, its fields, evidence and notes. Conversations are kept. A new conversation from the same identifier creates a new profile.
+Returns every folder the project groups its customer flows into, with how many flows each holds, in the order the app shows them. Filter the flow list to one folder with `GET /v1/customer\-flow?folderId=`. Customer flows were previously called scenarios.
 .SH "API"
-DELETE /v1/customer\-profile/{customerProfileId}
-.SH "ARGUMENTS"
-.TP
-\fIcustomer\-profile\-id\fR
-The customer\-profile\-id.
+GET /v1/customer\-flow/folder
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -54,7 +50,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark customer\-profile delete <customer\-profile\-id>
+roark customer\-flow folder list
 .fi
 .RE
 .SH "ENVIRONMENT"

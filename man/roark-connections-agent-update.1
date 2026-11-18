@@ -1,0 +1,128 @@
+.\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
+.TH "ROARK\-CONNECTIONS\-AGENT\-UPDATE" "1" "" "roark-connections-agent-update" "Roark Analytics API Manual"
+.SH "NAME"
+roark\-connections\-agent\-update \- Update an agent connection
+.SH "SYNOPSIS"
+.B roark connections agent update
+\fIconnection\-id\fR [\fIoptions\fR]
+.SH "DESCRIPTION"
+Changes a connection’s settings or rotates its credential. Send `provider` (it must match the connection’s) and only the fields to change; the rest keep their stored values. A new Retell, Vapi, ElevenLabs or Bland key is checked by listing agents first. Set `status` to INACTIVE to pause syncing without deleting anything.
+.SH "API"
+PATCH /v1/connections/agent/{connectionId}
+.SH "ARGUMENTS"
+.TP
+\fIconnection\-id\fR
+The connection\-id.
+.SH "REQUEST BODY"
+This endpoint accepts one of several request shapes, so the body is supplied as JSON through \e\-\e\-data or on standard input rather than as individual flags.
+.TP
+\fBAgentConnectionUpdateRetell\fR
+Requires provider.
+.TP
+\fBAgentConnectionUpdateVapi\fR
+Requires provider.
+.TP
+\fBAgentConnectionUpdateElevenLabs\fR
+Requires provider.
+.TP
+\fBAgentConnectionUpdateBland\fR
+Requires provider.
+.TP
+\fBAgentConnectionUpdateLeaping\fR
+Requires provider.
+.TP
+\fBAgentConnectionUpdateLivekit\fR
+Requires provider.
+.TP
+\fBAgentConnectionUpdateLivekitSelfHosted\fR
+Requires provider.
+.TP
+\fBAgentConnectionUpdatePipecatSelfHosted\fR
+Requires provider.
+.TP
+\fBAgentConnectionUpdatePipecatCloud\fR
+Requires provider.
+.TP
+\fBAgentConnectionUpdateKore\fR
+Requires provider.
+.TP
+\fBAgentConnectionUpdateGoogleCes\fR
+Requires provider.
+.SH "GLOBAL OPTIONS"
+.TP
+\fB\-\-data\fR \fI<json>\fR
+Request body as JSON, or @file to read one (@\- for stdin).
+.TP
+\fB\-y\fR, \fB\-\-yes\fR
+Skip confirmation prompts.
+.TP
+\fB\-\-no\-input\fR
+Never prompt; fail instead.
+.TP
+\fB\-\-base\-url\fR \fI<url>\fR
+API base URL.
+.TP
+\fB\-\-token\fR \fI<token>\fR
+Bearer token. Prefer ROARK_API_BEARER_TOKEN or the stored credential.
+.TP
+\fB\-\-timeout\fR \fI<ms>\fR
+Request timeout in milliseconds.
+.TP
+\fB\-\-max\-retries\fR \fI<count>\fR
+Retries for retryable failures.
+.TP
+\fB\-\-format\fR \fI<format>\fR
+Output format: auto, json, jsonl, plain.
+.TP
+\fB\-\-json\fR
+Shorthand for \-\-format json.
+.TP
+\fB\-\-no\-color\fR
+Disable colour.
+.TP
+\fB\-q\fR, \fB\-\-quiet\fR
+Suppress non\-essential output.
+.TP
+\fB\-\-allow\-project\-base\-url\fR
+Send the stored credential to a base URL set by a project .roark.json. Refused by default.
+.SH "EXAMPLES"
+.PP
+.RS 4
+.nf
+roark connections agent update <connection\-id> \-\-data '{ ... }'
+.fi
+.RE
+.SH "ENVIRONMENT"
+.TP
+\fBROARK_API_BEARER_TOKEN\fR
+Bearer token used when \-\-token is not given.
+.TP
+\fBROARK_BASE_URL\fR
+API base URL.
+.TP
+\fBROARK_ALLOW_PROJECT_BASE_URL\fR
+Trusts a base URL set by a project .roark.json, like \-\-allow\-project\-base\-url.
+.TP
+\fBNO_COLOR\fR
+Disables colour when set to any value.
+.SH "EXIT STATUS"
+.TP
+\fB0\fR
+The command succeeded.
+.TP
+\fB1\fR
+The API rejected the request.
+.TP
+\fB2\fR
+The command line was wrong.
+.TP
+\fB3\fR
+No credential, or the credential was refused.
+.TP
+\fB4\fR
+The addressed resource does not exist.
+.TP
+\fB5\fR
+The request never completed: connection, timeout, or abort.
+.SH "SEE ALSO"
+.BR roark (1)

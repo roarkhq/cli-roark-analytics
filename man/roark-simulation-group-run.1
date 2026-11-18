@@ -1,12 +1,12 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
 .TH "ROARK\-SIMULATION\-GROUP\-RUN" "1" "" "roark-simulation-group-run" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-simulation\-group\-run \- Run a simulation group
+roark\-simulation\-group\-run \- Run a plan group
 .SH "SYNOPSIS"
 .B roark simulation group run
 \fIgroup\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Starts one run of every plan in the group, exactly as POST /v1/simulation/plan/{planId}/job would for each, and groups the runs into a run group whose combined report is announced through the group's notification settings once it is ready. This places real calls. Config\-managed groups can be run here too. Returns the run group. Poll GET /v1/simulation/run\-group/{groupId} until `latestReport.status` is READY. If a plan cannot start after others did, the runs that started are still grouped and the 400 names the run group id.
+Starts one run of every plan in the group, exactly as `POST /v1/simulation/plan/{planId}/job` would for each, and groups the runs into a run group whose combined report is announced through the group's notification settings once it is ready. This places real calls. Config\-managed groups can be run here too. Returns the run group. Poll GET /v1/simulation/run\-group/{groupId} until `latestReport.status` is READY. If a plan cannot start after others did, the runs that started are still grouped and the 400 names the run group id.
 .SH "API"
 POST /v1/simulation/group/{groupId}/run
 .SH "ARGUMENTS"

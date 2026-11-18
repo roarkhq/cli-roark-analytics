@@ -1,25 +1,18 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-CUSTOMER\-PROFILE\-ATTRIBUTE\-UPDATE" "1" "" "roark-customer-profile-attribute-update" "Roark Analytics API Manual"
+.TH "ROARK\-CONNECTIONS\-CALENDAR\-CHECK" "1" "" "roark-connections-calendar-check" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-customer\-profile\-attribute\-update \- Set a customer profile field
+roark\-connections\-calendar\-check \- Check a calendar connection
 .SH "SYNOPSIS"
-.B roark customer\-profile attribute update
-\fIcustomer\-profile\-id\fR \fIkey\fR [\fIoptions\fR]
+.B roark connections calendar check
+\fIconnection\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Sets the value and locks the field, so newer conversations cannot change it.
+Re\-verifies the stored credential against the provider and records the result on the connection. A credential the provider rejects sets `status` to INVALID_CREDENTIALS. A provider outage is a 500 and leaves the status untouched: being unable to reach the provider is not evidence that the customer’s credential is bad.
 .SH "API"
-PUT /v1/customer\-profile/{customerProfileId}/attributes/{key}
+POST /v1/connections/calendar/{connectionId}/check
 .SH "ARGUMENTS"
 .TP
-\fIcustomer\-profile\-id\fR
-The customer\-profile\-id.
-.TP
-\fIkey\fR
-The key.
-.SH "OPTIONS"
-.TP
-\fB\-\-value\fR \fI<value>\fR
-The new value. Setting a field locks it, so newer conversations cannot change it. Required.
+\fIconnection\-id\fR
+Calendar connection ID
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -61,7 +54,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark customer\-profile attribute update <customer\-profile\-id> <key> \-\-value <value>
+roark connections calendar check <connection\-id>
 .fi
 .RE
 .SH "ENVIRONMENT"

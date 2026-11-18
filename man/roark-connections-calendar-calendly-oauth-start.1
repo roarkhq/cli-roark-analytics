@@ -1,28 +1,24 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-CALENDAR\-CONNECTION\-UPDATE" "1" "" "roark-calendar-connection-update" "Roark Analytics API Manual"
+.TH "ROARK\-CONNECTIONS\-CALENDAR\-CALENDLY\-OAUTH\-START" "1" "" "roark-connections-calendar-calendly-oauth-start" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-calendar\-connection\-update \- Update a calendar connection
+roark\-connections\-calendar\-calendly\-oauth\-start \- Start connecting a Calendly account
 .SH "SYNOPSIS"
-.B roark calendar\-connection update
-\fIconnection\-id\fR [\fIoptions\fR]
+.B roark connections calendar calendly\-oauth start
+[\fIoptions\fR]
 .SH "DESCRIPTION"
-Renames a connection, changes the timezone slots are offered in, or rotates the credential. A rotated credential is verified first, and a verified credential returns the connection to ACTIVE.
+Returns a URL to open in a browser. Calendly has no credential a request body can carry, so connecting one is two steps: ask for this URL, let the customer consent, and Roark finishes the rest server\-side (it exchanges the code, verifies the credential, reads the account’s own timezone when none was given, and stores the connection). Nothing is created until the customer consents, and a link that is not used expires. Read the result with `GET /v1/connections/calendar?provider=CALENDLY`.
 .SH "API"
-PATCH /v1/calendar\-connection/{connectionId}
-.SH "ARGUMENTS"
-.TP
-\fIconnection\-id\fR
-Calendar connection ID
+POST /v1/connections/calendar/calendly/authorize\-url
 .SH "OPTIONS"
 .TP
+\fB\-\-calendar\-connection\-id\fR \fI<value>\fR
+Reconnect an existing connection instead of creating one: the consent screen replaces that connection’s credential in place, so every tool bound to it keeps working. Use this when a connection reports `INVALID_CREDENTIALS`. The connection’s existing name and timezone are kept, so `label` is ignored when this is set. Optional.
+.TP
 \fB\-\-label\fR \fI<value>\fR
-Rename the connection. Optional.
+Customer\-facing name for the connection, unique within the project. Required unless `calendarConnectionId` is set, and decided now because the consent screen has nowhere to carry it. Optional.
 .TP
 \fB\-\-timezone\fR \fI<value>\fR
-Change the named IANA timezone slots are offered in. Optional.
-.TP
-\fB\-\-api\-key\fR \fI<value>\fR
-Rotate the credential. The new key is verified before it is stored, and a verified key returns the connection to ACTIVE, which is how a connection recovers from INVALID_CREDENTIALS. Optional.
+The named IANA timezone to offer slots in, for example `America/Los_Angeles`. Omit to adopt the Calendly account’s own. A fixed offset such as `\-08:00` is rejected: it does not observe DST. Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -64,7 +60,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark calendar\-connection update <connection\-id>
+roark connections calendar calendly\-oauth start
 .fi
 .RE
 .SH "ENVIRONMENT"

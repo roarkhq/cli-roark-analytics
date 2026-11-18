@@ -1,12 +1,12 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
 .TH "ROARK\-SIMULATION\-GROUP\-CREATE" "1" "" "roark-simulation-group-create" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-simulation\-group\-create \- Create a simulation group
+roark\-simulation\-group\-create \- Create a plan group
 .SH "SYNOPSIS"
 .B roark simulation group create
 [\fIoptions\fR]
 .SH "DESCRIPTION"
-Saves a named set of plans to run together, again and again. Nothing runs yet: POST /v1/simulation/group/{groupId}/run starts one run of every plan and groups them into a run group with one combined report. Slack channels need Slack connected to the project. Email is on by default.
+Saves a named set of plans to run together, again and again. Nothing runs yet: `POST /v1/simulation/group/{groupId}/run` starts one run of every plan and groups them into a run group with one combined report. Slack channels need Slack connected to the project. Email is on by default.
 .SH "API"
 POST /v1/simulation/group
 .SH "OPTIONS"
