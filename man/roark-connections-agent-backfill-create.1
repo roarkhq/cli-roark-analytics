@@ -1,18 +1,22 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-CALENDAR\-CONNECTION\-LIST" "1" "" "roark-calendar-connection-list" "Roark Analytics API Manual"
+.TH "ROARK\-CONNECTIONS\-AGENT\-BACKFILL\-CREATE" "1" "" "roark-connections-agent-backfill-create" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-calendar\-connection\-list \- List calendar connections
+roark\-connections\-agent\-backfill\-create \- Import past calls
 .SH "SYNOPSIS"
-.B roark calendar\-connection list
-[\fIoptions\fR]
+.B roark connections agent backfill create
+\fIconnection\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Returns every calendar connection in the authenticated project, by label. A project has a handful of these, so the list is not paginated: `pagination.hasMore` is always false.
+Starts a backfill that imports up to `maxCalls` of the most recent past calls from a Retell, Vapi, ElevenLabs or Leaping connection. Other platforms return 400.
 .SH "API"
-GET /v1/calendar\-connection
+POST /v1/connections/agent/{connectionId}/backfills
+.SH "ARGUMENTS"
+.TP
+\fIconnection\-id\fR
+The connection\-id.
 .SH "OPTIONS"
 .TP
-\fB\-\-provider\fR \fI<value>\fR
-Who holds the calendar. CAL_COM is the only provider that can be connected today; GOOGLE and CALENDLY are described by `capabilities` but not yet connectable. One of: CAL_COM, GOOGLE, CALENDLY. Optional.
+\fB\-\-max\-calls\fR \fI<value>\fR
+How many of the most recent past calls to import, up to 1000. Required.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -54,7 +58,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark calendar\-connection list
+roark connections agent backfill create <connection\-id> \-\-max\-calls <value>
 .fi
 .RE
 .SH "ENVIRONMENT"

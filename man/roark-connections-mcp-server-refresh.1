@@ -1,25 +1,18 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-CUSTOMER\-PROFILE\-CONVERSATION\-LIST" "1" "" "roark-customer-profile-conversation-list" "Roark Analytics API Manual"
+.TH "ROARK\-CONNECTIONS\-MCP\-SERVER\-REFRESH" "1" "" "roark-connections-mcp-server-refresh" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-customer\-profile\-conversation\-list \- List a customer's conversations
+roark\-connections\-mcp\-server\-refresh \- Refresh an MCP server
 .SH "SYNOPSIS"
-.B roark customer\-profile conversation list
-\fIcustomer\-profile\-id\fR [\fIoptions\fR]
+.B roark connections mcp\-server refresh
+\fIserver\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Calls and chats with this customer, newest first.
+Connects to the server again and records the tools it offers now. Agents keep calling the tools they were given; a new tool reaches an agent only once you add it.
 .SH "API"
-GET /v1/customer\-profile/{customerProfileId}/conversations
+POST /v1/connections/mcp\-server/{serverId}/refresh
 .SH "ARGUMENTS"
 .TP
-\fIcustomer\-profile\-id\fR
-The customer\-profile\-id.
-.SH "OPTIONS"
-.TP
-\fB\-\-limit\fR \fI<value>\fR
-Optional.
-.TP
-\fB\-\-page\fR \fI<value>\fR
-Optional.
+\fIserver\-id\fR
+The server\-id.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -61,7 +54,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark customer\-profile conversation list <customer\-profile\-id>
+roark connections mcp\-server refresh <server\-id>
 .fi
 .RE
 .SH "ENVIRONMENT"

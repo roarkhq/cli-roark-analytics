@@ -1,14 +1,14 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-CALENDAR\-CONNECTION\-TARGET\-LIST" "1" "" "roark-calendar-connection-target-list" "Roark Analytics API Manual"
+.TH "ROARK\-CONNECTIONS\-CALENDAR\-TARGET\-LIST" "1" "" "roark-connections-calendar-target-list" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-calendar\-connection\-target\-list \- List what can be booked on a calendar
+roark\-connections\-calendar\-target\-list \- List bookable targets
 .SH "SYNOPSIS"
-.B roark calendar\-connection target list
+.B roark connections calendar target list
 \fIconnection\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
 What an agent can be pointed at on this connection: Cal.com event types today, Google calendars when that lands. Read live from the provider, so an event type added since you connected is here without reconnecting. Each entry carries a `target` ready to put on a calendar tool, so nothing has to assemble one by hand.
 .SH "API"
-GET /v1/calendar\-connection/{connectionId}/targets
+GET /v1/connections/calendar/{connectionId}/targets
 .SH "ARGUMENTS"
 .TP
 \fIconnection\-id\fR
@@ -54,7 +54,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark calendar\-connection target list <connection\-id>
+roark connections calendar target list <connection\-id>
 .fi
 .RE
 .SH "ENVIRONMENT"

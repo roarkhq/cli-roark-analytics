@@ -6,7 +6,7 @@ roark\-dashboard\-update \- Update a dashboard
 .B roark dashboard update
 \fIdashboard\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Edits a dashboard. Omitted fields keep their current value. `widgets`, when sent, replaces the list: widgets are matched by name, so a widget that keeps its name keeps its id; a new name adds a widget and a name no longer listed removes it. To change one widget, PUT /v1/dashboard/{dashboardId}/widget/{widgetId}.
+Edits a dashboard. Omitted fields keep their current value. `widgets`, when sent, replaces the list: widgets are matched by name, so a widget that keeps its name keeps its id; a new name adds a widget and a name no longer listed removes it. To change one widget, `PUT /v1/dashboard/{dashboardId}/widget/{widgetId}`.
 .SH "API"
 PUT /v1/dashboard/{dashboardId}
 .SH "ARGUMENTS"

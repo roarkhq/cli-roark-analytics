@@ -1,18 +1,18 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-CUSTOMER\-PROFILE\-GET" "1" "" "roark-customer-profile-get" "Roark Analytics API Manual"
+.TH "ROARK\-CONNECTIONS\-CALENDAR\-DELETE" "1" "" "roark-connections-calendar-delete" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-customer\-profile\-get \- Get a customer profile
+roark\-connections\-calendar\-delete \- Delete a calendar connection
 .SH "SYNOPSIS"
-.B roark customer\-profile get
-\fIcustomer\-profile\-id\fR [\fIoptions\fR]
+.B roark connections calendar delete
+\fIconnection\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Get a customer profile
+Disconnects the calendar and destroys the stored credential. A credential the customer deleted should stop existing, so this is not an archive. Appointments already recorded against the connection are kept, so a booking stays explainable after the calendar is disconnected. Refused with a 409 while a calendar tool is still bound to the connection, naming the tools: point them at another calendar, or delete them, first. A dangling binding would otherwise be found by whoever next tried to ship the agent, who is not the person who disconnected the calendar.
 .SH "API"
-GET /v1/customer\-profile/{customerProfileId}
+DELETE /v1/connections/calendar/{connectionId}
 .SH "ARGUMENTS"
 .TP
-\fIcustomer\-profile\-id\fR
-The customer\-profile\-id.
+\fIconnection\-id\fR
+Calendar connection ID
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -54,7 +54,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark customer\-profile get <customer\-profile\-id>
+roark connections calendar delete <connection\-id>
 .fi
 .RE
 .SH "ENVIRONMENT"

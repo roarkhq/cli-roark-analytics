@@ -45,6 +45,12 @@ How many more times to run a test case when the agent under test never responds:
 \fB\-\-no\-response\-retry\-backoff\-seconds\fR \fI<value>\fR
 Seconds a retry waits before it dials (30\-600). Only used when `maxNoResponseRetries` is above 0. Optional.
 .TP
+\fB\-\-calls\-per\-second\fR \fI<value>\fR
+The most simulations a run starts per second (0.01\-10), fractional allowed: 0.2 starts one every 5 seconds. Omitted or `null` starts them as fast as `maxConcurrentJobs` allows. The concurrency limit still applies on top, so a run holds the rate only while calls last under `maxConcurrentJobs` / `callsPerSecond` seconds. A run reports the rate it achieved as `dialRate.achievedCallsPerSecond`. A rate above the project's concurrency limit / 30 is refused with 400: that limit could only hold it with calls under 30 seconds. Send `null` to remove the rate; omit to leave it unchanged. Optional.
+.TP
+\fB\-\-ramp\-up\-seconds\fR \fI<value>\fR
+Seconds over which the rate climbs linearly from 0 to `callsPerSecond` (0\-3600). Omitted, `null` or 0 starts at the full rate. Only used with `callsPerSecond`. Send `null` to remove the ramp; omit to leave it unchanged. Optional.
+.TP
 \fB\-\-end\-call\-phrases\fR \fI<value>\fR
 Phrases that trigger end of call. Empty array disables the feature. Repeatable. Optional.
 .TP
@@ -79,7 +85,7 @@ Whether to also collect each attached flow's own metrics, on top of this plan's 
 Whether to let the run add metrics by itself off the attached flows. See `POST /v1/simulation/plan`. Optional.
 .TP
 \fB\-\-comparison\-property\fR \fI<value>\fR
-The property this plan investigates. Send `null` to clear the comparison; omit the field to leave it unchanged. See `POST /v1/simulation/plan`. The pair moves together. Sending `comparisonProperty` without `comparisonBaseline` keeps the stored baseline when the property is unchanged and the baseline is still one of the values being run. Otherwise it becomes the new property's norm, or `null` when that norm is not being run either, because a baseline is a value of one specific property. One of: ACCENT, AGE, BACKGROUND_NOISE, BACKGROUND_NOISE_VOLUME, BASE_EMOTION, CONFIRMATION_STYLE, GENDER, INTENT_CLARITY, LANGUAGE, INTERRUPTION, MEMORY_RELIABILITY, RESPONSE_TIMING, SPEECH_CLARITY, SPEECH_PACE. Optional.
+The property this plan investigates. Send `null` to clear the comparison; omit the field to leave it unchanged. See `POST /v1/simulation/plan`. The pair moves together. Sending `comparisonProperty` without `comparisonBaseline` keeps the stored baseline when the property is unchanged and the baseline is still one of the values being run. Otherwise it becomes the new property's norm, or `null` when that norm is not being run either, because a baseline is a value of one specific property. One of: ACCENT, AGE, BACKGROUND_NOISE, BACKGROUND_NOISE_VOLUME, BASE_EMOTION, CONFIRMATION_STYLE, GENDER, INTENT_CLARITY, LANGUAGE, INTERRUPTION, LINE_QUALITY, MEMORY_RELIABILITY, RESPONSE_TIMING, SPEECH_CLARITY, SPEECH_PACE. Optional.
 .TP
 \fB\-\-comparison\-baseline\fR \fI<value>\fR
 The reference value, shown first in the results. See `POST /v1/simulation/plan`. A real value cannot be sent on its own: the property it belongs to decides which values are legal, and an omitted property means "leave unchanged", which this endpoint cannot check a baseline against. Send `comparisonProperty` with it, or get a `400`. `null` on its own IS allowed, and clears just the baseline while leaving the property set. Nothing needs validating when clearing, and a property with no baseline is a real state: the report falls back to that property's own norm, and `GENDER` has no norm to fall back to. Optional.

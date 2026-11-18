@@ -26,6 +26,18 @@ The noise bed played underneath the simulated caller. NONE plays nothing. One of
 .TP
 \fB\-\-background\-noise\-volume\fR \fI<value>\fR
 How loud the bed plays, as a gain from 0 (silent) to 1 (as loud as the caller). Defaults to 0.1, which sits well under the caller. Ignored on Vapi endpoints, which have no level control. Optional.
+.TP
+\fB\-\-line\-quality\fR \fI<value>\fR
+The phone line the simulated caller is on: packet loss applied to its 20 ms audio packets, per direction. The loss pattern is seeded per call, so a redial loses the same packets. CLEAR: No loss. MINOR_LOSS: 1% random, both ways. CELL_EDGE: 5% in 80 ms gaps, both ways. POOR_CONNECTION: 10% in 120 ms gaps, both ways. ONE_WAY_DEGRADED: 8% in 80 ms gaps, toward the agent only. CUSTOM: the per\-direction loss in `lineCustom`, up to 20% in 0.5 steps, with a mean burst of up to 10 packets (omit it for random loss). Defaults to CLEAR. One of: CLEAR, MINOR_LOSS, CELL_EDGE, POOR_CONNECTION, ONE_WAY_DEGRADED, CUSTOM. Optional.
+.TP
+\fB\-\-line\-custom\fR \fI<value>\fR
+The per\-direction loss of a CUSTOM line. Optional.
+.TP
+\fB\-\-line\-custom.to\-agent\fR \fI<value>\fR
+The caller's audio on its way to the agent: what the agent hears. Omit for no loss. Optional.
+.TP
+\fB\-\-line\-custom.from\-agent\fR \fI<value>\fR
+The agent's audio on its way to the caller: what the caller hears. Omit for no loss. Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR

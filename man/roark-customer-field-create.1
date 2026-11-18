@@ -1,22 +1,30 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-CUSTOMER\-PROFILE\-NOTES\-UPDATE" "1" "" "roark-customer-profile-notes-update" "Roark Analytics API Manual"
+.TH "ROARK\-CUSTOMER\-FIELD\-CREATE" "1" "" "roark-customer-field-create" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-customer\-profile\-notes\-update \- Update the notes on a customer profile
+roark\-customer\-field\-create \- Create a customer field
 .SH "SYNOPSIS"
-.B roark customer\-profile notes update
-\fIcustomer\-profile\-id\fR [\fIoptions\fR]
+.B roark customer field create
+[\fIoptions\fR]
 .SH "DESCRIPTION"
-Replaces your team's shared notes. Null or empty clears them. The last save wins.
+Adds a field of your project's own. With extract on, conversations fill it from what customers say, guided by its description.
 .SH "API"
-PUT /v1/customer\-profile/{customerProfileId}/notes
-.SH "ARGUMENTS"
-.TP
-\fIcustomer\-profile\-id\fR
-The customer\-profile\-id.
+POST /v1/customer/fields
 .SH "OPTIONS"
 .TP
-\fB\-\-notes\fR \fI<value>\fR
-Replaces the existing notes. Null or empty clears them. Required.
+\fB\-\-key\fR \fI<value>\fR
+Starts with a letter; letters, numbers and underscores only. Fixed once created. Required.
+.TP
+\fB\-\-label\fR \fI<value>\fR
+Required.
+.TP
+\fB\-\-description\fR \fI<value>\fR
+What the agent listens for in a conversation. Required when extract is true. Optional.
+.TP
+\fB\-\-value\-type\fR \fI<value>\fR
+One of: TEXT, NUMBER, BOOLEAN, DATE, PHONE_NUMBER, EMAIL, CURRENCY. Required.
+.TP
+\fB\-\-extract\fR
+Whether conversations fill this field Required.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -58,7 +66,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark customer\-profile notes update <customer\-profile\-id> \-\-notes <value>
+roark customer field create \-\-key <value> \-\-label <value> \-\-value\-type <value> \-\-extract <value>
 .fi
 .RE
 .SH "ENVIRONMENT"

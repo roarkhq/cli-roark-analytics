@@ -1,18 +1,27 @@
 .\" File generated from our OpenAPI spec by app-agent-codegen. Do not edit.
-.TH "ROARK\-CALENDAR\-CONNECTION\-GET" "1" "" "roark-calendar-connection-get" "Roark Analytics API Manual"
+.TH "ROARK\-CONNECTIONS\-CALENDAR\-CREATE" "1" "" "roark-connections-calendar-create" "Roark Analytics API Manual"
 .SH "NAME"
-roark\-calendar\-connection\-get \- Get a calendar connection
+roark\-connections\-calendar\-create \- Connect a calendar account
 .SH "SYNOPSIS"
-.B roark calendar\-connection get
-\fIconnection\-id\fR [\fIoptions\fR]
+.B roark connections calendar create
+[\fIoptions\fR]
 .SH "DESCRIPTION"
-Returns one calendar connection. The stored credential is never included.
+Verifies the credential against the provider and, only if it works, stores it encrypted. A credential the provider rejects is a 400 and no connection is created: a connection that has never worked would next be exercised by an inbound call at 2am, with nobody there to fix it.
 .SH "API"
-GET /v1/calendar\-connection/{connectionId}
-.SH "ARGUMENTS"
+POST /v1/connections/calendar
+.SH "OPTIONS"
 .TP
-\fIconnection\-id\fR
-Calendar connection ID
+\fB\-\-provider\fR \fI<value>\fR
+Who holds the calendar. CAL_COM is connected with an API key; GOOGLE and CALENDLY are connected by consent, through `POST /v1/connections/calendar/google/authorize\-url` and `POST /v1/connections/calendar/calendly/authorize\-url`. One of: CAL_COM, GOOGLE, CALENDLY. Required.
+.TP
+\fB\-\-label\fR \fI<value>\fR
+Customer\-facing name for this account, unique within the project. Required. Required.
+.TP
+\fB\-\-api\-key\fR \fI<value>\fR
+The provider account’s API key. For CAL_COM, a Cal.com API key (starts with `cal_`). It is verified against the provider before anything is stored, so an invalid key is a 400 and no connection is created. Stored encrypted and never returned. Required.
+.TP
+\fB\-\-timezone\fR \fI<value>\fR
+The named IANA timezone to offer slots in, for example `America/Los_Angeles`. Omit to adopt the provider account’s own timezone. A fixed offset such as `\-08:00` is rejected: it does not observe DST. Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
@@ -54,7 +63,7 @@ Send the stored credential to a base URL set by a project .roark.json. Refused b
 .PP
 .RS 4
 .nf
-roark calendar\-connection get <connection\-id>
+roark connections calendar create \-\-provider <value> \-\-label <value> \-\-api\-key <value>
 .fi
 .RE
 .SH "ENVIRONMENT"
