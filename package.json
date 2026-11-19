@@ -234,6 +234,7 @@
     "./man/roark-simulation-persona-get.1",
     "./man/roark-simulation-persona-list.1",
     "./man/roark-simulation-persona-update.1",
+    "./man/roark-simulation-phone-number-list.1",
     "./man/roark-simulation-plan-create.1",
     "./man/roark-simulation-plan-delete.1",
     "./man/roark-simulation-plan-get.1",

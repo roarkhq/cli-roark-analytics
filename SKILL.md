@@ -237,6 +237,7 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark simulation persona get <persona-id>` - Get a persona
 - `roark simulation persona list` - List personas
 - `roark simulation persona update <persona-id>` - Update a persona
+- `roark simulation phone-number list` - List simulation phone numbers
 - `roark simulation plan create --data '{...}'` - Create a run plan
 - `roark simulation plan delete <plan-id>` - Delete a run plan
 - `roark simulation plan get <plan-id>` - Get a run plan
