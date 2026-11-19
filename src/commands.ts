@@ -3488,7 +3488,7 @@ export const COMMANDS: readonly CliCommand[] = [
         description:
           'Who holds the calendar. CAL_COM is connected with an API key; GOOGLE and CALENDLY are connected by consent, through `POST /v1/connections/calendar/google/authorize-url` and `POST /v1/connections/calendar/calendly/authorize-url`.',
         valueKind: 'string',
-        enumValues: ['CAL_COM', 'GOOGLE', 'CALENDLY'],
+        enumValues: ['CAL_COM', 'GOOGLE', 'CALENDLY', 'GO_HIGH_LEVEL'],
         repeatable: false,
       },
       {
@@ -3653,7 +3653,7 @@ export const COMMANDS: readonly CliCommand[] = [
         description:
           'Who holds the calendar. CAL_COM is connected with an API key; GOOGLE and CALENDLY are connected by consent, through `POST /v1/connections/calendar/google/authorize-url` and `POST /v1/connections/calendar/calendly/authorize-url`.',
         valueKind: 'string',
-        enumValues: ['CAL_COM', 'GOOGLE', 'CALENDLY'],
+        enumValues: ['CAL_COM', 'GOOGLE', 'CALENDLY', 'GO_HIGH_LEVEL'],
         repeatable: false,
       },
     ],
