@@ -3486,7 +3486,7 @@ export const COMMANDS: readonly CliCommand[] = [
         location: 'body',
         required: true,
         description:
-          'Who holds the calendar. CAL_COM is connected with an API key; GOOGLE and CALENDLY are connected by consent, through `POST /v1/connections/calendar/google/authorize-url` and `POST /v1/connections/calendar/calendly/authorize-url`.',
+          'Who holds the calendar. CAL_COM and GO_HIGH_LEVEL are connected with a key, GO_HIGH_LEVEL also needing the sub-account the key belongs to; GOOGLE and CALENDLY are connected by consent, through `POST /v1/connections/calendar/google/authorize-url` and `POST /v1/connections/calendar/calendly/authorize-url`.',
         valueKind: 'string',
         enumValues: ['CAL_COM', 'GOOGLE', 'CALENDLY', 'GO_HIGH_LEVEL'],
         repeatable: false,
@@ -3506,7 +3506,17 @@ export const COMMANDS: readonly CliCommand[] = [
         location: 'body',
         required: true,
         description:
-          'The provider account’s API key. For CAL_COM, a Cal.com API key (starts with `cal_`). It is verified against the provider before anything is stored, so an invalid key is a 400 and no connection is created. Stored encrypted and never returned.',
+          'The provider account’s API key. For CAL_COM, a Cal.com API key (starts with `cal_`). For GO_HIGH_LEVEL, a sub-account Private Integration Token, which must carry the `calendars.readonly`, `calendars/events.readonly`, `calendars/events.write`, `contacts.readonly`, `contacts.write` and `locations.readonly` scopes. It is verified against the provider before anything is stored, so an invalid key is a 400 and no connection is created. Stored encrypted and never returned.',
+        valueKind: 'string',
+        repeatable: false,
+      },
+      {
+        name: 'go-high-level-location',
+        path: ['goHighLevelLocation'],
+        location: 'body',
+        required: false,
+        description:
+          'Required for GO_HIGH_LEVEL and ignored by every other provider: the sub-account the token belongs to, for example `ve9EPM428h8vShlRW1KT`. A Private Integration Token does not name its own sub-account and every calendar call needs one, so the two are stored and verified together: a token minted in a different sub-account is a 400.',
         valueKind: 'string',
         repeatable: false,
       },
@@ -3651,7 +3661,7 @@ export const COMMANDS: readonly CliCommand[] = [
         location: 'query',
         required: false,
         description:
-          'Who holds the calendar. CAL_COM is connected with an API key; GOOGLE and CALENDLY are connected by consent, through `POST /v1/connections/calendar/google/authorize-url` and `POST /v1/connections/calendar/calendly/authorize-url`.',
+          'Who holds the calendar. CAL_COM and GO_HIGH_LEVEL are connected with a key, GO_HIGH_LEVEL also needing the sub-account the key belongs to; GOOGLE and CALENDLY are connected by consent, through `POST /v1/connections/calendar/google/authorize-url` and `POST /v1/connections/calendar/calendly/authorize-url`.',
         valueKind: 'string',
         enumValues: ['CAL_COM', 'GOOGLE', 'CALENDLY', 'GO_HIGH_LEVEL'],
         repeatable: false,
@@ -4021,6 +4031,16 @@ export const COMMANDS: readonly CliCommand[] = [
         required: false,
         description:
           'Rotate the credential. The new key is verified before it is stored, and a verified key returns the connection to ACTIVE, which is how a connection recovers from INVALID_CREDENTIALS.',
+        valueKind: 'string',
+        repeatable: false,
+      },
+      {
+        name: 'go-high-level-location',
+        path: ['goHighLevelLocation'],
+        location: 'body',
+        required: false,
+        description:
+          'Only with `apiKey`, and only for GO_HIGH_LEVEL: the sub-account the rotated token belongs to. Required there because the token and the sub-account are one credential, so a rotation has to name both.',
         valueKind: 'string',
         repeatable: false,
       },

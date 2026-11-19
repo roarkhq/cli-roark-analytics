@@ -23,6 +23,9 @@ Change the named IANA timezone slots are offered in. Optional.
 .TP
 \fB\-\-api\-key\fR \fI<value>\fR
 Rotate the credential. The new key is verified before it is stored, and a verified key returns the connection to ACTIVE, which is how a connection recovers from INVALID_CREDENTIALS. Optional.
+.TP
+\fB\-\-go\-high\-level\-location\fR \fI<value>\fR
+Only with `apiKey`, and only for GO_HIGH_LEVEL: the sub\-account the rotated token belongs to. Required there because the token and the sub\-account are one credential, so a rotation has to name both. Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
