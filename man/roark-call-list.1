@@ -27,7 +27,7 @@ Sort direction (default: desc) One of: asc, desc. Optional.
 Filter by call status One of: RINGING, IN_PROGRESS, ENDED. Optional.
 .TP
 \fB\-\-search\-text\fR \fI<value>\fR
-Search text to filter calls by title, summary, or transcript Optional.
+Search text to filter calls by title, summary, transcript, notes or call id. A phone number in any common format, such as (608) 813\-8733 or +16088138733, matches the customer phone number on the call instead of the transcript. A search that takes too long returns 400 with code search_timeout: narrow the search text or add filters and try again. Optional.
 .TP
 \fB\-\-agent\-id\fR \fI<value>\fR
 Calls that include any of these agents. One id, or several separated by commas, at most 100. A call with more than one agent matches when any of them is listed. An id that is not an agent on a call in this project matches nothing. Combines with the other filters, including sortBy and sortDirection. Optional.

@@ -2675,7 +2675,8 @@ export const COMMANDS: readonly CliCommand[] = [
         path: ['searchText'],
         location: 'query',
         required: false,
-        description: 'Search text to filter calls by title, summary, or transcript',
+        description:
+          'Search text to filter calls by title, summary, transcript, notes or call id. A phone number in any common format, such as (608) 813-8733 or +16088138733, matches the customer phone number on the call instead of the transcript. A search that takes too long returns 400 with code search_timeout: narrow the search text or add filters and try again.',
         valueKind: 'string',
         repeatable: false,
       },
