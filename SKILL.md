@@ -166,6 +166,7 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark customer-flow folder create --name <value>` - Create a customer flow folder
 - `roark customer-flow folder delete <folder-id>` - Delete a customer flow folder
 - `roark customer-flow folder list` - List customer flow folders
+- `roark customer-flow folder update <folder-id>` - Update a customer flow folder
 - `roark customer-flow get <flow-id>` - Get a customer flow
 - `roark customer-flow graph replace <flow-id> --graph <value>` - Replace a scripted flow's steps
 - `roark customer-flow happy-path update <flow-id>` - Update a flow's happy path

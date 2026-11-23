@@ -6,7 +6,7 @@ roark\-customer\-flow\-folder\-list \- List customer flow folders
 .B roark customer\-flow folder list
 [\fIoptions\fR]
 .SH "DESCRIPTION"
-Returns every folder the project groups its customer flows into, with how many flows each holds, in the order the app shows them. Filter the flow list to one folder with `GET /v1/customer\-flow?folderId=`. Customer flows were previously called scenarios.
+Returns every folder the project groups its customer flows into, with how many flows each holds, in the order the app shows them. Subfolders are included, each with the `parentId` of the folder it sits in. Filter the flow list to one folder with `GET /v1/customer\-flow?folderId=`, adding `includeSubfolders=true` to take in the folders inside it. Customer flows were previously called scenarios.
 .SH "API"
 GET /v1/customer\-flow/folder
 .SH "GLOBAL OPTIONS"

@@ -163,6 +163,7 @@
     "./man/roark-customer-flow-folder-create.1",
     "./man/roark-customer-flow-folder-delete.1",
     "./man/roark-customer-flow-folder-list.1",
+    "./man/roark-customer-flow-folder-update.1",
     "./man/roark-customer-flow-get.1",
     "./man/roark-customer-flow-graph-replace.1",
     "./man/roark-customer-flow-happy-path-update.1",
