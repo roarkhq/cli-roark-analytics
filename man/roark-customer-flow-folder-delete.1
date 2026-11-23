@@ -6,7 +6,7 @@ roark\-customer\-flow\-folder\-delete \- Delete a customer flow folder
 .B roark customer\-flow folder delete
 \fIfolder\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Deletes a folder. The flows in it are kept and no longer sit in any folder. Built\-in folders cannot be deleted.
+Deletes a folder. Its flows and subfolders are kept and move up one level: into the folder it sat in, or out of any folder when it was a top\-level folder. Built\-in folders cannot be deleted.
 .SH "API"
 DELETE /v1/customer\-flow/folder/{folderId}
 .SH "ARGUMENTS"

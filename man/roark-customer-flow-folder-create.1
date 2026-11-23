@@ -6,19 +6,22 @@ roark\-customer\-flow\-folder\-create \- Create a customer flow folder
 .B roark customer\-flow folder create
 [\fIoptions\fR]
 .SH "DESCRIPTION"
-Creates a folder to group customer flows. File a flow into it by sending its `folderId` when you create or update the flow. Names are unique within a project, ignoring case. Customer flows were previously called scenarios.
+Creates a folder to group customer flows, at the top level or inside another folder with `parentId`. Folders nest up to 5 levels deep. File a flow into it by sending its `folderId` when you create or update the flow. Names are unique within their parent folder, ignoring case. Customer flows were previously called scenarios.
 .SH "API"
 POST /v1/customer\-flow/folder
 .SH "OPTIONS"
 .TP
 \fB\-\-name\fR \fI<value>\fR
-The folder name. Must be unique in the project. Required.
+The folder name. Must be unique within its parent folder, ignoring case. Required.
 .TP
 \fB\-\-color\fR \fI<value>\fR
 The color the folder is shown with in the app. Folders share the palette labels use. Defaults to GREY. One of: GREEN, RED, ORANGE, PURPLE, GREY, BLUE, PEACH, TEAL, INDIGO, AMBER, ROSE, CYAN. Optional.
 .TP
 \fB\-\-description\fR \fI<value>\fR
 What belongs in this folder. Optional.
+.TP
+\fB\-\-parent\-id\fR \fI<value>\fR
+Create the folder inside this folder. Omit it, or send null, for a top\-level folder. Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
