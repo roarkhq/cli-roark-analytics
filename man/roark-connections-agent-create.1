@@ -6,7 +6,7 @@ roark\-connections\-agent\-create \- Connect an agent
 .B roark connections agent create
 [\fIoptions\fR]
 .SH "DESCRIPTION"
-Connects the platform a project’s agents run on. The body is shaped by `provider`; `GET /v1/connections/agent/providers` lists what each needs. Retell, Vapi, ElevenLabs and Bland keys are checked by listing agents first, so a refused key returns 400 and nothing is stored. Platforms that pull agents start syncing straight away. For LIVEKIT_SELF_HOSTED and the Pipecat providers, the response carries `observerApiKey`, shown once, for your SDK to report calls with. Most platforms connect once per project, and a second create returns 409; LiveKit Cloud may connect several accounts.
+Connects the platform a project’s agents run on. The body is shaped by `provider`; `GET /v1/connections/agent/providers` lists what each needs. Retell, Vapi, ElevenLabs and Bland keys are checked by listing agents first, so a refused key returns 400 and nothing is stored. An account with more agents than the project allows for `agentScope` ALL (25 unless raised for the project) returns 400 `too_many_agents`, including when `agentScope` is left out: send SELECTED with the `agentIds` to bring in, up to 1,000. Platforms that pull agents start syncing straight away. For LIVEKIT_SELF_HOSTED and the Pipecat providers, the response carries `observerApiKey`, shown once, for your SDK to report calls with. Most platforms connect once per project, and a second create returns 409; LiveKit Cloud may connect several accounts.
 .SH "API"
 POST /v1/connections/agent
 .SH "REQUEST BODY"

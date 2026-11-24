@@ -6,7 +6,7 @@ roark\-connections\-agent\-update \- Update an agent connection
 .B roark connections agent update
 \fIconnection\-id\fR [\fIoptions\fR]
 .SH "DESCRIPTION"
-Changes a connection’s settings or rotates its credential. Send `provider` (it must match the connection’s) and only the fields to change; the rest keep their stored values. A new Retell, Vapi, ElevenLabs or Bland key is checked by listing agents first. Set `status` to INACTIVE to pause syncing without deleting anything.
+Changes a connection’s settings or rotates its credential. Send `provider` (it must match the connection’s) and only the fields to change; the rest keep their stored values. A new Retell, Vapi, ElevenLabs or Bland key is checked by listing agents first. Moving to `agentScope` ALL, or giving an ALL connection a new key, on an account with more agents than the project allows returns 400 `too_many_agents`, as does selecting more than 1,000. Set `status` to INACTIVE to pause syncing without deleting anything.
 .SH "API"
 PATCH /v1/connections/agent/{connectionId}
 .SH "ARGUMENTS"
