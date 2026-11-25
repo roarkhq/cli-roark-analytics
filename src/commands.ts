@@ -7408,6 +7408,16 @@ export const COMMANDS: readonly CliCommand[] = [
         repeatable: false,
       },
       {
+        name: 'applicability-condition',
+        path: ['applicabilityCondition'],
+        location: 'body',
+        required: false,
+        description:
+          'When this metric applies, in plain words (for example "the caller asks to stop being contacted"). BOOLEAN LLM metrics only. On a conversation that does not meet it, the metric records `captureStatus: NOT_APPLICABLE` instead of a verdict, and checks on it count only the conversations it applies to. Null or empty: it applies to every conversation. Send null or an empty string to remove it.',
+        valueKind: 'string',
+        repeatable: false,
+      },
+      {
         name: 'grades-short-calls',
         path: ['gradesShortCalls'],
         location: 'body',
@@ -8044,6 +8054,16 @@ export const COMMANDS: readonly CliCommand[] = [
         required: false,
         description:
           'What a `false` value means. Given to the judge as its polarity rule, so keep it accurate.',
+        valueKind: 'string',
+        repeatable: false,
+      },
+      {
+        name: 'applicability-condition',
+        path: ['applicabilityCondition'],
+        location: 'body',
+        required: false,
+        description:
+          'When this metric applies, in plain words (for example "the caller asks to stop being contacted"). BOOLEAN LLM metrics only. On a conversation that does not meet it, the metric records `captureStatus: NOT_APPLICABLE` instead of a verdict, and checks on it count only the conversations it applies to. Null or empty: it applies to every conversation.',
         valueKind: 'string',
         repeatable: false,
       },
