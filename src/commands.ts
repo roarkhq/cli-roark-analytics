@@ -91,6 +91,7 @@ export const GROUPS: Readonly<Record<string, string>> = {
   'simulation plan job cost': 'Read simulation plan job cost',
   'simulation plan job debrief': 'Manage simulation plan job debrief',
   'simulation plan job result': 'Read simulation plan job result',
+  'simulation plan job-rescore': 'Read simulation plan job rescore',
   'simulation resource': 'Read simulation resource',
   'simulation resource-generation': 'Read simulation resource generations',
   'simulation resource-generation guidance': 'Read simulation resource generation guidance',
@@ -10146,6 +10147,29 @@ export const COMMANDS: readonly CliCommand[] = [
     requiresAuth: true,
   },
   {
+    commandPath: ['simulation', 'plan', 'job', 'rescore'],
+    clientProperty: 'simulationRunPlanJob',
+    methodName: 'rescore',
+    httpMethod: 'post',
+    httpPath: '/v1/simulation/plan/job/{jobId}/rescore',
+    summary: 'Re-score a simulation run',
+    description:
+      "Grade a finished run's calls again, without placing new calls: the same calls and metrics, with each metric's current version and the flows' current agent expectations. Use it after editing a metric or a flow's expectations, to see how the run you already have scores against them. The new values replace the run's current ones; earlier values stay in each metric value's history. The grading is billed like any metric collection. A run is re-scored one at a time: while one re-score runs, another is refused with 409. Returns immediately. Poll GET /v1/simulation/plan/job/{jobId}/rescore until `status` is COMPLETED or FAILED, then read the new values from GET /v1/simulation/plan/job/{jobId}/results.",
+    positionals: [
+      {
+        name: 'job-id',
+        paramKey: 'jobId',
+      },
+    ],
+    flags: [],
+    hasParams: false,
+    paramsAllOptional: true,
+    bodyOpaque: false,
+    bodyVariants: [],
+    acceptsBody: false,
+    requiresAuth: true,
+  },
+  {
     commandPath: ['simulation', 'plan', 'job', 'result', 'get'],
     clientProperty: 'simulationRunPlanJob',
     methodName: 'getResults',
@@ -10212,6 +10236,29 @@ export const COMMANDS: readonly CliCommand[] = [
     bodyOpaque: false,
     bodyVariants: [],
     acceptsBody: true,
+    requiresAuth: true,
+  },
+  {
+    commandPath: ['simulation', 'plan', 'job-rescore', 'get'],
+    clientProperty: 'simulationRunPlanJob',
+    methodName: 'getRescore',
+    httpMethod: 'get',
+    httpPath: '/v1/simulation/plan/job/{jobId}/rescore',
+    summary: "Get a simulation run's latest re-score",
+    description:
+      "The run's most recent re-score, with its status and how many conversations have been graded.",
+    positionals: [
+      {
+        name: 'job-id',
+        paramKey: 'jobId',
+      },
+    ],
+    flags: [],
+    hasParams: false,
+    paramsAllOptional: true,
+    bodyOpaque: false,
+    bodyVariants: [],
+    acceptsBody: false,
     requiresAuth: true,
   },
   {

@@ -248,8 +248,10 @@ operations (`run`, `start`, `lookup`, `promote`, `replace`). There is no `post`,
 - `roark simulation plan job delete <job-id>` - Delete a simulation run
 - `roark simulation plan job get <job-id>` - Get a simulation run
 - `roark simulation plan job list` - List simulation runs
+- `roark simulation plan job rescore <job-id>` - Re-score a simulation run
 - `roark simulation plan job result get <job-id>` - Get a simulation run's results
 - `roark simulation plan job start <plan-id>` - Run a simulation plan
+- `roark simulation plan job-rescore get <job-id>` - Get a simulation run's latest re-score
 - `roark simulation plan list` - List run plans
 - `roark simulation plan update <plan-id>` - Update a run plan
 - `roark simulation resource generate --agent-ids <value>` - Generate simulation resources
