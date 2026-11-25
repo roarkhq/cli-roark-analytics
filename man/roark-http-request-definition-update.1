@@ -29,6 +29,12 @@ Request body template. Accepts a JSON object or a string with placeholders like 
 .TP
 \fB\-\-headers\fR \fI<value>\fR
 Request headers as key\-value pairs Optional.
+.TP
+\fB\-\-timeout\-ms\fR \fI<value>\fR
+How long to wait for each attempt, in milliseconds, from 1000 to 300000. Raise it while you debug your endpoint. Null or omitted is the default, 30000. Optional.
+.TP
+\fB\-\-max\-attempts\fR \fI<value>\fR
+How many times to send the request, from 1 to 5. Set 1 so a slow answer is never sent again, which would start a second call. Null or omitted is the default, 3. Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR

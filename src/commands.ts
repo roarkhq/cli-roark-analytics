@@ -6496,6 +6496,26 @@ export const COMMANDS: readonly CliCommand[] = [
         valueKind: 'object',
         repeatable: false,
       },
+      {
+        name: 'timeout-ms',
+        path: ['timeoutMs'],
+        location: 'body',
+        required: false,
+        description:
+          'How long to wait for each attempt, in milliseconds, from 1000 to 300000. Raise it while you debug your endpoint. Null or omitted is the default, 30000.',
+        valueKind: 'integer',
+        repeatable: false,
+      },
+      {
+        name: 'max-attempts',
+        path: ['maxAttempts'],
+        location: 'body',
+        required: false,
+        description:
+          'How many times to send the request, from 1 to 5. Set 1 so a slow answer is never sent again, which would start a second call. Null or omitted is the default, 3.',
+        valueKind: 'integer',
+        repeatable: false,
+      },
     ],
     hasParams: true,
     paramsAllOptional: false,
@@ -6624,6 +6644,26 @@ export const COMMANDS: readonly CliCommand[] = [
         required: false,
         description: 'Request headers as key-value pairs',
         valueKind: 'object',
+        repeatable: false,
+      },
+      {
+        name: 'timeout-ms',
+        path: ['timeoutMs'],
+        location: 'body',
+        required: false,
+        description:
+          'How long to wait for each attempt, in milliseconds, from 1000 to 300000. Raise it while you debug your endpoint. Null or omitted is the default, 30000.',
+        valueKind: 'integer',
+        repeatable: false,
+      },
+      {
+        name: 'max-attempts',
+        path: ['maxAttempts'],
+        location: 'body',
+        required: false,
+        description:
+          'How many times to send the request, from 1 to 5. Set 1 so a slow answer is never sent again, which would start a second call. Null or omitted is the default, 3.',
+        valueKind: 'integer',
         repeatable: false,
       },
     ],
@@ -7533,6 +7573,26 @@ export const COMMANDS: readonly CliCommand[] = [
         description:
           'A JSON template with {{path}} placeholders into the request payload, such as {"cardId": "{{call.properties.cardId}}"}. Omit or pass null to send the default payload.',
         valueKind: 'string',
+        repeatable: false,
+      },
+      {
+        name: 'http-request.timeout-ms',
+        path: ['httpRequest', 'timeoutMs'],
+        location: 'body',
+        required: false,
+        description:
+          'How long to wait for each attempt, in milliseconds. At most 300000. Omit or pass null for 30000.',
+        valueKind: 'integer',
+        repeatable: false,
+      },
+      {
+        name: 'http-request.max-attempts',
+        path: ['httpRequest', 'maxAttempts'],
+        location: 'body',
+        required: false,
+        description:
+          'How many times to send the request before recording an error: once, plus retries after a timeout, a connection failure or an HTTP 5xx. At most 5. Omit or pass null for 3.',
+        valueKind: 'integer',
         repeatable: false,
       },
       {
