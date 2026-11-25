@@ -75,6 +75,12 @@ Request headers, for example your own Authorization header. Values may contain p
 \fB\-\-http\-request.body\fR \fI<value>\fR
 A JSON template with {{path}} placeholders into the request payload, such as {"cardId": "{{call.properties.cardId}}"}. Omit or pass null to send the default payload. Optional.
 .TP
+\fB\-\-http\-request.timeout\-ms\fR \fI<value>\fR
+How long to wait for each attempt, in milliseconds. At most 300000. Omit or pass null for 30000. Optional.
+.TP
+\fB\-\-http\-request.max\-attempts\fR \fI<value>\fR
+How many times to send the request before recording an error: once, plus retries after a timeout, a connection failure or an HTTP 5xx. At most 5. Omit or pass null for 3. Optional.
+.TP
 \fB\-\-change\-reason\fR \fI<value>\fR
 Optional free\-text audit note recorded on the new version. Optional.
 .TP
