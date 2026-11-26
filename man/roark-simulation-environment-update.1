@@ -38,6 +38,12 @@ The caller's audio on its way to the agent: what the agent hears. Omit for no lo
 .TP
 \fB\-\-line\-custom.from\-agent\fR \fI<value>\fR
 The agent's audio on its way to the caller: what the caller hears. Omit for no loss. Optional.
+.TP
+\fB\-\-phone\fR \fI<value>\fR
+The phone the simulated caller is on: the codecs the call passes through, both ways, on top of any loss in lineQuality. Null is no phone. LANDLINE: The narrow band of a phone handset and the codec of the phone network. MOBILE: The narrow band and the compressed voice codec of a mobile call. BLUETOOTH: A mobile on a car kit or headset: the Bluetooth link adds fizz under the voice, then the mobile codec. Defaults to null. One of: LANDLINE, MOBILE, BLUETOOTH. Optional.
+.TP
+\fB\-\-line\-noise\fR \fI<value>\fR
+Hiss on the line, both ways, from 0 (none) to 1 (heavy, about 10 dB under phone speech). Combines with the phone and lineQuality. Defaults to 0. Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
