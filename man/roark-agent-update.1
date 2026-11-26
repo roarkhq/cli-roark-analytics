@@ -20,6 +20,18 @@ Name of the agent Optional.
 .TP
 \fB\-\-description\fR \fI<value>\fR
 Description of the agent Optional.
+.TP
+\fB\-\-industry\fR \fI<value>\fR
+The industry the agent serves. One of: HEALTHCARE, FINANCIAL_SERVICES, INSURANCE, DEBT_COLLECTION, RETAIL, TRAVEL_AND_HOSPITALITY, TELECOMMUNICATIONS, TECHNOLOGY, PUBLIC_SECTOR, UTILITIES, LOGISTICS, AUTOMOTIVE, HOME_SERVICES, RESTAURANTS, EDUCATION, RECRUITING_AND_STAFFING, OTHER. Optional.
+.TP
+\fB\-\-industry\-description\fR \fI<value>\fR
+The industry in your own words, when none of the listed ones fits. Use it with industry OTHER. Optional.
+.TP
+\fB\-\-website\-url\fR \fI<value>\fR
+The business's website. Simulation setup reads it. Optional.
+.TP
+\fB\-\-capabilities\fR \fI<value>\fR
+What the agent handles. Simulation setup tests each one. One of: APPOINTMENT_BOOKING, FAQ, IDENTITY_VERIFICATION, ACCOUNT_MANAGEMENT, BILLING_AND_PAYMENTS, ORDER_MANAGEMENT, TROUBLESHOOTING, CALL_ROUTING, LEAD_QUALIFICATION, COLLECTIONS, OUTBOUND_CALLING. Repeatable. Optional.
 .SH "GLOBAL OPTIONS"
 .TP
 \fB\-\-data\fR \fI<json>\fR
