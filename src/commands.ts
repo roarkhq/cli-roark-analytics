@@ -5193,7 +5193,7 @@ export const COMMANDS: readonly CliCommand[] = [
     httpPath: '/v1/customer-flow/{flowId}/edge-case',
     summary: 'Add an edge case',
     description:
-      "Adds a variant to an IMPROV flow. A scripted flow's variants are owned by the path engine, one per path through the graph, so they are created by editing the graph through PUT /v1/customer-flow/{flowId}/graph rather than here. Leave personaOverrideId or environmentId unset to inherit the happy path's.",
+      "Adds a variant to an IMPROV flow. A scripted flow's variants are owned by the path engine, one per path through the graph, so they are created by editing the graph through PUT /v1/customer-flow/{flowId}/graph rather than here. Leave personaOverrideId or environmentId unset to inherit the happy path's, and holdMode unset to wait on hold the way the happy path does.",
     positionals: [
       {
         name: 'flow-id',
@@ -5233,6 +5233,37 @@ export const COMMANDS: readonly CliCommand[] = [
         location: 'body',
         required: false,
         valueKind: 'string',
+        repeatable: false,
+      },
+      {
+        name: 'hold-mode',
+        path: ['holdMode'],
+        location: 'body',
+        required: false,
+        description:
+          'How the simulated customer waits quietly on hold while your agent is busy. DEFAULT follows Roark\'s built-in rules: wait when the agent asks for a moment ("bear with me", "let me pull that up"), and never in place of answering a question. CUSTOM follows holdInstructions. NEVER means this customer never holds. Null on an edge case uses the happy path\'s mode, instructions and longest wait together; null on the happy path is DEFAULT. Applies to improv variants and to the improvised turns of scripted ones.',
+        valueKind: 'string',
+        enumValues: ['DEFAULT', 'CUSTOM', 'NEVER'],
+        repeatable: false,
+      },
+      {
+        name: 'hold-instructions',
+        path: ['holdInstructions'],
+        location: 'body',
+        required: false,
+        description:
+          'CUSTOM only: when the simulated customer waits quietly, written as instructions it follows. It stays silent until the agent speaks again or the longest wait runs out, then takes the turn back. Required when holdMode is CUSTOM. Up to 4000 characters.',
+        valueKind: 'string',
+        repeatable: false,
+      },
+      {
+        name: 'hold-max-seconds',
+        path: ['holdMaxSeconds'],
+        location: 'body',
+        required: false,
+        description:
+          'The longest one wait on hold can run, in seconds, from 5 to 600. When it runs out the simulated customer takes the turn back. Null uses the default, 180. Ignored when holdMode is NEVER.',
+        valueKind: 'integer',
         repeatable: false,
       },
       {
@@ -5350,7 +5381,7 @@ export const COMMANDS: readonly CliCommand[] = [
     httpPath: '/v1/customer-flow/{flowId}/edge-case/{edgeCaseId}',
     summary: 'Update an edge case',
     description:
-      "Updates an edge case's title, persona, environment, brief, preceded-by link or expectations. Omitted fields are left alone; `additionalExpectations` replaces the set wholesale rather than appending. Promoting it to the happy path is a separate call, since that also demotes the incumbent.",
+      "Updates an edge case's title, persona, environment, brief, hold settings, preceded-by link or expectations. Omitted fields are left alone; `additionalExpectations` replaces the set wholesale rather than appending. Promoting it to the happy path is a separate call, since that also demotes the incumbent.",
     positionals: [
       {
         name: 'flow-id',
@@ -5394,6 +5425,37 @@ export const COMMANDS: readonly CliCommand[] = [
         location: 'body',
         required: false,
         valueKind: 'string',
+        repeatable: false,
+      },
+      {
+        name: 'hold-mode',
+        path: ['holdMode'],
+        location: 'body',
+        required: false,
+        description:
+          'How the simulated customer waits quietly on hold while your agent is busy. DEFAULT follows Roark\'s built-in rules: wait when the agent asks for a moment ("bear with me", "let me pull that up"), and never in place of answering a question. CUSTOM follows holdInstructions. NEVER means this customer never holds. Null on an edge case uses the happy path\'s mode, instructions and longest wait together; null on the happy path is DEFAULT. Applies to improv variants and to the improvised turns of scripted ones.',
+        valueKind: 'string',
+        enumValues: ['DEFAULT', 'CUSTOM', 'NEVER'],
+        repeatable: false,
+      },
+      {
+        name: 'hold-instructions',
+        path: ['holdInstructions'],
+        location: 'body',
+        required: false,
+        description:
+          'CUSTOM only: when the simulated customer waits quietly, written as instructions it follows. It stays silent until the agent speaks again or the longest wait runs out, then takes the turn back. Required when holdMode is CUSTOM. Up to 4000 characters.',
+        valueKind: 'string',
+        repeatable: false,
+      },
+      {
+        name: 'hold-max-seconds',
+        path: ['holdMaxSeconds'],
+        location: 'body',
+        required: false,
+        description:
+          'The longest one wait on hold can run, in seconds, from 5 to 600. When it runs out the simulated customer takes the turn back. Null uses the default, 180. Ignored when holdMode is NEVER.',
+        valueKind: 'integer',
         repeatable: false,
       },
       {
@@ -5710,7 +5772,7 @@ export const COMMANDS: readonly CliCommand[] = [
     httpPath: '/v1/customer-flow/{flowId}/happy-path',
     summary: "Update a flow's happy path",
     description:
-      "Updates the happy path's title, persona, environment, brief or expectations. Omitted fields are left alone; `additionalExpectations` replaces the set wholesale rather than appending. Its persona and environment are what the edge cases inherit, so changing them here changes every edge case that does not name its own.",
+      "Updates the happy path's title, persona, environment, brief, hold settings or expectations. Omitted fields are left alone; `additionalExpectations` replaces the set wholesale rather than appending. Its persona, environment and hold settings are what the edge cases inherit, so changing them here changes every edge case that does not name its own.",
     positionals: [
       {
         name: 'flow-id',
@@ -5750,6 +5812,37 @@ export const COMMANDS: readonly CliCommand[] = [
         location: 'body',
         required: false,
         valueKind: 'string',
+        repeatable: false,
+      },
+      {
+        name: 'hold-mode',
+        path: ['holdMode'],
+        location: 'body',
+        required: false,
+        description:
+          'How the simulated customer waits quietly on hold while your agent is busy. DEFAULT follows Roark\'s built-in rules: wait when the agent asks for a moment ("bear with me", "let me pull that up"), and never in place of answering a question. CUSTOM follows holdInstructions. NEVER means this customer never holds. Null on an edge case uses the happy path\'s mode, instructions and longest wait together; null on the happy path is DEFAULT. Applies to improv variants and to the improvised turns of scripted ones.',
+        valueKind: 'string',
+        enumValues: ['DEFAULT', 'CUSTOM', 'NEVER'],
+        repeatable: false,
+      },
+      {
+        name: 'hold-instructions',
+        path: ['holdInstructions'],
+        location: 'body',
+        required: false,
+        description:
+          'CUSTOM only: when the simulated customer waits quietly, written as instructions it follows. It stays silent until the agent speaks again or the longest wait runs out, then takes the turn back. Required when holdMode is CUSTOM. Up to 4000 characters.',
+        valueKind: 'string',
+        repeatable: false,
+      },
+      {
+        name: 'hold-max-seconds',
+        path: ['holdMaxSeconds'],
+        location: 'body',
+        required: false,
+        description:
+          'The longest one wait on hold can run, in seconds, from 5 to 600. When it runs out the simulated customer takes the turn back. Null uses the default, 180. Ignored when holdMode is NEVER.',
+        valueKind: 'integer',
         repeatable: false,
       },
       {
